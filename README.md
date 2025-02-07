@@ -1,4 +1,5 @@
-# 🍽️ FoodConnect
+
+![foodconnect-high-resolution-logo](https://github.com/user-attachments/assets/b1ffc80c-8319-4463-aa19-18308e9c7c10)
 
 Connecting food donors with those in need through an online platform.
 
