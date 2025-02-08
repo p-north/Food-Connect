@@ -32,7 +32,7 @@ FoodConnect is a web platform that bridges the gap between food donors and recip
 
 ## 🎯 Target Users
 
-### 🥦 Food Donors
+### Food Donors
 - 🏢 Businesses
 - 🍽️ Restaurants
 - 🛒 Grocery Stores, Supermarkets, and Bakeries
@@ -40,7 +40,7 @@ FoodConnect is a web platform that bridges the gap between food donors and recip
 - 🚜 Local Farmers
 - 🏡 Homeowners & Individual Donors
 
-### 🍽️ Recipients
+### Recipients
 - 👥 Individual Recipients
 - ⛪ Religious Institutions
 - 🏛️ Community Centers
