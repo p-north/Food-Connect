@@ -9,16 +9,16 @@ FoodConnect is a web platform that bridges the gap between food donors and recip
 ## 🚀 Tech Stack
 
 ### Frontend
-- ⚛️ **React**
-- 🏗️ **TypeScript**
-- ⚡ **Vite**
-- 🎨 **Tailwind CSS**
+- **React**
+- **TypeScript**
+- **Vite**
+- **Tailwind CSS**
 
 ### Backend
-- 🏗 **Express.js**
-- 🗄️ **PostgreSQL**
-- 🔍 **GraphQL**
-- 🔄 **Socket.io**
+- **Express.js**
+- **PostgreSQL**
+- **GraphQL**
+- **Socket.io**
 
 ## 🎯 Features
 
