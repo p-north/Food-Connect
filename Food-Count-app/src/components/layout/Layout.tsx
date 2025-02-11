@@ -3,12 +3,17 @@ import Navigation from './Navigation';
 
 const Layout = () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col min-h-screen w-screen">
+      {/* Full-width navigation */}
       <Navigation />
-      <main className="flex-grow">
+
+      {/* Main content area */}
+      <main className="flex-grow w-full bg-gray-50 flex justify-center items-center">
         <Outlet />
       </main>
-      <footer className="bg-gray-100 p-4 text-center">
+
+      {/* Footer at the bottom */}
+      <footer className="bg-gray-100 p-4 text-center w-full">
         <p>© 2024 Food Connect</p>
       </footer>
     </div>

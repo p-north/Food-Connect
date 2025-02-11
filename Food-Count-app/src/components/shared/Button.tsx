@@ -14,9 +14,9 @@ const Button = ({
   const baseStyles = 'px-4 py-2 rounded-md font-medium transition-colors duration-200';
   
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700',
+    primary: 'bg-blue-600 text-sm text-blue-600 hover:bg-blue-700',
     secondary: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
-    text: 'text-gray-600 hover:text-blue-600'
+    text: 'text-blue-600 hover:text-blue-600'
   };
 
   return (
