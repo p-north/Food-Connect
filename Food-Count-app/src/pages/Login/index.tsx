@@ -59,7 +59,7 @@ const Login = () => {
           </Link>
         </div>
 
-        <Button type="submit" variant="primary" className="w-full hover:text-green-700">
+        <Button type="submit" variant="primary" className="w-full hover:text-blue-700">
           Sign In
         </Button>
 
