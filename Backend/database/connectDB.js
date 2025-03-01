@@ -1,9 +1,17 @@
-import { Client } from 'pg';
+import pg from 'pg'
 
 // create a postgresql client
-// not done
-const client = new Client({
-    user: 'food-connect-admin',
-    password: '12345',
 
-})
+// acessing client thru terminal:
+    // sudo -i -u postgres
+    // psql
+const client = new pg.Client({
+    user: 'admin',
+    password: 'fd123',
+    host: 'localhost',
+    database: 'foodconnect',
+    port: 5432,
+
+});
+
+export default client;
