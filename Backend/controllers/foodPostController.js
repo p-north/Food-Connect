@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
 
-const createFoodPost = async (req: Request, res: Response) => {
+
+const createFoodPost = async (req, res) => {
     try {
         res.status(200).json({
             message: 'Food post created successfully',
@@ -10,7 +10,7 @@ const createFoodPost = async (req: Request, res: Response) => {
     }
 }
 
-const getFoodPosts = async (req: Request, res: Response) => {
+const getFoodPosts = async (req, res) => {
     try {
         res.status(200).json({
             message: 'Food posts fetched successfully',
@@ -20,7 +20,7 @@ const getFoodPosts = async (req: Request, res: Response) => {
     }
 }
 
-const getFoodPost = async (req: Request, res: Response) => {
+const getFoodPost = async (req, res) => {
     try {
         res.status(200).json({
             message: 'Food post fetched successfully',
@@ -30,7 +30,7 @@ const getFoodPost = async (req: Request, res: Response) => {
     }
 }
 
-const updateFoodPost = async (req: Request, res: Response) => {
+const updateFoodPost = async (req, res) => {
     try {
         res.status(200).json({
             message: 'Food post updated successfully',
@@ -40,7 +40,7 @@ const updateFoodPost = async (req: Request, res: Response) => {
     }
 }
 
-const deleteFoodPost = async (req: Request, res: Response) => {
+const deleteFoodPost = async (req, res) => {
     try {
         res.status(200).json({
             message: 'Food post deleted successfully',
