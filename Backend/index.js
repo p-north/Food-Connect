@@ -1,3 +1,4 @@
+import foodPostRoutes from "./routes/foodPostRoutes";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -31,9 +32,17 @@ app.use(cookieParser());
 
 // auth routes
 app.use("/api/auth", authRoutes);
+app.use('/api/foodPosts', foodPostRoutes);
 
 app.listen(PORT, () => {
   console.log("Server Running on Port: ", PORT);
 });
 
 // email handling done using mailtrap
+
+
+
+
+
+
+
