@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./src/routes/auth.route.js";
 import client from "./src/database/connectDB.js";
+import createUserTable from "./src/models/user.model.js";
 
 // dotenv config
 dotenv.config();
@@ -17,7 +18,19 @@ client
   .connect()
   .then(() => console.log("Connected to PostgreSQL!"))
   .catch((err) => console.error("Connection error", err.stack))
-  .finally(() => client.end());
+
+// create tables
+const initDB = async () => {
+  try {
+      await client.query(createUserTable);
+      console.log("✅ Users table is ready!");
+  } catch (err) {
+      console.error("❌ Error creating users table:", err);
+  }
+};
+
+// call on tables to create
+initDB();
 
 app.use(
   cors({
