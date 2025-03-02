@@ -5,6 +5,8 @@ import pg from 'pg'
 // acessing client thru terminal:
     // sudo -i -u postgres
     // psql
+    // \c foodconnect
+    // \dt 
 const client = new pg.Client({
     user: 'admin',
     password: 'fd123',
