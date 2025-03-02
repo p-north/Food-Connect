@@ -35,4 +35,27 @@ export const sendVerificationEmail = async (email, verificationToken) => {
   }
 };
 
-// Welcome to FoodConnect - Let's Fight Food Waste Together!
+export const sendWelcomeEmail = async (email, name) => {
+  const recipient = [{email}];
+  try {
+    const msg = {
+      to: recipient, // Change to your recipient
+      from: "foodconnect-app@outlook.com", // Change to your verified sender
+      subject: "Welcome to FoodConnect - Let's Fight Food Waste Together!",
+      html: WELCOME_TEMPLATE.replace(
+        "{name}",
+        name
+      ),
+    };
+    // send the email
+    sgMail.send(msg).then(() => {
+      console.log("Email sent");
+    });
+    
+  } catch (error) {
+    console.error("Error sending verification", error);
+    throw new Error(`Error sending verification email: ${error}`);
+
+    
+  }
+};

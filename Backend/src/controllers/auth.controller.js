@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import client from "../database/connectDB.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail } from "../utils/email.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../utils/email.js";
 
 async function handleSignUp(req, res) {
   const { email, password, name, accountType } = req.body;
@@ -47,15 +47,15 @@ async function handleSignUp(req, res) {
       new Date(Date.now() + 24 * 60 * 60 * 1000), // Convert to proper timestamp format
     ];
 
-    const user = await client.query(query, values);
+    // insert the values
+    await client.query(query, values);
 
-    
     // get the userID
     const user_ID = await client.query(
-        'SELECT id FROM users WHERE verification_token = $1;',
-        [verificationToken]  // Pass as a parameter to prevent SQL injection
+      "SELECT id FROM users WHERE verification_token = $1;",
+      [verificationToken] // Pass as a parameter to prevent SQL injection
     );
-    
+
     //jwt token
     generateTokenAndSetCookie(res, user_ID);
 
@@ -68,7 +68,46 @@ async function handleSignUp(req, res) {
     res.status(400).json({ success: false, message: error.message });
   }
 }
-async function verifyEmail() {}
+async function verifyEmail(req, res) {
+  const { code } = req.body;
+  try {
+    const user = await client.query(
+      `SELECT * FROM users WHERE verification_token = $1 AND verification_token_expires_at > $2;`,
+      [code, new Date()]
+    );
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Invalid or expired verification code",
+        });
+    }
+
+    const user_id = user.rows[0].id;
+    const user_email = user.rows[0].email;
+    const user_name = user.rows[0].name;
+
+    // change the database
+    // set is verified to true, verification token to null, token expires at to null
+    // this indicates user is fully verified
+    await client.query(
+      `UPDATE users SET is_verified = $1, verification_token = $2, verification_token_expires_at = $3 WHERE users.id = $4`,
+      [true, null, null, user_id]
+    );
+
+    await sendWelcomeEmail(user_email, user_name);
+
+    res.status(200).json({
+      message: "Email verified successfully",
+    });
+
+  } catch (error) {
+    console.log("error", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+}
 async function handleLogin() {}
 async function handleLogout() {}
 async function forgotPassword() {}

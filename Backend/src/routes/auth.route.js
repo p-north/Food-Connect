@@ -14,7 +14,7 @@ const router = express.Router();
 // define routes here for authentication
 router.get("/check-auth", checkAuth);
 router.post("/signup", handleSignUp);
-router.post("verify-email", verifyEmail);
+router.post("/verify-email", verifyEmail);
 router.post("/login", handleLogin);
 router.post("/logout", handleLogout);
 

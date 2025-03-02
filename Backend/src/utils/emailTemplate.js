@@ -109,14 +109,15 @@ export const WELCOME_TEMPLATE = `
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#ffffff" style="width: 100%; max-width: 600px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
                     <tr>
                         <td align="center" style="padding-bottom: 20px;">
+                            <img src="http://cdn.mcauto-images-production.sendgrid.net/c5675e954809ddd6/2b1bb154-6bbf-4f83-9c80-de97076b3985/2000x487.png" style="max-width: 100%; height: auto; display: block;">
                             <h1 style="color: #2ECC40; font-size: 24px; margin-bottom: 10px;">Welcome to FoodConnect!</h1>
                             <p style="font-size: 16px; color: #4a4a4a; margin: 0;">Bridging the gap between food donors and recipients</p>
                         </td>
                     </tr>
                     <tr>
                         <td align="left" style="font-size: 16px; color: #4a4a4a; line-height: 1.6; padding: 0 10px;">
-
-                            <p>Thank you for joining <strong>FoodConnect</strong>. We’re excited to have you on board as we work towards reducing food waste and improving accessibility for those in need.</p>
+                            <p>Hi {name}, </p>
+                            <p>Thank you for joining <strong>FoodConnect</strong>. We\'re excited to have you on board as we work towards reducing food waste and improving accessibility for those in need.</p>
                             <p>With <strong>FoodConnect</strong>, you can:</p>
                             <br>
                             <ul style="padding-left: 20px;">

@@ -7,6 +7,7 @@ import pg from 'pg'
     // psql
     // \c foodconnect
     // \dt 
+    // \x auto
 const client = new pg.Client({
     user: 'admin',
     password: 'fd123',
