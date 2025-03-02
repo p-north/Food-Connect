@@ -22,3 +22,10 @@
     "code": "123456"
 }
 
+--Handles User login, reponse sends back a generated session cookie which lasts for 7d if user found
+--http://localhost:5000/api/auth/login
+--METHOD: POST
+-- example JSON{
+    "email":"myemail@gmail.com",
+    "password":"12345678"
+}

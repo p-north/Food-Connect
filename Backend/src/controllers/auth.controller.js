@@ -76,7 +76,7 @@ async function verifyEmail(req, res) {
       [code, new Date()]
     );
 
-    if (!user) {
+    if (user.rowCount === 0) {
       return res
         .status(400)
         .json({
@@ -108,7 +108,47 @@ async function verifyEmail(req, res) {
     res.status(500).json({ message: "Server Error" });
   }
 }
-async function handleLogin() {}
+async function handleLogin(req, res) {
+  const {email, password} = req.body;
+
+  try {
+    // validate user credentials
+    const user = await client.query(
+      `SELECT * FROM users WHERE email = $1;`,
+      [email]
+    );
+
+    if(user.rowCount === 0){
+      return res.status(400).json({sucess: false, message: "Invalid Credentials or User does not exist."});
+    }
+
+    const dbPassword = user.rows[0].password;
+    const userID = user.rows[0].id;
+
+    const isPasswordValid = await bcrypt.compare(password, dbPassword);
+
+    if(!isPasswordValid){
+      return res.status(400).json({sucess: false, message: "Invalid Credentials"});
+    }
+
+    generateTokenAndSetCookie(res, userID);
+
+    // set the last login to current date
+    await client.query(`UPDATE users SET last_login = $1 WHERE id = $2;`, [new Date(), userID]);
+
+    res.status(200).json({
+      message: "Logged in successfully",
+    });
+
+
+
+
+  } catch (error) {
+    console.log('Error in login:', error);
+    res.status(400).json({success: false, message: error.message});
+  }
+
+}
 async function handleLogout() {}
 async function forgotPassword() {}
 async function resetPassword() {}
@@ -119,6 +159,8 @@ export {
   verifyEmail,
   handleLogin,
   handleSignUp,
+
+
   forgotPassword,
   resetPassword,
   checkAuth,
