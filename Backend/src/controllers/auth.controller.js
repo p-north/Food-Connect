@@ -77,12 +77,10 @@ async function verifyEmail(req, res) {
     );
 
     if (user.rowCount === 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Invalid or expired verification code",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
     }
 
     const user_id = user.rows[0].id;
@@ -102,24 +100,25 @@ async function verifyEmail(req, res) {
     res.status(200).json({
       message: "Email verified successfully",
     });
-
   } catch (error) {
     console.log("error", error);
     res.status(500).json({ message: "Server Error" });
   }
 }
 async function handleLogin(req, res) {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
   try {
     // validate user credentials
-    const user = await client.query(
-      `SELECT * FROM users WHERE email = $1;`,
-      [email]
-    );
+    const user = await client.query(`SELECT * FROM users WHERE email = $1;`, [
+      email,
+    ]);
 
-    if(user.rowCount === 0){
-      return res.status(400).json({sucess: false, message: "Invalid Credentials or User does not exist."});
+    if (user.rowCount === 0) {
+      return res.status(400).json({
+        sucess: false,
+        message: "Invalid Credentials or User does not exist.",
+      });
     }
 
     const dbPassword = user.rows[0].password;
@@ -127,42 +126,87 @@ async function handleLogin(req, res) {
 
     const isPasswordValid = await bcrypt.compare(password, dbPassword);
 
-    if(!isPasswordValid){
-      return res.status(400).json({sucess: false, message: "Invalid Credentials"});
+    if (!isPasswordValid) {
+      return res
+        .status(400)
+        .json({ sucess: false, message: "Invalid Credentials" });
     }
 
     generateTokenAndSetCookie(res, userID);
 
     // set the last login to current date
-    await client.query(`UPDATE users SET last_login = $1 WHERE id = $2;`, [new Date(), userID]);
+    await client.query(`UPDATE users SET last_login = $1 WHERE id = $2;`, [
+      new Date(),
+      userID,
+    ]);
 
     res.status(200).json({
       message: "Logged in successfully",
     });
-
   } catch (error) {
-    console.log('Error in login:', error);
-    res.status(400).json({success: false, message: error.message});
+    console.log("Error in login:", error);
+    res.status(400).json({ success: false, message: error.message });
   }
-
 }
 async function handleLogout(req, res) {
   // clear the cookies
   res.clearCookie("token");
-  res.status(200).json({ sucess: true, message: "Logged out successfully"});
+  res.status(200).json({ sucess: true, message: "Logged out successfully" });
 }
-async function forgotPassword() {}
-async function resetPassword() {}
-async function checkAuth() {}
+async function checkAuth(req, res) {
+  try {
+    // use the decoded ID in the middleware
+    const uID = req.userID;
+    // validate user credentials
+    const user = await client.query(`SELECT * FROM users WHERE id = $1;`, [
+      uID,
+    ]);
 
-export {
-  handleLogout,
-  verifyEmail,
-  handleLogin,
-  handleSignUp,
+    if (user.rowCount === 0) {
+      return res
+        .status(400)
+        .json({ sucess: false, message: "User does not exist." });
+    }
 
 
-  forgotPassword,
-  resetPassword,
-  checkAuth,
-};
+    res.status(200).json({
+      success: true,
+    });
+
+
+  } catch (error) {
+    console.log("Error in checkAuth", error);
+    res.status(400).json({ success: false, message: error.message});
+  }
+}
+// async function forgotPassword(req, res) {
+//   const {email} = req.body;
+
+//   try {
+//      // validate user credentials
+//      const user = await client.query(
+//       `SELECT * FROM users WHERE email = $1;`,
+//       [email]
+//     );
+
+//     if(user.rowCount === 0){
+//       return res.status(400).json({sucess: false, message: "User not found"});
+
+//     }
+
+//     // generate a reset token
+//     const resetToken = crypto.randomBytes(20).toString("hex");
+//     const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000 // 1 hour
+
+//     // update the database
+//     await client.query(`UPDATE users SET reset_password_token = $1, reset_password_expires_at = $2 WHERE email = $3;`, [resetToken, resetTokenExpiresAt, email]);
+
+//     // send the email
+
+//   } catch (error) {
+
+//   }
+// }
+// async function resetPassword() {}
+
+export { handleLogout, verifyEmail, handleLogin, handleSignUp, checkAuth };

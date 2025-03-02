@@ -5,7 +5,13 @@
 
 ------------------------User Auth----------------
 
--Handle Email SignUp, sends user a verification email
+--Checks wether the signed in user is authenticated at all times. Used for protected routes. Server will take cookie, decode it into the userID, and verify.
+--http://localhost:5001/api/auth/check-auth
+--METHOD: GET
+-pass in the cookie as token.
+
+
+-Handle Email SignUp, sends user a verification email. Server also generates a token from the encrypted user ID.
 --http://localhost:5000/api/auth/signup
 --METHOD: POST
 -- example JSON {
