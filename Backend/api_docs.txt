@@ -1,2 +1,17 @@
 // All API docs here
 // auth routes, fetch routes, GET, PUT, POST etc.....
+
+
+
+----User Auth--------
+
+-Handle Email SignUp, sends user a verification email
+--http://localhost:5000/api/auth/signup
+--METHOD: POST
+-- example raw json{
+    "email": "123@gmail.com",
+    "password": "12345",
+    "name": "cristiano",
+    "accountType": "donor"
+}
+
