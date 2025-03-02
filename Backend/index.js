@@ -29,6 +29,7 @@ const initDB = async () => {
   }
 };
 
+// call on tables to create
 initDB();
 
 app.use(
