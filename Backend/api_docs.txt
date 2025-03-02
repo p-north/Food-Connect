@@ -15,7 +15,7 @@
     "accountType":"donor"
 }
 
---Handles Email verification, sends the user a welcome email and verifies them in the database
+--Handles Email verification, receives the entered code, sends the user a welcome email and verifies them in the database.
 --http://localhost:5000/api/auth/verify-email
 --METHOD: POST
 -- example JSON {
@@ -29,3 +29,7 @@
     "email":"myemail@gmail.com",
     "password":"12345678"
 }
+
+--Handles user logout, response will clear the cookie passed. Nothing required in the body.
+--http://localhost:3000/api/auth/logout
+--METHOD POST

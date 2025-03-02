@@ -140,16 +140,17 @@ async function handleLogin(req, res) {
       message: "Logged in successfully",
     });
 
-
-
-
   } catch (error) {
     console.log('Error in login:', error);
     res.status(400).json({success: false, message: error.message});
   }
 
 }
-async function handleLogout() {}
+async function handleLogout(req, res) {
+  // clear the cookies
+  res.clearCookie("token");
+  res.status(200).json({ sucess: true, message: "Logged out successfully"});
+}
 async function forgotPassword() {}
 async function resetPassword() {}
 async function checkAuth() {}
