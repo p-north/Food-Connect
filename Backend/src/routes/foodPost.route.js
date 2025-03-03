@@ -5,7 +5,7 @@ import {
     getFoodPost,
     getFoodPosts,
     updateFoodPost
-} from '../controllers/foodPostController.js';
+} from '../controllers/foodPost.controller.js';
 
 const router = Router();
 

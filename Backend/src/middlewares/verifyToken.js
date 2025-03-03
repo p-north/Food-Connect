@@ -18,5 +18,4 @@ export const verifyToken = (req, res, next) =>{
         console.log("Error in verify token", error);
         return res.status(500).json({ success: false, message: "Server Error" });
     }
-
 }
