@@ -24,7 +24,7 @@ const FoodPost = {
      * @param title
      * @param quantity
      * @param description
-     * @param image
+     * @param imageUrl
      * @param dietaryRestrictions
      * @param location
      * @param availabilityStatus
@@ -36,19 +36,20 @@ const FoodPost = {
         title,
         quantity,
         description,
-        image,
+        imageUrl,
         dietaryRestrictions,
         location,
         availabilityStatus,
         expirationDate,
                  }) {
         try {
-            const createdAt = Date.now();
+            // TODO: GET USER ID FROM TOKEN
+            const createdAt = new Date();
             const { rows } = await client.query(`
-                INSERT INTO food_posts (userId, title, quantity, description, image, dietaryRestrictions, location, availabilityStatus, expirationDate, createdAt)
+                INSERT INTO food_posts (userId, title, quantity, description, imageUrl, dietaryRestrictions, location, availabilityStatus, expirationDate, createdAt)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                 RETURNING *;
-            `, [userId, title, quantity, description, image, dietaryRestrictions, location, availabilityStatus, expirationDate, createdAt]);
+            `, [userId, title, quantity, description, imageUrl, dietaryRestrictions, location, availabilityStatus, expirationDate, createdAt]);
             return rows[0];
         }
         catch (error) {

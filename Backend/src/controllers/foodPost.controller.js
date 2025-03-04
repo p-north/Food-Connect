@@ -1,12 +1,20 @@
+import FoodPost from "../models/foodPost.model.js";
 
-
+/**
+ * Create a new food post
+ * @param req {Request}
+ * @param res {Response}
+ * @returns {Promise<void>}
+ */
 const createFoodPost = async (req, res) => {
     try {
-        res.status(200).json({
-            message: 'Food post created successfully',
+        // TODO: USER ID FROM TOKEN
+        const data = await FoodPost.create(req.body);
+        res.status(201).json({
+            data: data,
         });
     } catch (error) {
-        res.status(500).json({ message: 'Error ' });
+        res.status(500).json({ message: 'Error creating food post', error });
     }
 }
 
