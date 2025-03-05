@@ -1,29 +1,42 @@
-import { ComponentProps, ElementType } from 'react';
+import { ReactNode, ButtonHTMLAttributes } from 'react';
 
-type ButtonProps = ComponentProps<'button'> & {
-  variant?: 'primary' | 'secondary' | 'text';
-  as?: ElementType;
-};
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  variant?: 'primary' | 'secondary' | 'outline';
+  fullWidth?: boolean;
+  icon?: ReactNode;
+  iconPosition?: 'left' | 'right';
+}
 
-const Button = ({
-  variant = 'primary',
+const Button = ({ 
+  children, 
+  variant = 'primary', 
+  fullWidth = false, 
+  icon, 
+  iconPosition = 'right',
   className = '',
-  as: Component = 'button',
-  ...props
+  ...props 
 }: ButtonProps) => {
-  const baseStyles = 'px-4 py-2 rounded-md font-medium transition-colors duration-200';
   
-  const variants = {
-    primary: 'bg-blue-600 text-sm text-blue-600 hover:bg-blue-700',
-    secondary: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
-    text: 'text-blue-600 hover:text-blue-600'
+  const baseClasses = "rounded-md px-4 py-3 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center";
+  
+  const variantClasses = {
+    primary: "bg-green-500 text-white hover:bg-green-600 focus:ring-green-500",
+    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500",
+    outline: "border border-green-500 text-green-500 hover:bg-green-50 focus:ring-green-500"
   };
-
+  
+  const widthClasses = fullWidth ? "w-full" : "";
+  
   return (
-    <Component
-      className={`${baseStyles} ${variants[variant]} ${className}`}
+    <button 
+      className={`${baseClasses} ${variantClasses[variant]} ${widthClasses} ${className}`}
       {...props}
-    />
+    >
+      {icon && iconPosition === 'left' && <span className="mr-2">{icon}</span>}
+      {children}
+      {icon && iconPosition === 'right' && <span className="ml-2">{icon}</span>}
+    </button>
   );
 };
 

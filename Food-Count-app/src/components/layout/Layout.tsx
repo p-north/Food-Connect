@@ -1,20 +1,63 @@
 import { Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Navigation from './Navigation';
 
 const Layout = () => {
   return (
-    <div className="flex flex-col min-h-screen w-screen">
-      {/* Full-width navigation */}
+    <div className="min-h-screen flex flex-col">
       <Navigation />
-
-      {/* Main content area */}
-      <main className="flex-grow w-full bg-gray-50 flex justify-center items-center">
+      
+      <main className="flex-grow">
         <Outlet />
       </main>
-
-      {/* Footer at the bottom */}
-      <footer className="bg-gray-100 p-4 text-center w-full">
-        <p>© 2024 Food Connect</p>
+      
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center mb-4">
+                <svg className="w-6 h-6 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                <span className="ml-2 font-medium">FoodConnect</span>
+              </div>
+              <p className="text-sm text-gray-400">Making a difference, one meal at a time.</p>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Quick Links</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link to="/#how-it-works" className="hover:text-white">How It Works</Link></li>
+                <li><Link to="/#partners" className="hover:text-white">Partners</Link></li>
+                <li><Link to="/#impact" className="hover:text-white">Impact</Link></li>
+                <li><Link to="/#testimonials" className="hover:text-white">Testimonials</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Resources</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link to="/blog" className="hover:text-white">Blog</Link></li>
+                <li><Link to="/faq" className="hover:text-white">FAQ</Link></li>
+                <li><Link to="/support" className="hover:text-white">Support</Link></li>
+                <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-medium mb-4">Legal</h3>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
+                <li><Link to="/cookies" className="hover:text-white">Cookie Policy</Link></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-gray-800 text-sm text-gray-400 text-center">
+            © 2024 FoodConnect. All rights reserved.
+          </div>
+        </div>
       </footer>
     </div>
   );
