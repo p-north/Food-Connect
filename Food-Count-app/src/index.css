@@ -26,11 +26,12 @@ a:hover {
 
 body {
   margin: 0;
+  width: 100%; /* Ensures full width */
+  height: 100%; /* Ensures full height */
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  flex-direction: column;
 }
+
 
 h1 {
   font-size: 3.2em;
