@@ -8,9 +8,11 @@ import FoodPost from "../models/foodPost.model.js";
  */
 const createFoodPost = async (req, res) => {
     try {
-        // TODO: USER ID FROM TOKEN
+        // add userId to req.body
+        req.body.userId = req.userID;
         const data = await FoodPost.create(req.body);
         res.status(201).json({
+            success: true,
             data: data,
         });
     } catch (error) {
@@ -21,7 +23,6 @@ const createFoodPost = async (req, res) => {
 const getFoodPosts = async (req, res) => {
     try {
         res.status(200).json({
-            message: 'Food posts fetched successfully',
         });
     } catch (error) {
         res.status(500).json({ message: 'Error ' });

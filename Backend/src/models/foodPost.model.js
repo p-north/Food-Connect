@@ -1,4 +1,4 @@
-
+import client from "../database/connectDB.js";
 /*
     FoodPost model
     - id
@@ -14,7 +14,6 @@
     - created date
 */
 
-import client from "../database/connectDB.js";
 
 const FoodPost = {
 
@@ -43,13 +42,34 @@ const FoodPost = {
         expirationDate,
                  }) {
         try {
-            // TODO: GET USER ID FROM TOKEN
             const createdAt = new Date();
             const { rows } = await client.query(`
-                INSERT INTO food_posts (userId, title, quantity, description, imageUrl, dietaryRestrictions, location, availabilityStatus, expirationDate, createdAt)
+                INSERT INTO food_posts (
+                    userId,
+                    title,
+                    quantity,
+                    description,
+                    imageUrl,
+                    dietaryRestrictions,
+                    location,
+                    availabilityStatus,
+                    expirationDate,
+                    createdAt
+                )
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                 RETURNING *;
-            `, [userId, title, quantity, description, imageUrl, dietaryRestrictions, location, availabilityStatus, expirationDate, createdAt]);
+            `, [
+                userId,
+                title,
+                quantity,
+                description,
+                imageUrl,
+                dietaryRestrictions,
+                location,
+                availabilityStatus,
+                expirationDate,
+                createdAt
+            ]);
             return rows[0];
         }
         catch (error) {
@@ -59,13 +79,13 @@ const FoodPost = {
     },
 
     /**
-     * Find food post by id
-     * @param id
+     * Find food post by foodPostId
+     * @param foodPostId
      * @returns {Promise<*|{success: boolean, message: string}>}
      */
-    async findById(id) {
+    async findById(foodPostId) {
         try {
-            const { rows } = await client.query('SELECT * FROM food_posts WHERE id = $1', [id]);
+            const { rows } = await client.query('SELECT * FROM food_posts WHERE foodPostId = $1', [foodPostId]);
             return rows[0];
         }
         catch (error) {
