@@ -1,18 +1,33 @@
 import client from "../database/connectDB.js";
 /*
-    FoodPost model
+    food_post model
     - id
     - userId
     - title
     - quantity
     - description
-    - image url
+    - image_url
     - dietaryRestrictions
     - location
     - availability status
     - expiration date
     - created date
 */
+
+const createFoodPostTable = `
+CREATE TABLE IF NOT EXISTS food_posts (
+    foodPostId SERIAL PRIMARY KEY,
+    userId INTEGER NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    quantity INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    image_url TEXT NOT NULL,
+    dietaryRestrictions TEXT,
+    location TEXT NOT NULL,
+    availabilityStatus VARCHAR(50) NOT NULL CHECK (availabilityStatus IN ('available', 'unavailable')),
+    expirationDate TIMESTAMP NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`;
 
 
 const FoodPost = {
@@ -23,7 +38,7 @@ const FoodPost = {
      * @param title
      * @param quantity
      * @param description
-     * @param imageUrl
+     * @param image_url
      * @param dietaryRestrictions
      * @param location
      * @param availabilityStatus
@@ -35,7 +50,7 @@ const FoodPost = {
         title,
         quantity,
         description,
-        imageUrl,
+        image_url,
         dietaryRestrictions,
         location,
         availabilityStatus,
@@ -49,7 +64,7 @@ const FoodPost = {
                     title,
                     quantity,
                     description,
-                    imageUrl,
+                    image_url,
                     dietaryRestrictions,
                     location,
                     availabilityStatus,
@@ -63,7 +78,7 @@ const FoodPost = {
                 title,
                 quantity,
                 description,
-                imageUrl,
+                image_url,
                 dietaryRestrictions,
                 location,
                 availabilityStatus,
@@ -170,4 +185,4 @@ const FoodPost = {
     },
 }
 
-export default FoodPost;
+export { createFoodPostTable, FoodPost };

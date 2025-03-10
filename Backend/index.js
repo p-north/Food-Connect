@@ -6,6 +6,7 @@ import cors from "cors";
 import authRoutes from "./src/routes/auth.route.js";
 import client from "./src/database/connectDB.js";
 import createUserTable from "./src/models/user.model.js";
+import {createFoodPostTable} from "./src/models/foodPost.model.js";
 
 // dotenv config
 dotenv.config();
@@ -22,10 +23,13 @@ client
 // create tables
 const initDB = async () => {
   try {
-      await client.query(createUserTable);
-      console.log("✅ Users table is ready!");
+      await Promise.all([
+          client.query(createUserTable),
+          client.query(createFoodPostTable)
+      ])
+        console.log("✅ Tables created successfully!");
   } catch (err) {
-      console.error("❌ Error creating users table:", err);
+      console.error("❌ Error creating tables:", err);
   }
 };
 
