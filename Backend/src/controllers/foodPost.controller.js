@@ -49,6 +49,14 @@ const getFoodPost = async (req, res) => {
 
 const updateFoodPost = async (req, res) => {
     try {
+        // check if user is the owner of the food post
+        const foodPost = await FoodPost.findById(req.params.id);
+        if (foodPost.userId !== req.userID) {
+            return res.status(401).json({
+                success: false,
+                message: 'Unauthorized to update food post',
+            });
+        }
         const data = await FoodPost.updateById(req.params.id, req.body);
         res.status(200).json({
             data: data,
@@ -64,7 +72,15 @@ const updateFoodPost = async (req, res) => {
 
 const deleteFoodPost = async (req, res) => {
     try {
-        const data = await FoodPost.deleteById(req.params.id);
+        // check if user is the owner of the food post
+        const foodPost = await FoodPost.findById(req.params.id);
+        if (foodPost.userId !== req.userID) {
+            return res.status(401).json({
+                success: false,
+                message: 'Unauthorized to delete food post',
+            });
+        }
+        await FoodPost.deleteById(req.params.id);
         res.status(200).json({
             success: true,
             message: 'Food post deleted successfully',
