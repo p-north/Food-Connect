@@ -1,32 +1,17 @@
 import client from "../database/connectDB.js";
-/*
-    food_post model
-    - id
-    - userId
-    - title
-    - quantity
-    - description
-    - image_url
-    - dietaryRestrictions
-    - location
-    - availability status
-    - expiration date
-    - created date
-*/
-
 const createFoodPostTable = `
 CREATE TABLE IF NOT EXISTS food_posts (
-    foodPostId SERIAL PRIMARY KEY,
-    userId INTEGER NOT NULL,
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
     title VARCHAR(255) NOT NULL,
     quantity INTEGER NOT NULL,
     description TEXT NOT NULL,
     image_url TEXT NOT NULL,
-    dietaryRestrictions TEXT,
+    dietary_restrictions TEXT,
     location TEXT NOT NULL,
-    availabilityStatus VARCHAR(50) NOT NULL CHECK (availabilityStatus IN ('available', 'unavailable')),
-    expirationDate TIMESTAMP NOT NULL,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    availability_status VARCHAR(50) NOT NULL,
+    expiration_date TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`;
 
 
