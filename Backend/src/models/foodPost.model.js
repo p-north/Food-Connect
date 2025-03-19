@@ -38,7 +38,7 @@ const FoodPost = {
      * @param title
      * @param quantity
      * @param description
-     * @param image_url
+     * @param imageurl
      * @param dietaryRestrictions
      * @param location
      * @param availabilityStatus
@@ -50,7 +50,7 @@ const FoodPost = {
         title,
         quantity,
         description,
-        image_url,
+        imageUrl,
         dietaryRestrictions,
         location,
         availabilityStatus,
@@ -60,16 +60,16 @@ const FoodPost = {
             const createdAt = new Date();
             const { rows } = await client.query(`
                 INSERT INTO food_posts (
-                    userId,
+                    user_id,
                     title,
                     quantity,
                     description,
                     image_url,
-                    dietaryRestrictions,
+                    dietary_restrictions,
                     location,
-                    availabilityStatus,
-                    expirationDate,
-                    createdAt
+                    availability_status,
+                    expiration_date,
+                    created_at
                 )
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                 RETURNING *;
@@ -78,7 +78,7 @@ const FoodPost = {
                 title,
                 quantity,
                 description,
-                image_url,
+                imageUrl,
                 dietaryRestrictions,
                 location,
                 availabilityStatus,
@@ -100,7 +100,7 @@ const FoodPost = {
      */
     async findById(foodPostId) {
         try {
-            const { rows } = await client.query('SELECT * FROM food_posts WHERE foodPostId = $1', [foodPostId]);
+            const { rows } = await client.query('SELECT * FROM food_posts WHERE id = $1', [foodPostId]);
             return rows[0];
         }
         catch (error) {
@@ -123,13 +123,14 @@ const FoodPost = {
             throw error;
         }
     },
+
     /**
-     * Update food post by id
+     * Find food posts by userId
      * @param id
      * @param title
      * @param quantity
      * @param description
-     * @param image
+     * @param imageUrl
      * @param dietaryRestrictions
      * @param location
      * @param availabilityStatus
@@ -140,7 +141,7 @@ const FoodPost = {
         title,
         quantity,
         description,
-        image,
+        imageUrl,
         dietaryRestrictions,
         location,
         availabilityStatus,
@@ -152,14 +153,14 @@ const FoodPost = {
                     title = $1,
                     quantity = $2,
                     description = $3,
-                    image = $4,
-                    dietaryRestrictions = $5,
+                    image_url = $4,
+                    dietary_restrictions = $5,
                     location = $6,
-                    availabilityStatus = $7,
-                    expirationDate = $8
+                    availability_status = $7,
+                    expiration_date = $8
                 WHERE id = $9
                 RETURNING *;
-            `, [title, quantity, description, image, dietaryRestrictions, location, availabilityStatus, expirationDate, id]);
+            `, [title, quantity, description, imageUrl, dietaryRestrictions, location, availabilityStatus, expirationDate, id]);
             return rows[0];
         }
         catch (error) {
