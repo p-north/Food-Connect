@@ -1,0 +1,133 @@
+// All API docs here
+// auth routes, fetch routes, GET, PUT, POST etc.....
+
+
+FoodPost routes
+------------------------FoodPost----------------
+foodPost model:
+{
+    id: int,
+    userId: int,
+    title: string,
+    quantity: int,
+    description: string,
+    imageUrl: string,
+    dietaryRestrictions: string,
+    location: string,
+    availabilityStatus: string,
+    expirationDate: date,
+}
+
+
+/api/foodPosts/
+method: GET
+description: Get all food posts
+response:
+{
+    "success": true,
+    "data":
+    [
+        foodPost1,
+        ...
+    ]
+}
+
+
+/api/foodPosts/:foodPostId
+method: GET
+description: Get a food post by id
+response:
+{
+    "success": true,
+    "data": foodPost
+}
+
+/api/foodPosts/
+method: POST
+description: Create a food post
+body:
+{
+    "title": "Food Post 1",
+    "quantity": 10,
+    "description": "This is a food post",
+    "imageUrl": "https://www.google.com",
+    "dietaryRestrictions": "None",
+    "location": "1234 Main St",
+    "availabilityStatus": "Available",
+    "expirationDate": "2021-12-31",
+}
+response:
+{
+    "success": true,
+    "data": foodPost
+}
+
+
+/api/foodPosts/:foodPostId
+method: PUT
+description: Update a food post by id
+body:
+{
+    "title": "Food Post 1",
+    "quantity": 10,
+    "description": "This is a food post",
+    "imageUrl": "https://www.google.com",
+    "dietaryRestrictions": "None",
+    "location": "1234 Main St",
+    "availabilityStatus": "Available",
+    "expirationDate": "2021-12-31",
+}
+response:
+{
+    "success": true,
+    "data": foodPost
+}
+
+/api/foodPosts/:foodPostId
+method: DELETE
+description: Delete a food post by id
+response:
+{
+    "success": true,
+    "message": "Food post deleted successfully"
+}
+
+
+
+
+------------------------User Auth----------------
+
+--Checks wether the signed in user is authenticated at all times. Used for protected routes. Server will take cookie, decode it into the userID, and verify.
+--http://localhost:5001/api/auth/check-auth
+--METHOD: GET
+-pass in the cookie as token.
+
+
+-Handle Email SignUp, sends user a verification email. Server also generates a token from the encrypted user ID.
+--http://localhost:5000/api/auth/signup
+--METHOD: POST
+-- example JSON {
+    "email":"123@gmail.com",
+    "password":"12345",
+    "name":"cristiano",
+    "accountType":"donor"
+}
+
+--Handles Email verification, receives the entered code, sends the user a welcome email and verifies them in the database.
+--http://localhost:5000/api/auth/verify-email
+--METHOD: POST
+-- example JSON {
+    "code": "123456"
+}
+
+--Handles User login, reponse sends back a generated session cookie which lasts for 7d if user found
+--http://localhost:5000/api/auth/login
+--METHOD: POST
+-- example JSON{
+    "email":"myemail@gmail.com",
+    "password":"12345678"
+}
+
+--Handles user logout, response will clear the cookie passed. Nothing required in the body.
+--http://localhost:3000/api/auth/logout
+--METHOD POST
