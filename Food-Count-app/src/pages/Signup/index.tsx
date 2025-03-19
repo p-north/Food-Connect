@@ -47,7 +47,7 @@ const Signup = () => {
             type="button"
             className={`flex-1 py-3 text-center rounded-l-lg transition-colors ${
               signupType === 'donor' 
-                ? 'bg-green-500 text-white' 
+                ? 'bg-green-500 text-gray' 
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setSignupType('donor')}
@@ -58,7 +58,7 @@ const Signup = () => {
             type="button"
             className={`flex-1 py-3 text-center rounded-r-lg transition-colors ${
               signupType === 'recipient' 
-                ? 'bg-green-500 text-white' 
+                ? 'bg-green-500 text-gray' 
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setSignupType('recipient')}
@@ -162,7 +162,7 @@ const Signup = () => {
             </label>
           </div>
           
-          <Button type="submit" fullWidth>
+          <Button type="submit" fullWidth className="test-gray">
             Create Account
           </Button>
           

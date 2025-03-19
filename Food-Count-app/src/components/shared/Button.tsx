@@ -21,8 +21,8 @@ const Button = ({
   const baseClasses = "rounded-md px-4 py-3 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center";
   
   const variantClasses = {
-    primary: "bg-green-500 text-white hover:bg-green-600 focus:ring-green-500",
-    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500",
+    primary: "bg-green-500 text-gray hover:bg-green-600 focus:ring-green-500",
+    secondary: "bg-green-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500",
     outline: "border border-green-500 text-green-500 hover:bg-green-50 focus:ring-green-500"
   };
   

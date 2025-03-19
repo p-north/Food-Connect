@@ -108,7 +108,7 @@ const Login = () => {
 
         <button
           type="submit"
-          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-gray-700 bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
         >
           Sign in
           <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
