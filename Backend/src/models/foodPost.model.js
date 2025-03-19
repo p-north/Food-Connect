@@ -1,4 +1,5 @@
 import client from "../database/connectDB.js";
+import toCamelCase from "../utils/toCamelCase.js";
 const createFoodPostTable = `
 CREATE TABLE IF NOT EXISTS food_posts (
     id SERIAL PRIMARY KEY,
@@ -18,17 +19,17 @@ CREATE TABLE IF NOT EXISTS food_posts (
 const FoodPost = {
 
     /**
-     * Create food post
+     * Create a new food post
      * @param userId
      * @param title
      * @param quantity
      * @param description
-     * @param imageurl
+     * @param imageUrl
      * @param dietaryRestrictions
      * @param location
      * @param availabilityStatus
      * @param expirationDate
-     * @returns {Promise<*|{success: boolean, message: string}>}
+     * @returns {Promise<*>}
      */
     async create({
         userId,
@@ -70,7 +71,7 @@ const FoodPost = {
                 expirationDate,
                 createdAt
             ]);
-            return rows[0];
+            return toCamelCase(rows[0]);
         }
         catch (error) {
             console.log("Error in create food post", error);
@@ -86,7 +87,7 @@ const FoodPost = {
     async findById(foodPostId) {
         try {
             const { rows } = await client.query('SELECT * FROM food_posts WHERE id = $1', [foodPostId]);
-            return rows[0];
+            return toCamelCase(rows[0]);
         }
         catch (error) {
             console.log("Error in find food post by id", error);
@@ -101,7 +102,9 @@ const FoodPost = {
     async findAll() {
         try {
             const { rows } = await client.query('SELECT * FROM food_posts');
-            return rows;
+
+            //camel case the rows
+            return rows.map(toCamelCase);
         }
         catch (error) {
             console.log("Error in find all food posts", error);
@@ -146,7 +149,7 @@ const FoodPost = {
                 WHERE id = $9
                 RETURNING *;
             `, [title, quantity, description, imageUrl, dietaryRestrictions, location, availabilityStatus, expirationDate, id]);
-            return rows[0];
+            return toCamelCase(rows[0]);
         }
         catch (error) {
             console.log("Error in update food post by id", error);

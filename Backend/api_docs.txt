@@ -2,6 +2,98 @@
 // auth routes, fetch routes, GET, PUT, POST etc.....
 
 
+FoodPost routes
+------------------------FoodPost----------------
+foodPost model:
+{
+    id: int,
+    userId: int,
+    title: string,
+    quantity: int,
+    description: string,
+    imageUrl: string,
+    dietaryRestrictions: string,
+    location: string,
+    availabilityStatus: string,
+    expirationDate: date,
+}
+
+
+/api/foodPosts/
+method: GET
+description: Get all food posts
+response:
+{
+    "success": true,
+    "data":
+    [
+        foodPost1,
+        ...
+    ]
+}
+
+
+/api/foodPosts/:foodPostId
+method: GET
+description: Get a food post by id
+response:
+{
+    "success": true,
+    "data": foodPost
+}
+
+/api/foodPosts/
+method: POST
+description: Create a food post
+body:
+{
+    "title": "Food Post 1",
+    "quantity": 10,
+    "description": "This is a food post",
+    "imageUrl": "https://www.google.com",
+    "dietaryRestrictions": "None",
+    "location": "1234 Main St",
+    "availabilityStatus": "Available",
+    "expirationDate": "2021-12-31",
+}
+response:
+{
+    "success": true,
+    "data": foodPost
+}
+
+
+/api/foodPosts/:foodPostId
+method: PUT
+description: Update a food post by id
+body:
+{
+    "title": "Food Post 1",
+    "quantity": 10,
+    "description": "This is a food post",
+    "imageUrl": "https://www.google.com",
+    "dietaryRestrictions": "None",
+    "location": "1234 Main St",
+    "availabilityStatus": "Available",
+    "expirationDate": "2021-12-31",
+}
+response:
+{
+    "success": true,
+    "data": foodPost
+}
+
+/api/foodPosts/:foodPostId
+method: DELETE
+description: Delete a food post by id
+response:
+{
+    "success": true,
+    "message": "Food post deleted successfully"
+}
+
+
+
 
 ------------------------User Auth----------------
 
