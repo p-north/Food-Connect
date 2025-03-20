@@ -86,7 +86,10 @@ const deleteFoodPost = async (req, res) => {
             message: 'Food post deleted successfully',
         });
     } catch (error) {
-        res.status(500).json({ message: 'Error ' });
+        res.status(500).json({
+            success: false,
+            message: 'Error '
+        });
     }
 }
 
