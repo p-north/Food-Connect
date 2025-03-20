@@ -9,11 +9,16 @@ import createUserTable from "./src/models/user.model.js";
 import {createFoodPostTable} from "./src/models/foodPost.model.js";
 import {createMessageTable} from "./src/models/messages.model.js";
 
+
+
 // dotenv config
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+
+
 
 // connect to PostgreSQL
 client
@@ -51,8 +56,11 @@ app.use(cookieParser());
 
 // auth routes
 app.use("/api/auth", authRoutes);
+// foodPost routes
 app.use("/api/food-posts", foodPostRoutes);
+// messaging routes
 app.use("/api/messages", foodPostRoutes);
+
 
 app.listen(PORT, () => {
   console.log("Server Running on Port: ", PORT);
