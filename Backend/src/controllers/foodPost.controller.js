@@ -1,9 +1,17 @@
 import {FoodPost} from "../models/foodPost.model.js";
+import { handleImageUpload, handleImageRetrieval } from "../utils/amazonS3.utils.js";
 
 const createFoodPost = async (req, res) => {
     try {
-        // add userId to req.body
-        req.body.userId = req.userID;
+        // add userId to req.body (change this)
+        req.body.userId = 2;
+        // generate signed image urls from s3 
+        const {urls} = await handleImageUpload(req, res);
+        console.log(urls);
+        
+        
+        // add the signed urls to body
+        req.body.imageUrl = urls;
         const data = await FoodPost.create(req.body);
         res.status(201).json({
             success: true,
