@@ -45,6 +45,11 @@ response:
 /api/foodPosts/
 method: POST
 description: Create a food post
+content-type: multipart/from
+files:
+{
+    images: [image1, image2, image3]
+}
 body:
 {
     "title": "Food Post 1",
@@ -98,13 +103,13 @@ response:
 ------------------------User Auth----------------
 
 --Checks wether the signed in user is authenticated at all times. Used for protected routes. Server will take cookie, decode it into the userID, and verify.
---http://localhost:5001/api/auth/check-auth
+--/api/auth/check-auth
 --METHOD: GET
 -pass in the cookie as token.
 
 
 -Handle Email SignUp, sends user a verification email. Server also generates a token from the encrypted user ID.
---http://localhost:5000/api/auth/signup
+--/api/auth/signup
 --METHOD: POST
 -- example JSON {
     "email":"123@gmail.com",
@@ -114,14 +119,14 @@ response:
 }
 
 --Handles Email verification, receives the entered code, sends the user a welcome email and verifies them in the database.
---http://localhost:5000/api/auth/verify-email
+--/api/auth/verify-email
 --METHOD: POST
 -- example JSON {
     "code": "123456"
 }
 
 --Handles User login, reponse sends back a generated session cookie which lasts for 7d if user found
---http://localhost:5000/api/auth/login
+--/api/auth/login
 --METHOD: POST
 -- example JSON{
     "email":"myemail@gmail.com",
@@ -129,5 +134,5 @@ response:
 }
 
 --Handles user logout, response will clear the cookie passed. Nothing required in the body.
---http://localhost:3000/api/auth/logout
+--/api/auth/logout
 --METHOD POST
