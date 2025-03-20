@@ -19,35 +19,40 @@ FoodConnect is a web platform that bridges the gap between food donors and recip
 - **PostgreSQL**
 - **GraphQL**
 - **Socket.io**
+  
+### Cloud
+- **AWS RDS**
+- **AWS S3**
+- **AWS EC2**
 
 ## 🎯 Features
 
-- 🛒 **Marketplace** for various food donations
-- 🤖 **AI-powered tool** that predicts food expiry dates based on image uploads
-- 💬 **Real-time chat system** using WebSockets (Socket.io)
-- 🏷️ **Advanced filtering** system (allergies, dietary preferences, location, expiry date, quantity, availability, etc.)
-- 👤 **User & Seller profiles**
-- 📌 **Map integration** for easy location-based searches
-- 🔐 **Login/Sign-up system**
+- **Marketplace** for various food donations
+- **AI-powered tool** that predicts food expiry dates based on image uploads
+- **Real-time chat system** using WebSockets (Socket.io)
+- **Advanced filtering** system (allergies, dietary preferences, location, expiry date, quantity, availability, etc.)
+- **User & Seller profiles**
+- **Map integration** for easy location-based searches
+- **Login/Sign-up system**
 
-## 🎯 Target Users
+## 🏢 Target Users
 
 ### Food Donors
-- 🏢 Businesses
-- 🍽️ Restaurants
-- 🛒 Grocery Stores, Supermarkets, and Bakeries
-- 🏭 Food Manufacturers
-- 🚜 Local Farmers
-- 🏡 Homeowners & Individual Donors
+- Businesses
+- Restaurants
+- Grocery Stores, Supermarkets, and Bakeries
+- Food Manufacturers
+- Local Farmers
+- Homeowners & Individual Donors
 
 ### Recipients
-- 👥 Individual Recipients
-- ⛪ Religious Institutions
-- 🏛️ Community Centers
-- 🏚️ Food Banks
-- 🏠 Homeless Shelters
-- ❤️ Non-Profit Organizations
-- 🥣 Soup Kitchens
+- Individual Recipients
+- Religious Institutions
+- Community Centers
+- Food Banks
+- Homeless Shelters
+- Non-Profit Organizations
+- Soup Kitchens
 
 ## 🔧 Setup & Installation
 
