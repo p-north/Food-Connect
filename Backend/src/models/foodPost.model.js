@@ -1,4 +1,5 @@
 import client from "../database/connectDB.js";
+import { handleImageDeletion } from "../utils/amazonS3.utils.js";
 import toCamelCase from "../utils/toCamelCase.js";
 const createFoodPostTable = `
 CREATE TABLE IF NOT EXISTS food_posts (

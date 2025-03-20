@@ -18,10 +18,15 @@ const router = Router();
 const storage = multer.memoryStorage();
 const upload = multer({storage: storage});
 
+// get all food posts
 router.get('/', verifyToken, getFoodPosts);
+// get post by id
 router.get('/:id', verifyToken, getFoodPost);
-router.post('/', verifyToken, upload.array('images'), createFoodPost);
+// create new post
+router.post('/', upload.array('images'), createFoodPost);
+// update existing post
 router.put('/:id', verifyToken, updateFoodPost);
-router.delete('/:id',verifyToken, deleteFoodPost);
+// delete a post
+router.delete('/:id', deleteFoodPost);
 
 export default router;

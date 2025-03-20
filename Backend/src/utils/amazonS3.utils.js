@@ -23,7 +23,7 @@ async function handleImageUpload(req){
         return ({ success: false, message: "No files have been sent"});
     }
     // UserID
-    const userID = req.userID;
+    const userID = 1;
 
     try {
         // array to store all image links
@@ -73,19 +73,52 @@ async function handleImageUpload(req){
         console.error('Error uploading images:', error);
         return ({success:false, message: "Image uploading error"});
     }
-
-
 };
 
-async function handleImageRetrieval(req){
+// async function handleImageRetrieval(req){
+//     // get the user 
+//     const userID = req.userID;
 
-}
-async function handleImageDeletion(req){
+//     try {
+        
+//     } catch (error) {
+        
+//     }
+// }
 
+
+async function handleImageDeletion(images){
+
+    try {
+        // function to delete all image objects
+        for(const image of images){
+            // get the key after dotcom
+            const imageURL = image.split('.com/')[1];
+            // get only the path
+            const imageKey = imageURL.split('?')[0]
+
+            console.log("imageKey", imageKey)
+
+            const params = {
+                Bucket: process.env.AWS_BUCKET_NAME,
+                Key: imageKey,
+            };
+
+            // delete the object from s3
+            await s3.deleteObject(params).promise(); 
+        }
+        console.log("All objects deleted for user in S3");
+        return {status:"true", message:"All images deleted from S3"};
+    } catch (error) {
+        console.error("Error while generating image", error)
+        return{"Error while generating image": error}
+    }
+
+       
 }
 // optional
 async function handleImageUpdate(req){
 
 }
 
-export {handleImageUpload, handleImageRetrieval}
+export {handleImageUpload, handleImageDeletion}

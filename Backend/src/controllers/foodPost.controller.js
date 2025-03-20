@@ -1,10 +1,10 @@
 import {FoodPost} from "../models/foodPost.model.js";
-import { handleImageUpload, handleImageRetrieval } from "../utils/amazonS3.utils.js";
+import { handleImageUpload, handleImageDeletion } from "../utils/amazonS3.utils.js";
 
 const createFoodPost = async (req, res) => {
     try {
         // add userId to req.body (change this)
-        req.body.userId = 2;
+        req.body.userId = 1;
         // generate signed image urls from s3 
         const {urls} = await handleImageUpload(req, res);
         console.log(urls);
@@ -82,12 +82,21 @@ const deleteFoodPost = async (req, res) => {
     try {
         // check if user is the owner of the food post
         const foodPost = await FoodPost.findById(req.params.id);
-        if (foodPost.userId !== req.userID) {
+        console.log("User Id", req.body.userID)
+        console.log("Post Id:", req.params.id)
+        if (foodPost.userId !== req.body.userID) {
             return res.status(401).json({
                 success: false,
                 message: 'Unauthorized to delete food post',
             });
         }
+
+        const images = foodPost.imageUrl;
+        console.log(typeof images)
+
+        // delete from S3
+        await handleImageDeletion(images);
+
         await FoodPost.deleteById(req.params.id);
         res.status(200).json({
             success: true,
