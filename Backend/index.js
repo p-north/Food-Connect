@@ -7,6 +7,7 @@ import authRoutes from "./src/routes/auth.route.js";
 import client from "./src/database/connectDB.js";
 import createUserTable from "./src/models/user.model.js";
 import {createFoodPostTable} from "./src/models/foodPost.model.js";
+import {createMessageTable} from "./src/models/messages.model.js";
 
 // dotenv config
 dotenv.config();
@@ -25,7 +26,8 @@ const initDB = async () => {
   try {
       await Promise.all([
           client.query(createUserTable),
-          client.query(createFoodPostTable)
+          client.query(createFoodPostTable),
+          client.query(createMessageTable),
       ])
         console.log("✅ Tables created successfully!");
   } catch (err) {
