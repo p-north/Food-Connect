@@ -54,9 +54,9 @@ app.use(cookieParser());
 
 // auth routes
 app.use("/api/auth", authRoutes);
+// foodPosts routes
 app.use('/api/foodPosts', foodPostRoutes);
-// image upload/retrieval routes
-// app.use('/api/image', imageRoute)
+
 
 app.listen(PORT, () => {
   console.log("Server Running on Port: ", PORT);

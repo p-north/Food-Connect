@@ -27,6 +27,6 @@ router.post('/', upload.array('images'), createFoodPost);
 // update existing post
 router.put('/:id', verifyToken, updateFoodPost);
 // delete a post
-router.delete('/:id', deleteFoodPost);
+router.delete('/:id', verifyToken, deleteFoodPost);
 
 export default router;

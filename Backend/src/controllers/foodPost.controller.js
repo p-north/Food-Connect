@@ -4,7 +4,7 @@ import { handleImageUpload, handleImageDeletion } from "../utils/amazonS3.utils.
 const createFoodPost = async (req, res) => {
     try {
         // add userId to req.body (change this)
-        req.body.userId = 1;
+        req.body.userId = req.userID;
         // generate signed image urls from s3 
         const {urls} = await handleImageUpload(req, res);
         console.log(urls);
@@ -82,9 +82,7 @@ const deleteFoodPost = async (req, res) => {
     try {
         // check if user is the owner of the food post
         const foodPost = await FoodPost.findById(req.params.id);
-        console.log("User Id", req.body.userID)
-        console.log("Post Id:", req.params.id)
-        if (foodPost.userId !== req.body.userID) {
+        if (foodPost.userId !== req.userID) {
             return res.status(401).json({
                 success: false,
                 message: 'Unauthorized to delete food post',
