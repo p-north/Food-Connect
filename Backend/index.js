@@ -7,6 +7,7 @@ import authRoutes from "./src/routes/auth.route.js";
 import client from "./src/database/connectDB.js";
 import createUserTable from "./src/models/user.model.js";
 import {createFoodPostTable} from "./src/models/foodPost.model.js";
+import {createMessageTable} from "./src/models/messages.model.js";
 
 
 
@@ -30,7 +31,8 @@ const initDB = async () => {
   try {
       await Promise.all([
           client.query(createUserTable),
-          client.query(createFoodPostTable)
+          client.query(createFoodPostTable),
+          client.query(createMessageTable),
       ])
         console.log("✅ Tables created successfully!");
   } catch (err) {
@@ -54,8 +56,10 @@ app.use(cookieParser());
 
 // auth routes
 app.use("/api/auth", authRoutes);
-// foodPosts routes
-app.use('/api/foodPosts', foodPostRoutes);
+// foodPost routes
+app.use("/api/food-posts", foodPostRoutes);
+// messaging routes
+app.use("/api/messages", foodPostRoutes);
 
 
 app.listen(PORT, () => {

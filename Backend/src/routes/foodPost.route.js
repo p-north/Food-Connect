@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express from "express";
 import {
     createFoodPost,
     deleteFoodPost,
@@ -11,7 +11,7 @@ import multer from "multer"
 
 
 
-const router = Router();
+const router = express.Router();
 
 
 // Setup multer

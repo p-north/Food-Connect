@@ -2,6 +2,40 @@
 // auth routes, fetch routes, GET, PUT, POST etc.....
 
 
+// Message routes
+------------------------Message----------------
+message model:
+{
+    id: int,
+    senderId: int,
+    receiverId: int,
+    message: string,
+    createdAt: date,
+}
+
+/api/messages/:receiverId
+method: GET
+description: Get all messages between the signed in user and the receiver
+response:
+{
+    "success": true,
+    "message": "Messages fetched successfully",
+    "data":
+    [
+        message1,
+        ...
+    ]
+}
+
+/api/messages/:receiverId
+method: POST
+description: Send a message to the receiver
+body:
+{
+    "message": "Hello"
+}
+
+
 FoodPost routes
 ------------------------FoodPost----------------
 foodPost model:
@@ -19,7 +53,7 @@ foodPost model:
 }
 
 
-/api/foodPosts/
+/api/food-posts/
 method: GET
 description: Get all food posts
 response:
@@ -33,7 +67,7 @@ response:
 }
 
 
-/api/foodPosts/:foodPostId
+/api/food-posts/:foodPostId
 method: GET
 description: Get a food post by id
 response:
@@ -42,7 +76,7 @@ response:
     "data": foodPost
 }
 
-/api/foodPosts/
+/api/food-posts/
 method: POST
 description: Create a food post
 content-type: multipart/from
@@ -68,7 +102,7 @@ response:
 }
 
 
-/api/foodPosts/:foodPostId
+/api/food-posts/:foodPostId
 method: PUT
 description: Update a food post by id
 body:
@@ -88,7 +122,7 @@ response:
     "data": foodPost
 }
 
-/api/foodPosts/:foodPostId
+/api/food-posts/:foodPostId
 method: DELETE
 description: Delete a food post by id
 response:
