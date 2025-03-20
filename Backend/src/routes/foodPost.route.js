@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express from "express";
 import {
     createFoodPost,
     deleteFoodPost,
@@ -8,7 +8,7 @@ import {
 } from '../controllers/foodPost.controller.js';
 import {verifyToken} from "../middlewares/verifyToken.js";
 
-const router = Router();
+const router = express.Router();
 
 router.get('/', verifyToken, getFoodPosts);
 router.get('/:id', verifyToken, getFoodPost);

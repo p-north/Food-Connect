@@ -49,7 +49,8 @@ app.use(cookieParser());
 
 // auth routes
 app.use("/api/auth", authRoutes);
-app.use('/api/foodPosts', foodPostRoutes);
+app.use("/api/food-posts", foodPostRoutes);
+app.use("/api/messages", foodPostRoutes);
 
 app.listen(PORT, () => {
   console.log("Server Running on Port: ", PORT);
