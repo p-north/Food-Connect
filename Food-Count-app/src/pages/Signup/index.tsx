@@ -1,8 +1,10 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/shared/Button';
 import Container from '../../components/shared/Container';
 import InputField from '../../components/shared/InputField';
+import useAuthStore from '../../store/authStore';
+import { API_URL } from '../../config/api';
 
 type SignupType = 'donor' | 'recipient';
 
@@ -17,6 +19,25 @@ const Signup = () => {
     organization: '',
     agreeToTerms: false
   });
+  const [verificationCode, setVerificationCode] = useState('');
+  
+  const navigate = useNavigate();
+  
+  // Get state and actions from the auth store
+  const { 
+    signup, 
+    verifyEmail, 
+    error, 
+    isLoading, 
+    verificationPending, 
+    emailToVerify,
+    clearError 
+  } = useAuthStore();
+  
+  // Clear errors when component mounts
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -26,11 +47,87 @@ const Signup = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup data:', { type: signupType, ...formData });
+    
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      // We can't use the store's error state for this validation
+      // So we'll handle it locally
+      alert('Passwords do not match');
+      return;
+    }
+    
+    if (!formData.agreeToTerms) {
+      alert('Please agree to the terms of service');
+      return;
+    }
+    
+    try {
+      await signup({
+        firstName: formData.firstName,
+        email: formData.email,
+        password: formData.password,
+        accountType: signupType
+      });
+      // No need to set verification pending, the store handles it
+    } catch (err) {
+      console.error('Signup error:', err);
+    }
   };
+  
+  const handleVerifyEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!verificationCode) {
+      alert('Please enter the verification code');
+      return;
+    }
+    
+    try {
+      await verifyEmail(verificationCode);
+      navigate('/login', { state: { verified: true } });
+    } catch (err) {
+      console.error('Verification error:', err);
+    }
+  };
+  
+  // If verification is needed, show the verification form
+  if (verificationPending) {
+    return (
+      <Container maxWidth="md" className="py-12">
+        <div className="bg-white rounded-lg shadow-md p-8">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold mb-2">Verify Your Email</h1>
+            <p className="text-gray-600">
+              We've sent a verification code to {emailToVerify}. Please enter it below.
+            </p>
+          </div>
+          
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleVerifyEmail} className="space-y-6">
+            <InputField
+              label="Verification Code"
+              name="verificationCode"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              required
+              placeholder="Enter the 6-digit code"
+            />
+            
+            <Button type="submit" disabled={isLoading} fullWidth>
+              {isLoading ? 'Verifying...' : 'Verify Email'}
+            </Button>
+          </form>
+        </div>
+      </Container>
+    );
+  }
   
   return (
     <Container maxWidth="md" className="py-12">
@@ -42,12 +139,18 @@ const Signup = () => {
           </p>
         </div>
         
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+        
         <div className="flex border border-gray-200 rounded-lg mb-8">
           <button
             type="button"
             className={`flex-1 py-3 text-center rounded-l-lg transition-colors ${
               signupType === 'donor' 
-                ? 'bg-green-500 text-gray' 
+                ? 'bg-green-500 text-white' 
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setSignupType('donor')}
@@ -58,7 +161,7 @@ const Signup = () => {
             type="button"
             className={`flex-1 py-3 text-center rounded-r-lg transition-colors ${
               signupType === 'recipient' 
-                ? 'bg-green-500 text-gray' 
+                ? 'bg-green-500 text-white' 
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setSignupType('recipient')}
@@ -82,7 +185,7 @@ const Signup = () => {
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              required
+              
               placeholder="Enter your last name"
             />
           </div>
@@ -162,8 +265,8 @@ const Signup = () => {
             </label>
           </div>
           
-          <Button type="submit" fullWidth className="test-gray">
-            Create Account
+          <Button type="submit" fullWidth disabled={isLoading}>
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </Button>
           
           <div className="text-center mt-6">

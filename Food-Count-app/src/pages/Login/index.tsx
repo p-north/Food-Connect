@@ -1,16 +1,42 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import useAuthStore from '../../store/authStore';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get state and actions from the auth store
+  const { login, error, isLoading, isAuthenticated, clearError } = useAuthStore();
+  
+  // Check if user was just verified
+  const justVerified = location.state?.verified;
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+    
+    // Clear any previous errors when component mounts
+    clearError();
+  }, [isAuthenticated, navigate, clearError]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log({ email, password, rememberMe });
+    
+    try {
+      await login(email, password);
+      // No need to navigate here, the useEffect will handle it
+    } catch (err) {
+      // Error is handled in the store
+      console.error('Login failed:', err);
+    }
   };
 
   return (
@@ -20,7 +46,20 @@ const Login = () => {
         <p className="text-gray-600">Sign in to continue your journey in reducing food waste</p>
       </div>
 
+      {justVerified && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+          Your email has been verified successfully! You can now log in.
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Email input */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             Email address
@@ -45,6 +84,7 @@ const Login = () => {
           </div>
         </div>
 
+        {/* Password input */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
             Password
@@ -108,9 +148,10 @@ const Login = () => {
 
         <button
           type="submit"
-          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-gray-700 bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          disabled={isLoading}
+          className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
         >
-          Sign in
+          {isLoading ? 'Signing in...' : 'Sign in'}
           <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
