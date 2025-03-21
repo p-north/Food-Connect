@@ -8,6 +8,8 @@ import client from "./src/database/connectDB.js";
 import createUserTable from "./src/models/user.model.js";
 import {createFoodPostTable} from "./src/models/foodPost.model.js";
 import {createMessageTable} from "./src/models/messages.model.js";
+import createReviewsTable from "./src/models/reviews.model.js"
+import reviewsRoutes from "./src/routes/reviews.route.js"
 
 
 
@@ -33,6 +35,7 @@ const initDB = async () => {
           client.query(createUserTable),
           client.query(createFoodPostTable),
           client.query(createMessageTable),
+          client.query(createReviewsTable),
       ])
         console.log("✅ Tables created successfully!");
   } catch (err) {
@@ -60,6 +63,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/food-posts", foodPostRoutes);
 // messaging routes
 app.use("/api/messages", foodPostRoutes);
+// reviews routes
+app.use("/api/reviews", reviewsRoutes);
 
 
 app.listen(PORT, () => {

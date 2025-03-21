@@ -2,8 +2,87 @@
 // auth routes, fetch routes, GET, PUT, POST etc.....
 
 
+
+
+
+
+
+// Reviews routes
+-----------------------------------------------------------------------------------Reviews--------------------
+reviews model:
+{
+id 
+recipient_id (foreign key to users)
+donor_id (foreign key to users)
+rating INTEGER ,
+comment TEXT,
+created_at TIMESTAMP,
+updated_at TIMESTAMP,
+}
+
+
+
+/api/reviews/recReviews
+method: GET
+description: Get all the reviews for a recipient. ***The userID is passed in as cookies and verifies correct account.
+
+input: userID in cookie
+output:
+{
+    "sucess": true,
+    "message": "Reviews fetched sucessfully",
+    "reviews": []
+}
+
+
+/api/reviews/:donorID
+method: POST
+description: Create a new review for a donor. The donor id must be passed in params.
+input: donorID in the params.
+body:
+{
+    "comment":"review goes here",
+    "rating":"number between 1 and 5"
+}
+output:
+{
+    "sucess": true,
+    "message": "Review sucessfully created."
+}
+
+
+
+/api/reviews/:donorID
+method: GET
+description: Get all the reviews for a donor.
+input: donorID in params
+output:
+{
+    "sucess": true,
+    "message": "Review sucessfully fetched.",
+    "reviews": [review1, review2, review3]
+}
+
+/api/reviews/:reviewID
+method: DELETE
+description: Delete a review by a recipient.
+input: userID in cookie. reviewID in params.
+output:
+{
+    "sucess": true,
+    "message": "Review sucessfully deleted.",
+}
+
+
+
+
+
+
+
+
+
 // Message routes
-------------------------Message----------------
+------------------------------------------------------------------------Message----------------
 message model:
 {
     id: int,
@@ -36,8 +115,8 @@ body:
 }
 
 
+------------------------------------------------------------------------------------------FoodPost------------------------
 FoodPost routes
-------------------------FoodPost----------------
 foodPost model:
 {
     id: int,
@@ -134,7 +213,8 @@ response:
 
 
 
-------------------------User Auth----------------
+---------------------------------------------------------------------------------------User Auth----------------
+
 
 --Checks wether the signed in user is authenticated at all times. Used for protected routes. Server will take cookie, decode it into the userID, and verify.
 --/api/auth/check-auth
