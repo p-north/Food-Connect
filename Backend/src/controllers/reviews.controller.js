@@ -130,6 +130,47 @@ async function handleGetAllReviews(req, res) {
     return
   }
 }
-async function handleDeleteReviewByID(req, res) {}
+async function handleDeleteReviewByID(req, res) {
+    // get the recipient id
+    const recipient_id = req.userID;
+
+    // get the review id
+    const reviewID = req.params.reviewID;
+
+
+    // ensure the user is recipient, check for validness
+
+
+    // ensure the reciepient is a valid user and is type  "reciepient"
+    const reCheck = await client.query(
+        `SELECT type_of_account FROM users WHERE id = $1`,
+        [recipient_id]
+      );
+  
+      // check if the user exists
+      if (reCheck.rows.length == 0) {
+        return res
+          .status(400)
+          .json({ sucess: false, message: "User does not exist." });
+      }
+  
+      // check if correct type
+      if (reCheck.rows[0].type_of_account !== "recipient") {
+        return res
+          .status(400)
+          .json({ sucess: false, message: "User is not type *recipient!" });
+      }
+
+    // remove the post from database
+    const del = await client.query(`DELETE FROM reviews r WHERE r.id = $1 AND  r.recipient_id = $2`, [reviewID, recipient_id]);
+
+    // send the response
+    return res
+    .status(200)
+    .json({ sucess: true, message: "Review sucessfully deleted"});
+
+
+
+}
 
 export { handleCreateReview, handleDeleteReviewByID, handleGetAllReviews };

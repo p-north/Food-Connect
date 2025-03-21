@@ -10,7 +10,8 @@ router.post("/:donorID", verifyToken, handleCreateReview);
 // get all reviews for a specific donor
 router.get("/:donorID", verifyToken, handleGetAllReviews);
 // delete a review with review id
-router.delete("/:id", verifyToken, handleDeleteReviewByID);
+router.delete("/:reviewID", verifyToken, handleDeleteReviewByID);
+// functions to get all the reviews for a specific recipient
 
 // Optional for future: Be able to update a review
 
