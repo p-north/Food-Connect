@@ -19,12 +19,10 @@ async function handleCreateReview(req, res) {
       [recipient_id, donor_id]
     );
     if (reviewCheck.rows.length != 0) {
-      return res
-        .status(400)
-        .json({
-          sucess: false,
-          message: "Cannot create more than 1 review for same donor.",
-        });
+      return res.status(400).json({
+        sucess: false,
+        message: "Cannot create more than 1 review for same donor.",
+      });
     }
 
     // ensure the reciepient is a valid user and is type  "reciepient"
@@ -75,7 +73,7 @@ async function handleCreateReview(req, res) {
 
     return res
       .status(201)
-      .json({ sucess: true, message: "Review successfully created"});
+      .json({ sucess: true, message: "Review successfully created" });
   } catch (error) {
     console.log("Error in creating new review", error);
     res.status(400).json({ success: false, message: error.message });
@@ -108,69 +106,109 @@ async function handleGetAllReviews(req, res) {
     }
 
     // get all reviews form database
-    const reviews = await client.query(`SELECT r.id, r.recipient_id, r.donor_id, r.rating, r.comment, u.name AS recipient_name, r.created_at FROM reviews r JOIN users u ON r.recipient_id = u.id WHERE r.donor_id = $1`, [donor_id]);
+    const reviews = await client.query(
+      `SELECT r.id, r.recipient_id, r.donor_id, r.rating, r.comment, u.name AS recipient_name, r.created_at FROM reviews r JOIN users u ON r.recipient_id = u.id WHERE r.donor_id = $1`,
+      [donor_id]
+    );
 
-    if(reviews.rows.length == 0){
-        return res
-        .status(200)
-        .json({ sucess: true, reviews:0 });
+    if (reviews.rows.length == 0) {
+      return res.status(200).json({ sucess: true, reviews: 0 });
     }
 
     // console.log("Reviews: ", reviews.rows);
 
-    return res
-      .status(200)
-      .json({ sucess: true, message: reviews.rows});
-
-
-
+    return res.status(200).json({ sucess: true, message: reviews.rows });
   } catch (error) {
     console.log("Error fetching all reviews", error);
     res.status(400).json({ success: false, message: error.message });
-    return
+    return;
   }
 }
 async function handleDeleteReviewByID(req, res) {
+  try {
     // get the recipient id
     const recipient_id = req.userID;
 
     // get the review id
     const reviewID = req.params.reviewID;
 
-
     // ensure the user is recipient, check for validness
-
 
     // ensure the reciepient is a valid user and is type  "reciepient"
     const reCheck = await client.query(
-        `SELECT type_of_account FROM users WHERE id = $1`,
-        [recipient_id]
-      );
-  
-      // check if the user exists
-      if (reCheck.rows.length == 0) {
-        return res
-          .status(400)
-          .json({ sucess: false, message: "User does not exist." });
-      }
-  
-      // check if correct type
-      if (reCheck.rows[0].type_of_account !== "recipient") {
-        return res
-          .status(400)
-          .json({ sucess: false, message: "User is not type *recipient!" });
-      }
+      `SELECT type_of_account FROM users WHERE id = $1`,
+      [recipient_id]
+    );
+
+    // check if the user exists
+    if (reCheck.rows.length == 0) {
+      return res
+        .status(400)
+        .json({ sucess: false, message: "User does not exist." });
+    }
+
+    // check if correct type
+    if (reCheck.rows[0].type_of_account !== "recipient") {
+      return res
+        .status(400)
+        .json({ sucess: false, message: "User is not type *recipient!" });
+    }
 
     // remove the post from database
-    const del = await client.query(`DELETE FROM reviews r WHERE r.id = $1 AND  r.recipient_id = $2`, [reviewID, recipient_id]);
+    const del = await client.query(
+      `DELETE FROM reviews r WHERE r.id = $1 AND  r.recipient_id = $2`,
+      [reviewID, recipient_id]
+    );
 
     // send the response
     return res
-    .status(200)
-    .json({ sucess: true, message: "Review sucessfully deleted"});
+      .status(200)
+      .json({ sucess: true, message: "Review sucessfully deleted" });
+  } catch (error) {
+    console.log("Error deleting review", error);
+    res.status(400).json({ success: false, message: error.message });
+  }
+}
 
+async function handleRecipientReviews(req, res){
+
+  try {
+    
+    // get the id passed in through the AUTH middleware
+    const recipient_id = req.userID;
+  
+     // ensure the reciepient is a valid user and is type  "reciepient"
+     const reCheck = await client.query(
+      `SELECT type_of_account FROM users WHERE id = $1`,
+      [recipient_id]
+    );
+  
+    // check if the user exists
+    if (reCheck.rows.length == 0) {
+      return res
+        .status(400)
+        .json({ sucess: false, message: "User does not exist." });
+    }
+  
+    // check if correct type
+    if (reCheck.rows[0].type_of_account !== "recipient") {
+      return res
+        .status(400)
+        .json({ sucess: false, message: "User is not type *recipient!" });
+    }
+  
+  
+    // grab all the reviews for that recipient id
+    const result = await client.query(`SELECT r.id, r.donor_id, r.rating, r.comment, r.created_at, u.name AS donor_name FROM reviews r JOIN users u ON r.donor_id = u.id WHERE r.recipient_id = $1`, [recipient_id]);
+
+    res.status(200).json({sucess: true, message: "Reviews fetched sucessfully", reviews:result.rows })
+  } catch (error) {
+    console.log("Error fetching recipient's reviews", error);
+    res.status(400).json({ success: false, message: error.message });
+    
+  }
 
 
 }
 
-export { handleCreateReview, handleDeleteReviewByID, handleGetAllReviews };
+export { handleCreateReview, handleDeleteReviewByID, handleGetAllReviews, handleRecipientReviews };
