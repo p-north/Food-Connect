@@ -6,9 +6,9 @@ const router = express.Router();
 
 
 // create a new review, pass in the donor id in params
-router.post("/:id", verifyToken, handleCreateReview);
-// get all reviews for a donor (userID passed as in token)
-router.get("/", verifyToken, handleGetAllReviews);
+router.post("/:donorID", verifyToken, handleCreateReview);
+// get all reviews for a specific donor
+router.get("/:donorID", handleGetAllReviews);
 // delete a review with review id
 router.delete("/:id", verifyToken, handleDeleteReviewByID);
 
