@@ -4,8 +4,9 @@ import client from "../database/connectDB.js";
 async function handleCreateReview(req, res) {
   try {
     // passed on by the AUTH middleware
-    // const recipient_id = req.userID;
-    const recipient_id = 9;
+    const recipient_id = req.userID;
+    // const recipient_id = 9;
+
     // passed on as the params
     const donor_id = req.params.id;
     // comment passed in the body
@@ -64,7 +65,7 @@ async function handleCreateReview(req, res) {
 
     return res.status(201).json({sucess: true, message: "Review successfully created"});
 
-    
+
   } catch (error) {
     console.log("Error in creating new review", error);
     res.status(400).json({ success: false, message: error.message});
@@ -72,7 +73,7 @@ async function handleCreateReview(req, res) {
 }
 
 
-async function handleGetReviewByID(req, res) {}
+
 async function handleGetAllReviews(req, res) {}
 async function handleDeleteReviewByID(req, res) {}
 
@@ -80,5 +81,4 @@ export {
   handleCreateReview,
   handleDeleteReviewByID,
   handleGetAllReviews,
-  handleGetReviewByID,
 };
