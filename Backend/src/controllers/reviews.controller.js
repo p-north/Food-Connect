@@ -117,7 +117,7 @@ async function handleGetAllReviews(req, res) {
 
     // console.log("Reviews: ", reviews.rows);
 
-    return res.status(200).json({ sucess: true, message: reviews.rows });
+    return res.status(200).json({ sucess: true, message: "Reviews sucessfully fetched", reviews: reviews.rows});
   } catch (error) {
     console.log("Error fetching all reviews", error);
     res.status(400).json({ success: false, message: error.message });

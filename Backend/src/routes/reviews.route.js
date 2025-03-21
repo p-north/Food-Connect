@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 // functions to get all the reviews for a specific recipient
-router.get("/recReviews/", verifyToken, handleRecipientReviews);
+router.get("/recReviews", verifyToken, handleRecipientReviews);
 // create a new review, pass in the donor id in params
 router.post("/:donorID", verifyToken, handleCreateReview);
 // get all reviews for a specific donor
