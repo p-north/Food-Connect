@@ -76,12 +76,12 @@ const Landing = () => {
       {/* Recent Donations Section */}
       <section className="py-8 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl font-bold mb-6">Recent Donations</h2>
+          <h2 className="text-2xl font-bold mb-6 text-black">Recent Donations</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((item) => (
               <div key={item} className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold">Fresh Produce Bundle</h3>
+                  <h3 className="font-semibold text-black">Fresh Produce Bundle</h3>
                   <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">Available</span>
                 </div>
                 <p className="text-gray-600 text-sm mb-3">Vegetables, fruits, and herbs</p>
@@ -130,14 +130,14 @@ const Landing = () => {
       {/* Testimonials Section */}
       <section className="py-16 bg-gray-50" id="testimonials">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">What People Say</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-black">What People Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <p className="text-gray-600 italic mb-4">
                 "FoodConnect has made it so easy for our restaurant to donate surplus food.
                 We're helping the community while reducing waste."
               </p>
-              <div className="font-semibold">Sarah Johnson</div>
+              <div className="font-semibold text-black">Sarah Johnson</div>
               <div className="text-sm text-gray-500">Restaurant Owner</div>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -145,7 +145,7 @@ const Landing = () => {
                 "As a food bank coordinator, this platform has revolutionized how we connect
                 with donors and distribute food to those in need."
               </p>
-              <div className="font-semibold">Michael Chen</div>
+              <div className="font-semibold text-black">Michael Chen</div>
               <div className="text-sm text-gray-500">Food Bank Coordinator</div>
             </div>
           </div>
@@ -156,7 +156,7 @@ const Landing = () => {
       <section className="py-12 bg-green-50">
         <div className="max-w-3xl mx-auto px-6">
           <div className="bg-green-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-center mb-2">Stay Updated</h2>
+            <h2 className="text-2xl font-bold text-center mb-2 text-black">Stay Updated</h2>
             <p className="text-center text-gray-600 mb-6">
               Subscribe to our newsletter for updates on local food donations and community impact.
             </p>
