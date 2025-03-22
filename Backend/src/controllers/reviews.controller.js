@@ -15,7 +15,7 @@ async function handleCreateReview(req, res) {
 
     // check if the review is not already created by the user for the same donor
     const reviewCheck = await client.query(
-      `SELECT * FROM reviews WHERE recipient_id = $1 AND donor_id = $2`,
+      `SELECT * FROM reviews WHERE recipient_id = $1 AND donor_id = $2;`,
       [recipient_id, donor_id]
     );
     if (reviewCheck.rows.length != 0) {
@@ -27,7 +27,7 @@ async function handleCreateReview(req, res) {
 
     // ensure the reciepient is a valid user and is type  "reciepient"
     const reCheck = await client.query(
-      `SELECT type_of_account FROM users WHERE id = $1`,
+      `SELECT type_of_account FROM users WHERE id = $1;`,
       [recipient_id]
     );
 
@@ -47,7 +47,7 @@ async function handleCreateReview(req, res) {
 
     // Ensure that the donor is a valid user and that they are actually a "donor"
     const donorCheck = await client.query(
-      `SELECT type_of_account FROM users WHERE id = $1`,
+      `SELECT type_of_account FROM users WHERE id = $1;`,
       [donor_id]
     );
 
@@ -67,7 +67,7 @@ async function handleCreateReview(req, res) {
 
     // insert the review into table
     const result = await client.query(
-      `INSERT INTO reviews (recipient_id, donor_id, rating, comment) VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO reviews (recipient_id, donor_id, rating, comment) VALUES ($1, $2, $3, $4);`,
       [recipient_id, donor_id, rating, comment]
     );
 
@@ -87,7 +87,7 @@ async function handleGetAllReviews(req, res) {
     // check the donor exists and is valid donor
     // Ensure that the donor is a valid user and that they are actually a "donor"
     const donorCheck = await client.query(
-      `SELECT type_of_account FROM users WHERE id = $1`,
+      `SELECT type_of_account FROM users WHERE id = $1;`,
       [donor_id]
     );
 
@@ -107,7 +107,7 @@ async function handleGetAllReviews(req, res) {
 
     // get all reviews form database
     const reviews = await client.query(
-      `SELECT r.id, r.recipient_id, r.donor_id, r.rating, r.comment, u.name AS recipient_name, r.created_at FROM reviews r JOIN users u ON r.recipient_id = u.id WHERE r.donor_id = $1`,
+      `SELECT r.id, r.recipient_id, r.donor_id, r.rating, r.comment, u.name AS recipient_name, r.created_at FROM reviews r JOIN users u ON r.recipient_id = u.id WHERE r.donor_id = $1;`,
       [donor_id]
     );
 
@@ -121,7 +121,6 @@ async function handleGetAllReviews(req, res) {
   } catch (error) {
     console.log("Error fetching all reviews", error);
     res.status(400).json({ success: false, message: error.message });
-    return;
   }
 }
 async function handleDeleteReviewByID(req, res) {
@@ -136,7 +135,7 @@ async function handleDeleteReviewByID(req, res) {
 
     // ensure the reciepient is a valid user and is type  "reciepient"
     const reCheck = await client.query(
-      `SELECT type_of_account FROM users WHERE id = $1`,
+      `SELECT type_of_account FROM users WHERE id = $1;`,
       [recipient_id]
     );
 
@@ -156,7 +155,7 @@ async function handleDeleteReviewByID(req, res) {
 
     // remove the post from database
     const del = await client.query(
-      `DELETE FROM reviews r WHERE r.id = $1 AND  r.recipient_id = $2`,
+      `DELETE FROM reviews r WHERE r.id = $1 AND  r.recipient_id = $2;`,
       [reviewID, recipient_id]
     );
 
@@ -179,7 +178,7 @@ async function handleRecipientReviews(req, res){
   
      // ensure the reciepient is a valid user and is type  "reciepient"
      const reCheck = await client.query(
-      `SELECT type_of_account FROM users WHERE id = $1`,
+      `SELECT type_of_account FROM users WHERE id = $1;`,
       [recipient_id]
     );
   
@@ -199,7 +198,7 @@ async function handleRecipientReviews(req, res){
   
   
     // grab all the reviews for that recipient id
-    const result = await client.query(`SELECT r.id, r.donor_id, r.rating, r.comment, r.created_at, u.name AS donor_name FROM reviews r JOIN users u ON r.donor_id = u.id WHERE r.recipient_id = $1`, [recipient_id]);
+    const result = await client.query(`SELECT r.id, r.donor_id, r.rating, r.comment, r.created_at, u.name AS donor_name FROM reviews r JOIN users u ON r.donor_id = u.id WHERE r.recipient_id = $1;`, [recipient_id]);
 
     res.status(200).json({sucess: true, message: "Reviews fetched sucessfully", reviews:result.rows })
   } catch (error) {
