@@ -18,13 +18,13 @@ const Landing = () => {
             connecting surplus food with people who need it most.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup" className="bg-green-500 !text-white px-6 py-3 rounded-md flex items-center justify-center hover:bg-green-600 hover:scale-110 transition duration-300 ease-in-out">
+            <Link to="/signup" className="bg-green-500 !text-white px-6 py-3 rounded-md flex items-center justify-center hover:bg-green-600 hover:bg-opacity-90 transition-colors duration-150">
               Donate Food
               <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
-            <Link to="/signup" className="border border-gray-300 bg-white !text-green-500 px-6 py-3 rounded-md hover:bg-gray-50 hover:scale-110 transition duration-300 ease-in-out">
+            <Link to="/signup" className="border border-gray-300 bg-white !text-green-500 px-6 py-3 rounded-md hover:bg-gray-100 hover:bg-opacity-90 transition-colors duration-150">
               Find Food
             </Link>
           </div>
