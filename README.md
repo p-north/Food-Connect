@@ -6,6 +6,12 @@
 ## 🌍 Overview
 FoodConnect is a web platform that bridges the gap between food donors and recipients. It provides a marketplace for food donations, AI-powered food expiry predictions, a real-time chat system, and various filtering options to ensure food accessibility for those in need.
 
+## 💪 Group Members
+- **Puneet North**
+- **Amraj Koonar**
+- **Jake Bareng**
+- **Priyansh Sarvaiya**
+
 ## 🚀 Tech Stack
 
 ### Frontend
