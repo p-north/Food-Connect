@@ -177,7 +177,7 @@ async function handleReservationUpdate(req, res) {
     // Ensure that the donor is a valid user and that they are actually a "donor"
     const donorCheck = await client.query(
       `SELECT type_of_account FROM users WHERE id = $1;`,
-      [donor_id]
+      [donorID]
     );
 
     // check if donor exists
@@ -200,7 +200,7 @@ async function handleReservationUpdate(req, res) {
 
     // check if the reservation exists
     const listingCheck = await client.query(
-      `SELECT * FROM reservations r WHERE r.donor_id = $1, r.id = $2`,
+      `SELECT * FROM reservations r WHERE r.donor_id = $1 AND r.id = $2`,
       [donorID, reservationID]
     );
 
@@ -212,7 +212,8 @@ async function handleReservationUpdate(req, res) {
       });
     }
 
-    const CURRENT_TIMESTAMP = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    // current date
+    const CURRENT_TIMESTAMP = new Date(Date.now());
     // if the reservation exists, update it with the status
     const update = await client.query(
       `UPDATE reservations SET status = $1, updated_at = $2 WHERE id = $3`,
