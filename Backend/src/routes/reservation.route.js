@@ -1,5 +1,5 @@
 import express from "express"
-import { verifyToken } from "../middlewares/verifyToken"
+import { verifyToken } from "../middlewares/verifyToken.js"
 import {handleCreateReservation, handleDonorReservations, handleRecipientReservations, handleReservationUpdate} from "../controllers/reservation.controller.js"
 
 const router = express.Router();
@@ -14,8 +14,6 @@ router.get("/recipient", verifyToken, handleRecipientReservations);
     body: { food_post_id, donor_id }
 */
 router.post("/", verifyToken, handleCreateReservation);
-
-
 // update a existing reservation status, done by the DONOR only.
 // Example, change from pending to confirmed
 //  new Date(Date.now() + 24 * 60 * 60 * 1000)

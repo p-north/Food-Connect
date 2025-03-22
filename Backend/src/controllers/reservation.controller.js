@@ -142,7 +142,7 @@ async function handleCreateReservation(req, res) {
 
     // make sure that listing does not already list for same recipient, donor and food post
     const listingCheck = await client.query(
-      `SELECT * FROM reservations r WHERE r.recipient_id = $1, r.donor_id = $2, r.food_post_id = $3`,
+      `SELECT * FROM reservations r WHERE r.recipient_id = $1 AND r.donor_id = $2 AND r.food_post_id = $3`,
       [recipient_id, donor_id, postID]
     );
 
@@ -156,7 +156,7 @@ async function handleCreateReservation(req, res) {
     //  create a new listing, marking it as pending
     const listingRes = await client.query(
       `INSERT INTO reservations (recipient_id, donor_id, food_post_id, status) VALUES ($1, $2, $3, $4)`,
-      [recipient_id, donor_id, postID]
+      [recipient_id, donor_id, postID, status]
     );
 
     return res.status(201).json({
@@ -212,10 +212,11 @@ async function handleReservationUpdate(req, res) {
       });
     }
 
+    const CURRENT_TIMESTAMP = new Date(Date.now() + 24 * 60 * 60 * 1000);
     // if the reservation exists, update it with the status
     const update = await client.query(
-      `UPDATE reservations SET status = $1 WHERE id = $2`,
-      [status, reservationID]
+      `UPDATE reservations SET status = $1, updated_at = $2 WHERE id = $3`,
+      [status, CURRENT_TIMESTAMP, reservationID]
     );
 
     return res.status(200).json({
