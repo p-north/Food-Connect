@@ -4,6 +4,80 @@
 
 
 
+// Reservations routes
+---------------------------------------------------Reservations------------------------------------------------
+reservations model:
+{
+    id 
+    recipient_id INTEGER 
+    donor_id INTEGER ,
+    food_post_id INTEGER 
+    status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+}
+
+/api/reservations/donor
+method: GET
+description: fetches all the reservations for a donor, pending, completed etc etc.
+
+input: userID passed in as cookies token. 
+output:
+{
+    sucess: true,
+    message: fetched sucessfully,
+    reservations: [r1, r2, r3]
+}
+
+
+
+/api/reservations/recipient
+method: GET
+description: fetches all the reservations for a recipient, pending, completed etc etc.
+
+input: userID passed in as cookies token. 
+output:
+{
+    sucess: true,
+    message: fetched sucessfully,
+    reservations: [r1, r2, r3]
+}
+
+
+/api/reservations
+method: POST
+description: creates a new reservation for a foodpost and donor ONLY TRIGGERED BY Recipient.
+
+input: userID for recipients passed as cookies token
+body{
+    food_post_id: 8, 
+    donor_id: 9
+}
+output:
+{
+    sucess: true,
+    message: reservation created sucessfully,
+
+}
+
+/api/reservations/:reservationID
+method: PUT
+description: updates an existing reservation. ONLY TRIGGERED BY Donor. Donor's userID passed in as cookie token.
+input: 
+body 
+{
+    status: 'confirmed', 'cancelled', OR 'completed'
+}
+output:
+{
+    sucess: true,
+    message: reservation updated sucessfully,
+}
+
+
+
+
+
 
 
 
@@ -11,14 +85,14 @@
 -----------------------------------------------------------------------------------Reviews--------------------
 reviews model:
 {
-id 
-recipient_id (foreign key to users)
-donor_id (foreign key to users)
-rating INTEGER ,
-comment TEXT,
-created_at TIMESTAMP,
-updated_at TIMESTAMP,
-}
+    id 
+    recipient_id (foreign key to users)
+    donor_id (foreign key to users)
+    rating INTEGER ,
+    comment TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    }
 
 
 
