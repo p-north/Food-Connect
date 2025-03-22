@@ -27,10 +27,10 @@ const Layout = () => {
             <div>
               <h3 className="font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/#how-it-works" className="hover:text-white">How It Works</Link></li>
-                <li><Link to="/#partners" className="hover:text-white">Partners</Link></li>
-                <li><Link to="/#impact" className="hover:text-white">Impact</Link></li>
-                <li><Link to="/#testimonials" className="hover:text-white">Testimonials</Link></li>
+                <li><Link to="/#how-it-works" className="text-green-500 hover:text-white">How It Works</Link></li>
+                <li><Link to="/#partners" className="text-green-500 hover:text-white">Partners</Link></li>
+                <li><Link to="/#impact" className="text-green-500 hover:text-white">Impact</Link></li>
+                <li><Link to="/#testimonials" className="text-green-500 hover:text-white">Testimonials</Link></li>
               </ul>
             </div>
             
