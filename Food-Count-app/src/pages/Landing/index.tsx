@@ -156,15 +156,15 @@ const Landing = () => {
       <section className="py-12 bg-green-50">
         <div className="max-w-3xl mx-auto px-6">
           <div className="bg-green-50 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-center mb-2">Stay Updated</h2>
+            <h2 className="text-black text-2xl font-bold text-center mb-2">Stay Updated</h2>
             <p className="text-center text-gray-600 mb-6">
               Subscribe to our newsletter for updates on local food donations and community impact.
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="What's your email?"
+                className="text-gray-500 flex-grow px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <button className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 flex items-center justify-center">
                 Subscribe
