@@ -10,6 +10,7 @@ import {createFoodPostTable} from "./src/models/foodPost.model.js";
 import {createMessageTable} from "./src/models/messages.model.js";
 import createReviewsTable from "./src/models/reviews.model.js"
 import reviewsRoutes from "./src/routes/reviews.route.js"
+import messageRoute from "./src/routes/message.route.js";
 
 
 
@@ -62,7 +63,7 @@ app.use("/api/auth", authRoutes);
 // foodPost routes
 app.use("/api/food-posts", foodPostRoutes);
 // messaging routes
-app.use("/api/messages", foodPostRoutes);
+app.use("/api/messages", messageRoute);
 // reviews routes
 app.use("/api/reviews", reviewsRoutes);
 
