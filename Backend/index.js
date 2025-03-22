@@ -10,6 +10,10 @@ import {createFoodPostTable} from "./src/models/foodPost.model.js";
 import {createMessageTable} from "./src/models/messages.model.js";
 import createReviewsTable from "./src/models/reviews.model.js"
 import reviewsRoutes from "./src/routes/reviews.route.js"
+import { Server } from "socket.io";
+import { createServer } from "http";
+import handleSocketConnection from "./src/webSocket/handleSocket.js";
+import {verifyToken} from "./src/middlewares/verifyToken.js";
 
 
 
@@ -19,8 +23,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-
+// socket.io
+const server = createServer(app);
+const io = new Server(server);
 
 // connect to PostgreSQL
 client
@@ -56,6 +61,7 @@ app.use(
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
+io.engine.use(verifyToken);
 
 // auth routes
 app.use("/api/auth", authRoutes);
@@ -65,6 +71,10 @@ app.use("/api/food-posts", foodPostRoutes);
 app.use("/api/messages", foodPostRoutes);
 // reviews routes
 app.use("/api/reviews", reviewsRoutes);
+
+io.on("connection", socket => {
+    handleSocketConnection(socket, io);
+});
 
 
 app.listen(PORT, () => {
