@@ -69,7 +69,7 @@ app.use("/api/messages", foodPostRoutes);
 // reviews routes
 app.use("/api/reviews", reviewsRoutes);
 // reservation routes
-app.use("/reservation", reservationRoutes)
+app.use("/api/reservations", reservationRoutes)
 
 
 app.listen(PORT, () => {
