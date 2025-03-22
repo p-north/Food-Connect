@@ -3,7 +3,7 @@ import client from "../database/connectDB.js";
 async function handleDonorReservations(req, res) {
   try {
     // view the reservations for a donor
-    const donor_id = req.params.donorID;
+    const donor_id = req.userID;
 
     // check the donor exists and is valid donor
     // Ensure that the donor is a valid user and that they are actually a "donor"
@@ -28,7 +28,7 @@ async function handleDonorReservations(req, res) {
 
     // get all the reservations for the donor
     const result = await client.query(
-      `SELECT r.id, recipient_id, food_post_id, r.status, r.created_at FROM reservations r WHERE r.donor_id = $1;`,
+      `SELECT r.id, recipient_id, food_post_id, r.status, r.created_at, r.updated_at FROM reservations r WHERE r.donor_id = $1;`,
       [donor_id]
     );
 
