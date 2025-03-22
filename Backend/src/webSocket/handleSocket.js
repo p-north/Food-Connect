@@ -8,7 +8,7 @@ const users = {};
  * @param io
  */
 const handleSocketConnection = (socket, io) => {
-    const userId = socket.request.userID;
+    const userId = socket.userId;
 
     socket.on("private-message", async ({receiverId, message}) => {
         const receiverSocketId = users[receiverId];
