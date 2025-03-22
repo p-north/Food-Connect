@@ -14,6 +14,8 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import handleSocketConnection from "./src/webSocket/handleSocket.js";
 import {verifyToken} from "./src/middlewares/verifyToken.js";
+import messageRoute from "./src/routes/message.route.js";
+import socketVerifyToken from "./src/middlewares/socketVerifyToken.js";
 
 
 
@@ -25,7 +27,12 @@ const PORT = process.env.PORT || 5000;
 
 // socket.io
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+        credentials: true,
+    },
+});
 
 // connect to PostgreSQL
 client
@@ -61,24 +68,27 @@ app.use(
 // middlewares
 app.use(express.json());
 app.use(cookieParser());
-io.engine.use(verifyToken);
 
 // auth routes
 app.use("/api/auth", authRoutes);
 // foodPost routes
 app.use("/api/food-posts", foodPostRoutes);
 // messaging routes
-app.use("/api/messages", foodPostRoutes);
+app.use("/api/messages", messageRoute);
 // reviews routes
 app.use("/api/reviews", reviewsRoutes);
 
+
+// socket.io
+io.use(socketVerifyToken);
 io.on("connection", socket => {
-    handleSocketConnection(socket, io);
+    console.log("Authenticated socket connected:", socket.userId);
+    // handleSocketConnection(socket, io);
 });
 
 
-app.listen(PORT, () => {
-  console.log("Server Running on Port: ", PORT);
+server.listen(PORT, () => {
+    console.log("Server Running on Port: ", PORT);
 });
 
 // email handling done using mailtrap
