@@ -95,7 +95,7 @@ const Signup = () => {
   // If verification is needed, show the verification form
   if (verificationPending) {
     return (
-      <Container maxWidth="md" className="py-12">
+      <div className="min-h-screen w-full bg-green-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-2">Verify Your Email</h1>
@@ -125,13 +125,13 @@ const Signup = () => {
             </Button>
           </form>
         </div>
-      </Container>
+      </div>
     );
   }
   
   return (
-    <Container maxWidth="md" className="py-12">
-      <div className="bg-white rounded-lg shadow-md p-8">
+    <div className="min-h-screen w-full bg-green-50 flex items-center justify-center">
+      <div className="w-full max-w-lg bg-white rounded-xl shadow-md p-8">
         <div className="text-center mb-8">
           <h1 className="text-black text-3xl font-bold mb-2">Join FoodConnect</h1>
           <p className="text-gray-600">
@@ -279,7 +279,7 @@ const Signup = () => {
           </div>
         </form>
       </div>
-    </Container>
+    </div>
   );
 };
 
