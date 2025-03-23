@@ -10,6 +10,11 @@ import {createFoodPostTable} from "./src/models/foodPost.model.js";
 import {createMessageTable} from "./src/models/messages.model.js";
 import createReviewsTable from "./src/models/reviews.model.js"
 import reviewsRoutes from "./src/routes/reviews.route.js"
+import { Server } from "socket.io";
+import { createServer } from "http";
+import handleSocketConnection from "./src/webSocket/handleSocket.js";
+import messageRoute from "./src/routes/message.route.js";
+import socketVerifyToken from "./src/middlewares/socketVerifyToken.js";
 import createReservationTable from "./src/models/reservations.model.js";
 import reservationRoutes from "./src/routes/reservation.route.js"
 import messageRoute from "./src/routes/message.route.js";
@@ -22,8 +27,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-
-
+// socket.io
+const server = createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+        credentials: true,
+    },
+});
 
 // connect to PostgreSQL
 client
@@ -73,8 +84,13 @@ app.use("/api/reviews", reviewsRoutes);
 app.use("/api/reservations", reservationRoutes)
 
 
-app.listen(PORT, () => {
-  console.log("Server Running on Port: ", PORT);
+// socket.io
+io.use(socketVerifyToken);
+io.on("connection", handleSocketConnection);
+
+
+server.listen(PORT, () => {
+    console.log("Server Running on Port: ", PORT);
 });
 
 // email handling done using SendGrid

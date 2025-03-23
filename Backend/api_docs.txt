@@ -1,6 +1,15 @@
 // All API docs here
 // auth routes, fetch routes, GET, PUT, POST etc.....
 
+// message Socket
+-----------------------------------------------------------------------------------Message--------------------
+event: 'private-message'
+description: Send a private message to a user
+message:
+{
+    "receiverId": int,
+    "message" : string
+}
 
 
 
@@ -8,10 +17,10 @@
 ---------------------------------------------------Reservations------------------------------------------------
 reservations model:
 {
-    id 
-    recipient_id INTEGER 
+    id
+    recipient_id INTEGER
     donor_id INTEGER ,
-    food_post_id INTEGER 
+    food_post_id INTEGER
     status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -21,7 +30,7 @@ reservations model:
 method: GET
 description: fetches all the reservations for a donor, pending, completed etc etc.
 
-input: userID passed in as cookies token. 
+input: userID passed in as cookies token.
 output:
 {
     sucess: true,
@@ -35,7 +44,7 @@ output:
 method: GET
 description: fetches all the reservations for a recipient, pending, completed etc etc.
 
-input: userID passed in as cookies token. 
+input: userID passed in as cookies token.
 output:
 {
     sucess: true,
@@ -50,7 +59,7 @@ description: creates a new reservation for a foodpost and donor ONLY TRIGGERED B
 
 input: userID for recipients passed as cookies token
 body{
-    food_post_id: 8, 
+    food_post_id: 8,
     donor_id: 9
 }
 output:
@@ -63,8 +72,8 @@ output:
 /api/reservations/:reservationID
 method: PUT
 description: updates an existing reservation. ONLY TRIGGERED BY Donor. Donor's userID passed in as cookie token.
-input: 
-body 
+input:
+body
 {
     status: 'confirmed', 'cancelled', OR 'completed'
 }
@@ -85,7 +94,7 @@ output:
 -----------------------------------------------------------------------------------Reviews--------------------
 reviews model:
 {
-    id 
+    id
     recipient_id (foreign key to users)
     donor_id (foreign key to users)
     rating INTEGER ,
