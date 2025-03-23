@@ -40,10 +40,11 @@ const Login = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto py-12 px-6">
+  <div className="min-h-screen w-full bg-green-50 flex items-center justify-center">
+    <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
-        <p className="text-gray-600">Sign in to continue your journey in reducing food waste</p>
+        <h1 className="text-black text-2xl font-bold mb-2">Welcome back</h1>
+        <p className="text-gray-600 text-sm whitespace-nowrap overflow-hidden text-ellipsis">Sign in to continue your journey in reducing food waste</p>
       </div>
 
       {justVerified && (
@@ -133,7 +134,11 @@ const Login = () => {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 text-green-500 focus:ring-green-500 border-gray-300 rounded"
+              className="peer h-4 w-4 appearance-none bg-white border border-gray-300 rounded 
+             checked:bg-green-500 focus:ring-green-500 relative
+             checked:after:content-['✔'] checked:after:text-green-900
+             checked:after:absolute checked:after:inset-0 checked:after:flex 
+             checked:after:items-center checked:after:justify-center checked:after:text-sm"
             />
             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
               Remember me
@@ -169,9 +174,10 @@ const Login = () => {
       </div>
 
       <div className="mt-4 text-center text-xs text-gray-500">
-        © 2024 FoodConnect. Making a difference, one meal at a time.
+        © 2025 FoodConnect. Making a difference, one meal at a time.
       </div>
     </div>
+  </div>
   );
 };
 
