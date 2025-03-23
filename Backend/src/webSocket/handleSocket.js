@@ -5,15 +5,18 @@ const users = {};
 /**
  * handle messaging between 2 users
  * @param socket
- * @param io
  */
-const handleSocketConnection = (socket, io) => {
+const handleSocketConnection = (socket) => {
     const userId = socket.userId;
+
+    // add user to users object
+    users[userId] = socket.id;
 
     socket.on("private-message", async ({receiverId, message}) => {
         const receiverSocketId = users[receiverId];
+
         if (receiverSocketId) {
-            io.to(receiverSocketId).emit("private-message", {senderId: userId, message});
+            socket.to(receiverSocketId).emit("private-message", {senderId: userId, message});
         }
         try {
             await Message.create({senderId: userId, receiverId, message});

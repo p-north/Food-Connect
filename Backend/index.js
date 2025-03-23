@@ -13,7 +13,6 @@ import reviewsRoutes from "./src/routes/reviews.route.js"
 import { Server } from "socket.io";
 import { createServer } from "http";
 import handleSocketConnection from "./src/webSocket/handleSocket.js";
-import {verifyToken} from "./src/middlewares/verifyToken.js";
 import messageRoute from "./src/routes/message.route.js";
 import socketVerifyToken from "./src/middlewares/socketVerifyToken.js";
 
@@ -81,10 +80,7 @@ app.use("/api/reviews", reviewsRoutes);
 
 // socket.io
 io.use(socketVerifyToken);
-io.on("connection", socket => {
-    console.log("Authenticated socket connected:", socket.userId);
-    // handleSocketConnection(socket, io);
-});
+io.on("connection", handleSocketConnection);
 
 
 server.listen(PORT, () => {
