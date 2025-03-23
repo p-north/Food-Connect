@@ -257,7 +257,11 @@ const Signup = () => {
                 name="agreeToTerms"
                 checked={formData.agreeToTerms}
                 onChange={handleChange}
-                className="h-4 w-4 text-green-500 focus:ring-green-500 border-gray-300 rounded"
+                className="peer h-4 w-4 appearance-none bg-white border border-gray-300 rounded 
+                          checked:bg-green-500 focus:ring-green-500 relative
+                          checked:after:content-['✔'] checked:after:text-green-900
+                          checked:after:absolute checked:after:inset-0 checked:after:flex 
+                          checked:after:items-center checked:after:justify-center checked:after:text-sm" //HERE
               />
               <span className="ml-2 text-sm text-gray-600">
                 I agree to the <a href="#" className="text-green-500 hover:underline">Terms of Service</a> and <a href="#" className="text-green-500 hover:underline">Privacy Policy</a>
