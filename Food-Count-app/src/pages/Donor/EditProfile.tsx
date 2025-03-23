@@ -4,7 +4,7 @@ import Button from '../../components/shared/Button';
 import Container from '../../components/shared/Container';
 import InputField from '../../components/shared/InputField';
 
-const EditDonorProfile = () => {
+const EditDonorDashboard = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     name: 'City Bakery',
@@ -30,7 +30,7 @@ const EditDonorProfile = () => {
     e.preventDefault();
     // Would normally submit to API here
     console.log("Profile updated:", profile);
-    navigate('/donor/profile');
+    navigate('/donor/dashboard');
   };
 
   return (
@@ -136,7 +136,7 @@ const EditDonorProfile = () => {
             <div className="border-t pt-6 flex justify-end space-x-4">
               <button 
                 type="button" 
-                onClick={() => navigate('/donor/profile')}
+                onClick={() => navigate('/donor/dashboard')}
                 className="px-6 py-2 border rounded-md hover:bg-gray-50"
               >
                 Cancel
@@ -155,4 +155,4 @@ const EditDonorProfile = () => {
   );
 };
 
-export default EditDonorProfile;
+export default EditDonorDashboard;
