@@ -12,20 +12,22 @@ const Login = () => {
   const location = useLocation();
   
   // Get state and actions from the auth store
-  const { login, error, isLoading, isAuthenticated, clearError } = useAuthStore();
+  const { login, user, error, isLoading, isAuthenticated, clearError } = useAuthStore();
   
   // Check if user was just verified
   const justVerified = location.state?.verified;
   
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
+    if (isAuthenticated && user) {
+      if (user.accountType === 'donor') {
+        navigate('/donor/profile');
+      } else if (user.accountType === 'recipient') {
+        navigate('/recipient/profile'); // make sure you add this route
+      }
     }
-    
-    // Clear any previous errors when component mounts
-    clearError();
-  }, [isAuthenticated, navigate, clearError]);
+  }, [isAuthenticated, user, navigate]);  
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
