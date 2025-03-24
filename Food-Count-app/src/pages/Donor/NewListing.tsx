@@ -139,7 +139,7 @@ const NewListing = () => {
                   onChange={handleChange}
                   required
                   placeholder="E.g. Fresh Bread and Pastries"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  className="text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                 />
               </div>
 
@@ -155,7 +155,7 @@ const NewListing = () => {
                   onChange={handleChange}
                   required
                   placeholder="Your organization or business name"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  className="text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                 />
               </div>
 
@@ -171,7 +171,7 @@ const NewListing = () => {
                   onChange={handleChange}
                   required
                   placeholder="Street address for pickup"
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  className="text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                 />
               </div>
 
@@ -188,7 +188,8 @@ const NewListing = () => {
                   min="1"
                   max="24"
                   required
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  placeholder="Example: 36"
+                  className="text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                 />
               </div>
 
@@ -201,9 +202,9 @@ const NewListing = () => {
                   name="description"
                   value={listing.description}
                   onChange={handleChange}
-                  rows="3"
+                  rows={3}
                   placeholder="Describe what you're offering, quantity, etc."
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  className="text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                 ></textarea>
               </div>
 
@@ -218,7 +219,7 @@ const NewListing = () => {
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Add food categories (e.g. Bread, Vegetables)"
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                    className="text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                   />
                   <button
                     type="button"
@@ -307,7 +308,7 @@ const NewListing = () => {
               <div className="pt-4 flex justify-end space-x-3">
                 <Link
                   to="/donor/dashboard"
-                  className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="inline-flex items-center justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 >
                   Cancel
                 </Link>

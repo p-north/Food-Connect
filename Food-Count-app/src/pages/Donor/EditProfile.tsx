@@ -85,7 +85,8 @@ const EditProfile = () => {
                     value={profile.name}
                     onChange={handleChange}
                     required
-                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                    placeholder="Your organization or business name"
+                    className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -98,7 +99,8 @@ const EditProfile = () => {
                     value={profile.address}
                     onChange={handleChange}
                     required
-                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                    placeholder="What is your main address?"
+                    className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 <div>
@@ -111,13 +113,14 @@ const EditProfile = () => {
                     value={profile.city}
                     onChange={handleChange}
                     required
-                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                    placeholder="Ex: Vancouver"
+                    className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      State
+                      State/Province
                     </label>
                     <input
                       type="text"
@@ -125,12 +128,13 @@ const EditProfile = () => {
                       value={profile.state}
                       onChange={handleChange}
                       required
-                      className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                      placeholder="Ex: BC"
+                      className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      ZIP Code
+                      ZIP/Postal Code
                     </label>
                     <input
                       type="text"
@@ -138,7 +142,7 @@ const EditProfile = () => {
                       value={profile.zip}
                       onChange={handleChange}
                       required
-                      className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                      className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                     />
                   </div>
                 </div>
@@ -160,7 +164,8 @@ const EditProfile = () => {
                     value={profile.phone}
                     onChange={handleChange}
                     required
-                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                    placeholder="Ex: xxx-xxx-xxxx"
+                    className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 <div>
@@ -173,7 +178,8 @@ const EditProfile = () => {
                     value={profile.email}
                     onChange={handleChange}
                     required
-                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                    placeholder="youremail@example.com"
+                    className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -189,7 +195,8 @@ const EditProfile = () => {
                       name="website"
                       value={profile.website}
                       onChange={handleChange}
-                      className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 focus:ring-green-500 focus:border-green-500"
+                      placeholder="www.yourwebsite.com"
+                      className="text-black flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border-gray-300 focus:ring-green-500 focus:border-green-500"
                     />
                   </div>
                 </div>
@@ -209,7 +216,8 @@ const EditProfile = () => {
                   value={profile.description}
                   onChange={handleChange}
                   rows={4}
-                  className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
+                  placeholder="Describe who you are, about you, what you offer etc."
+                  className="text-black w-full border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"
                 />
                 <p className="text-sm text-gray-500 mt-1">
                   Tell recipients about your business and the types of food you typically donate.
