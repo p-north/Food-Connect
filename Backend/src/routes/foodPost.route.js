@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express from "express";
 import {
     createFoodPost,
     deleteFoodPost,
@@ -7,13 +7,26 @@ import {
     updateFoodPost
 } from '../controllers/foodPost.controller.js';
 import {verifyToken} from "../middlewares/verifyToken.js";
+import multer from "multer"
 
-const router = Router();
 
+
+const router = express.Router();
+
+
+// Setup multer
+const storage = multer.memoryStorage();
+const upload = multer({storage: storage});
+
+// get all food posts
 router.get('/', verifyToken, getFoodPosts);
+// get post by id
 router.get('/:id', verifyToken, getFoodPost);
-router.post('/', verifyToken,  createFoodPost);
+// create new post
+router.post('/', upload.array('images'), createFoodPost);
+// update existing post
 router.put('/:id', verifyToken, updateFoodPost);
-router.delete('/:id',verifyToken, deleteFoodPost);
+// delete a post
+router.delete('/:id', verifyToken, deleteFoodPost);
 
 export default router;

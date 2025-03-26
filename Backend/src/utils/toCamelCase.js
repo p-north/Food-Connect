@@ -1,3 +1,7 @@
+/**
+ * Convert object keys from snake_case to camelCase
+ * @param obj - object to convert
+ */
 const toCamelCase = (obj) => {
     const camelCaseObj = {};
     Object.keys(obj).forEach((key) => {

@@ -1,9 +1,205 @@
 // All API docs here
 // auth routes, fetch routes, GET, PUT, POST etc.....
 
+// message Socket
+-----------------------------------------------------------------------------------Message--------------------
+event: 'private-message'
+description: Send a private message to a user
+message:
+{
+    "receiverId": int,
+    "message" : string
+}
 
+
+
+// Reservations routes
+---------------------------------------------------Reservations------------------------------------------------
+reservations model:
+{
+    id
+    recipient_id INTEGER
+    donor_id INTEGER ,
+    food_post_id INTEGER
+    status VARCHAR(50) NOT NULL CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+}
+
+/api/reservations/donor
+method: GET
+description: fetches all the reservations for a donor, pending, completed etc etc.
+
+input: userID passed in as cookies token.
+output:
+{
+    sucess: true,
+    message: fetched sucessfully,
+    reservations: [r1, r2, r3]
+}
+
+
+
+/api/reservations/recipient
+method: GET
+description: fetches all the reservations for a recipient, pending, completed etc etc.
+
+input: userID passed in as cookies token.
+output:
+{
+    sucess: true,
+    message: fetched sucessfully,
+    reservations: [r1, r2, r3]
+}
+
+
+/api/reservations
+method: POST
+description: creates a new reservation for a foodpost and donor ONLY TRIGGERED BY Recipient.
+
+input: userID for recipients passed as cookies token
+body{
+    food_post_id: 8,
+    donor_id: 9
+}
+output:
+{
+    sucess: true,
+    message: reservation created sucessfully,
+
+}
+
+/api/reservations/:reservationID
+method: PUT
+description: updates an existing reservation. ONLY TRIGGERED BY Donor. Donor's userID passed in as cookie token.
+input:
+body
+{
+    status: 'confirmed', 'cancelled', OR 'completed'
+}
+output:
+{
+    sucess: true,
+    message: reservation updated sucessfully,
+}
+
+
+
+
+
+
+
+
+// Reviews routes
+-----------------------------------------------------------------------------------Reviews--------------------
+reviews model:
+{
+    id
+    recipient_id (foreign key to users)
+    donor_id (foreign key to users)
+    rating INTEGER ,
+    comment TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    }
+
+
+
+/api/reviews/recReviews
+method: GET
+description: Get all the reviews for a recipient. ***The userID is passed in as cookies and verifies correct account.
+
+input: userID in cookie
+output:
+{
+    "sucess": true,
+    "message": "Reviews fetched sucessfully",
+    "reviews": []
+}
+
+
+/api/reviews/:donorID
+method: POST
+description: Create a new review for a donor. The donor id must be passed in params.
+input: donorID in the params.
+body:
+{
+    "comment":"review goes here",
+    "rating":"number between 1 and 5"
+}
+output:
+{
+    "sucess": true,
+    "message": "Review sucessfully created."
+}
+
+
+
+/api/reviews/:donorID
+method: GET
+description: Get all the reviews for a donor.
+input: donorID in params
+output:
+{
+    "sucess": true,
+    "message": "Review sucessfully fetched.",
+    "reviews": [review1, review2, review3]
+}
+
+/api/reviews/:reviewID
+method: DELETE
+description: Delete a review by a recipient.
+input: userID in cookie. reviewID in params.
+output:
+{
+    "sucess": true,
+    "message": "Review sucessfully deleted.",
+}
+
+
+
+
+
+
+
+
+
+// Message routes
+------------------------------------------------------------------------Message----------------
+message model:
+{
+    id: int,
+    senderId: int,
+    receiverId: int,
+    message: string,
+    createdAt: date,
+}
+
+/api/messages/:receiverId
+method: GET
+description: Get all messages between the signed in user and the receiver
+response:
+{
+    "success": true,
+    "message": "Messages fetched successfully",
+    "data":
+    [
+        message1,
+        ...
+    ]
+}
+
+/api/messages/:receiverId
+method: POST
+description: Send a message to the receiver
+body:
+{
+    "message": "Hello"
+}
+
+
+------------------------------------------------------------------------------------------FoodPost------------------------
 FoodPost routes
-------------------------FoodPost----------------
 foodPost model:
 {
     id: int,
@@ -19,7 +215,7 @@ foodPost model:
 }
 
 
-/api/foodPosts/
+/api/food-posts/
 method: GET
 description: Get all food posts
 response:
@@ -33,7 +229,7 @@ response:
 }
 
 
-/api/foodPosts/:foodPostId
+/api/food-posts/:foodPostId
 method: GET
 description: Get a food post by id
 response:
@@ -42,9 +238,14 @@ response:
     "data": foodPost
 }
 
-/api/foodPosts/
+/api/food-posts/
 method: POST
 description: Create a food post
+content-type: multipart/from
+files:
+{
+    images: [image1, image2, image3]
+}
 body:
 {
     "title": "Food Post 1",
@@ -63,7 +264,7 @@ response:
 }
 
 
-/api/foodPosts/:foodPostId
+/api/food-posts/:foodPostId
 method: PUT
 description: Update a food post by id
 body:
@@ -83,7 +284,7 @@ response:
     "data": foodPost
 }
 
-/api/foodPosts/:foodPostId
+/api/food-posts/:foodPostId
 method: DELETE
 description: Delete a food post by id
 response:
@@ -95,16 +296,17 @@ response:
 
 
 
-------------------------User Auth----------------
+---------------------------------------------------------------------------------------User Auth----------------
+
 
 --Checks wether the signed in user is authenticated at all times. Used for protected routes. Server will take cookie, decode it into the userID, and verify.
---http://localhost:5001/api/auth/check-auth
+--/api/auth/check-auth
 --METHOD: GET
 -pass in the cookie as token.
 
 
 -Handle Email SignUp, sends user a verification email. Server also generates a token from the encrypted user ID.
---http://localhost:5000/api/auth/signup
+--/api/auth/signup
 --METHOD: POST
 -- example JSON {
     "email":"123@gmail.com",
@@ -114,14 +316,14 @@ response:
 }
 
 --Handles Email verification, receives the entered code, sends the user a welcome email and verifies them in the database.
---http://localhost:5000/api/auth/verify-email
+--/api/auth/verify-email
 --METHOD: POST
 -- example JSON {
     "code": "123456"
 }
 
 --Handles User login, reponse sends back a generated session cookie which lasts for 7d if user found
---http://localhost:5000/api/auth/login
+--/api/auth/login
 --METHOD: POST
 -- example JSON{
     "email":"myemail@gmail.com",
@@ -129,5 +331,5 @@ response:
 }
 
 --Handles user logout, response will clear the cookie passed. Nothing required in the body.
---http://localhost:3000/api/auth/logout
+--/api/auth/logout
 --METHOD POST

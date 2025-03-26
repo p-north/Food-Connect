@@ -1,9 +1,17 @@
 import {FoodPost} from "../models/foodPost.model.js";
+import { handleImageUpload, handleImageDeletion } from "../utils/amazonS3.utils.js";
 
 const createFoodPost = async (req, res) => {
     try {
-        // add userId to req.body
+        // add userId to req.body (change this)
         req.body.userId = req.userID;
+        // generate signed image urls from s3 
+        const {urls} = await handleImageUpload(req, res);
+        console.log(urls);
+        
+        
+        // add the signed urls to body
+        req.body.imageUrl = urls;
         const data = await FoodPost.create(req.body);
         res.status(201).json({
             success: true,
@@ -80,13 +88,23 @@ const deleteFoodPost = async (req, res) => {
                 message: 'Unauthorized to delete food post',
             });
         }
+
+        const images = foodPost.imageUrl;
+        console.log(typeof images)
+
+        // delete from S3
+        await handleImageDeletion(images);
+
         await FoodPost.deleteById(req.params.id);
         res.status(200).json({
             success: true,
             message: 'Food post deleted successfully',
         });
     } catch (error) {
-        res.status(500).json({ message: 'Error ' });
+        res.status(500).json({
+            success: false,
+            message: 'Error '
+        });
     }
 }
 
