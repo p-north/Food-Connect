@@ -9,6 +9,7 @@ import NewListing from './pages/Donor/NewListing';
 import RecipientDashboard from './pages/Recipient/RecipientDashboard';
 import RecipientProfile from './pages/Recipient/RecipientProfile';
 import RecipientReservations from './pages/Recipient/RecipientReservations';
+import Message from "./pages/Message";
 
 // import RecipientProfile from './pages/Recipient/RecipientProfile'; for prianish when hes done his page
 
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="/recipient/dashboard" element={<RecipientDashboard />} />
           <Route path="/recipient/profile" element={<RecipientProfile />} />
           <Route path="/recipient/reservations" element={<RecipientReservations />} />
+          <Route path="/message/:receiverId" element={<Message />} />
         </Route>
       </Routes>
     </Router>
