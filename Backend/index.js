@@ -17,7 +17,7 @@ import messageRoute from "./src/routes/message.route.js";
 import socketVerifyToken from "./src/middlewares/socketVerifyToken.js";
 import createReservationTable from "./src/models/reservations.model.js";
 import reservationRoutes from "./src/routes/reservation.route.js"
-import messageRoute from "./src/routes/message.route.js";
+
 
 
 

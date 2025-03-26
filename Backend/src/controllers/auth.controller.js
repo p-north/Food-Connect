@@ -168,9 +168,11 @@ async function checkAuth(req, res) {
         .json({ sucess: false, message: "User does not exist." });
     }
 
+    console.log(user.rows[0].accountType);
 
     res.status(200).json({
       success: true,
+
     });
 
 
