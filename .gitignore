@@ -1,0 +1,8 @@
+#node_modules for router
+node_modules
+/Backend/node_modules/
+/.idea/
+/Backend/node_modules/
+/.idea/
+/node_modules
+

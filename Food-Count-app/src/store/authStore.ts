@@ -45,8 +45,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
         password
       }, { withCredentials: true });
       
+      console.log(response.data);
       set({ 
-        user: response.data.user,
+        user: {
+          ...response.data,
+          accountType: response.data.accType
+        },
         isAuthenticated: true,
         isLoading: false
       });

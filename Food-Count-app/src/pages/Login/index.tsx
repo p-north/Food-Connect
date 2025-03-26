@@ -19,6 +19,8 @@ const Login = () => {
   
   // Redirect if already authenticated
   useEffect(() => {
+    console.log('isAuthenticated', isAuthenticated);
+    console.log('user', user);
     if (isAuthenticated && user) {
       if (user.accountType === 'donor') {
         navigate('/donor/profile');
