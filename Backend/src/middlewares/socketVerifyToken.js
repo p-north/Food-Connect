@@ -1,9 +1,24 @@
 // Socket.IO middleware to verify tokens
 import jwt from "jsonwebtoken";
 
+const extractToken = (cookieHeader) => {
+    const cookies = cookieHeader.split(";").reduce((cookies, cookie) => {
+        const [name, value] = cookie.split("=").map((c) => c.trim());
+        cookies[name] = value;
+        return cookies;
+    }, {});
+
+    return cookies.token;
+}
+
 const verifySocketToken = (socket, next) => {
     // Extract token from handshake (e.g., cookies, query params, or headers)
-    const token = socket.handshake.auth.token ||
+
+    const cookies = socket.handshake.headers.cookie;
+
+    const token =
+        extractToken(cookies) ||
+        socket.handshake.auth.token ||
         socket.handshake.query.token ||
         socket.request.cookies?.token;
 
