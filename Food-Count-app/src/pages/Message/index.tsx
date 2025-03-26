@@ -11,6 +11,8 @@ export type MessageType = {
     receiverId: number;
     message: string;
     createdAt: string;
+    senderName?: string;
+    receiverName?: string;
 }
 const Message = () => {
     const socketRef: RefObject<null|Socket> = useRef(null);
@@ -75,11 +77,11 @@ const Message = () => {
 
 
     return (
-        <div className="bg-gray-50 min-h-screen flex flex-col">
+        <div className="bg-gray-50 min-h-96 flex flex-col">
             {/* Header */}
             <div className="bg-white shadow-sm p-4">
                 <h1 className="text-2xl font-bold text-gray-800 text-center">
-                    Messages
+                    .
                 </h1>
             </div>
 
@@ -88,22 +90,22 @@ const Message = () => {
                 {messages?.map((msg: MessageType) => (
                     <div
                         key={msg.id}
-                        className={`flex ${msg.sender === currentUser ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
                     >
                         <div
                             className={`max-w-md p-4 rounded-lg ${
-                                msg.sender === currentUser
+                                msg.senderId === userId 
                                     ? 'bg-green-500 text-white'
                                     : 'bg-white shadow-sm'
                             }`}
                         >
-                            <p className="text-sm">{msg.message}</p>
+                            <p className="text-sm text-black">{msg.message}</p>
                             <div className={`mt-2 text-xs ${
-                                msg.sender === currentUser
+                                msg.senderId === userId
                                     ? 'text-green-100'
                                     : 'text-gray-500'
                             }`}>
-                                {new Date(msg.timestamp).toLocaleTimeString()}
+                                {new Date(msg.createdAt).toLocaleTimeString()}
                             </div>
                         </div>
                     </div>
@@ -118,7 +120,7 @@ const Message = () => {
                         onChange={e => setMessage(e.target.value)}
                         type="text"
                         placeholder="Type your message..."
-                        className="flex-grow px-4 py-2 border border-gray-300 rounded-md
+                        className="text-black flex-grow px-4 py-2 border border-gray-300 rounded-md
                  focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <button
