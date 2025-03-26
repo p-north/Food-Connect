@@ -12,15 +12,8 @@ const extractToken = (cookieHeader) => {
 }
 
 const verifySocketToken = (socket, next) => {
-    // Extract token from handshake (e.g., cookies, query params, or headers)
-
     const cookies = socket.handshake.headers.cookie;
-
-    const token =
-        extractToken(cookies) ||
-        socket.handshake.auth.token ||
-        socket.handshake.query.token ||
-        socket.request.cookies?.token;
+    const token = extractToken(cookies);
 
     if (!token) {
         return next(new Error("Unauthorized: No token provided"));
