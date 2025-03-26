@@ -30,14 +30,34 @@ const Message = {
         }
     },
 
+    // async findMessagesByUserId(senderId, receiverId) {
+    //     try {
+    //         const {rows} = await client.query(`
+    //             SELECT * FROM messages
+    //             WHERE (sender_id = $1 AND receiver_id = $2)
+    //             OR (sender_id = $2 AND receiver_id = $1)
+    //             ORDER BY created_at;
+    //         `, [senderId, receiverId]);
+    //         return rows.map(toCamelCase);
+    //     } catch (err) {
+    //         throw err;
+    //     }
+    // }
     async findMessagesByUserId(senderId, receiverId) {
         try {
-            const {rows} = await client.query(`
-                SELECT * FROM messages
-                WHERE (sender_id = $1 AND receiver_id = $2)
-                OR (sender_id = $2 AND receiver_id = $1)
-                ORDER BY created_at;
+            const { rows } = await client.query(`
+                SELECT 
+                    messages.*,
+                    sender.name AS sender_name,
+                    receiver.name AS receiver_name
+                FROM messages
+                JOIN users AS sender ON messages.sender_id = sender.id
+                JOIN users AS receiver ON messages.receiver_id = receiver.id
+                WHERE (messages.sender_id = $1 AND messages.receiver_id = $2)
+                OR (messages.sender_id = $2 AND messages.receiver_id = $1)
+                ORDER BY messages.created_at;
             `, [senderId, receiverId]);
+
             return rows.map(toCamelCase);
         } catch (err) {
             throw err;

@@ -2,6 +2,9 @@
 import jwt from "jsonwebtoken";
 
 const extractToken = (cookieHeader) => {
+    if (!cookieHeader) {
+        return null;
+    }
     const cookies = cookieHeader.split(";").reduce((cookies, cookie) => {
         const [name, value] = cookie.split("=").map((c) => c.trim());
         cookies[name] = value;
@@ -13,6 +16,7 @@ const extractToken = (cookieHeader) => {
 
 const verifySocketToken = (socket, next) => {
     const cookies = socket.handshake.headers.cookie;
+
     const token = extractToken(cookies);
 
     if (!token) {
