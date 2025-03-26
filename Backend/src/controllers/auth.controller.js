@@ -142,6 +142,7 @@ async function handleLogin(req, res) {
 
     res.status(200).json({
       message: "Logged in successfully",
+      accType: user.rows[0].type_of_account,
     });
   } catch (error) {
     console.log("Error in login:", error);
@@ -167,8 +168,6 @@ async function checkAuth(req, res) {
         .status(400)
         .json({ sucess: false, message: "User does not exist." });
     }
-
-    console.log(user.rows[0].accountType);
 
     res.status(200).json({
       success: true,
