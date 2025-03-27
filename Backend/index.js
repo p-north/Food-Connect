@@ -84,7 +84,7 @@ app.use("/api/reviews", reviewsRoutes);
 // reservation routes
 app.use("/api/reservations", reservationRoutes)
 // user route
-app.use("/api/user", userRoute);
+app.use("/api/users", userRoute);
 
 
 // socket.io

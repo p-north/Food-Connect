@@ -3,11 +3,10 @@ import {io, Socket} from "socket.io-client";
 import {API_URL, BASE_URL} from "../../config/api.ts";
 import {useParams} from "react-router-dom";
 import axios from "axios";
-import useAuthStore from "../../store/authStore.ts";
 
 export type MessageType = {
     id: number;
-    senderId: number;
+    senderId: number | null;
     receiverId: number;
     message: string;
     createdAt: string;
@@ -17,22 +16,20 @@ export type MessageType = {
 const Message = () => {
     const socketRef: RefObject<null|Socket> = useRef(null);
     const [messages, setMessages] = useState<MessageType[]>([]);
+    const [receiverName, setReceiverName] = useState("");
     const [message, setMessage] = useState("");
     const param = useParams();
-    const {user} = useAuthStore();
-
-    const userId = user?.id ? Number.parseInt(user.id) : 0;
-    const receiverId = Number.parseInt(param.receiverId as string);
+    const receiverId = Number(param.receiverId);
 
     const sendMessage = () => {
         socketRef.current?.emit("private-message", {
             receiverId,
             message
         });
-        setMessages((prevMessages) => {
+        setMessages((prevMessages ): MessageType[] => {
             return [...prevMessages, {
                 id: 0,
-                senderId: userId,
+                senderId: null,
                 receiverId,
                 message,
                 createdAt: new Date().toISOString()
@@ -41,6 +38,7 @@ const Message = () => {
         setMessage("");
     }
 
+    // connect to socket
     useEffect(() => {
         socketRef.current = io(BASE_URL, {
             withCredentials: true,
@@ -66,9 +64,12 @@ const Message = () => {
                 const response = await axios.get(`${API_URL}/messages/${receiverId}`, {
                     withCredentials: true
                 });
+                const receiverName = await axios.get(`${API_URL}/users/${receiverId}`, {
+                    withCredentials: true
+                });
+                setReceiverName(receiverName.data.data.name);
                 setMessages(response.data.data);
                 console.log(response.data.data);
-                console.log(user);
             }
             catch (err) {
                 console.log(err);
@@ -82,31 +83,32 @@ const Message = () => {
             {/* Header */}
             <div className="bg-white shadow-sm p-4">
                 <h1 className="text-2xl font-bold text-gray-800 text-center">
-                    .
+                    {receiverName}
                 </h1>
             </div>
 
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className={`flex-1 overflow-y-auto p-4 space-y-4`}
+            >
                 {messages?.map((msg: MessageType) => (
-                    <div
-                        key={msg.id}
-                        className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
-                    >
-                        <div
-                            className={`max-w-md p-4 rounded-lg ${
-                                msg.senderId === userId 
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-white shadow-sm'
-                            }`}
+                    <div className={`flex ${msg.senderId !== receiverId ? "justify-end" : "justify-start"}`} >
+                        <div className={`max-w-md p-4 rounded-lg ${
+                            msg.senderId !== receiverId
+                                ? 'bg-green-500 text-black'
+                                : 'bg-white shadow-sm'
+                        }`}
                         >
+                            {/* Add sender name display */}
+                            <div className="mb-1 text-xs font-semibold text-gray-800">
+                                {msg.senderId !== receiverId ? "You" : msg.senderName || "Unknown User"}
+                            </div>
                             <p className="text-sm text-black">{msg.message}</p>
                             <div className={`mt-2 text-xs ${
-                                msg.senderId === userId
+                                msg.senderId !== receiverId
                                     ? 'text-green-100'
                                     : 'text-gray-500'
                             }`}>
-                                {new Date(msg.createdAt).toLocaleTimeString()}
+                                {new Date(msg.createdAt).toLocaleString()}
                             </div>
                         </div>
                     </div>
