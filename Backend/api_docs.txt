@@ -1,6 +1,7 @@
 // All API docs here
 // auth routes, fetch routes, GET, PUT, POST etc.....
 
+
 // message Socket
 -----------------------------------------------------------------------------------Message--------------------
 event: 'private-message'
@@ -11,7 +12,23 @@ message:
     "message" : string
 }
 
+// user routes
+-----------------------------------------------------------------------------------User--------------------
+user model:
+{
+id: int,
+name: string,
+typeOfAccount: string,
+}
 
+/api/users/:userId
+method: GET
+description: Get a user by id
+response:
+{
+    "success": true,
+    "data": user
+}
 
 // Reservations routes
 ---------------------------------------------------Reservations------------------------------------------------
