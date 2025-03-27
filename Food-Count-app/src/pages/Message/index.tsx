@@ -24,6 +24,23 @@ const Message = () => {
     const userId = user?.id ? Number.parseInt(user.id) : 0;
     const receiverId = Number.parseInt(param.receiverId as string);
 
+    const sendMessage = () => {
+        socketRef.current?.emit("private-message", {
+            receiverId,
+            message
+        });
+        setMessages((prevMessages) => {
+            return [...prevMessages, {
+                id: 0,
+                senderId: userId,
+                receiverId,
+                message,
+                createdAt: new Date().toISOString()
+            }];
+        });
+        setMessage("");
+    }
+
     useEffect(() => {
         socketRef.current = io(BASE_URL, {
             withCredentials: true,
@@ -42,24 +59,6 @@ const Message = () => {
         }
     }, []);
 
-    const sendMessage = () => {
-        socketRef.current?.emit("private-message", {
-            receiverId,
-            message
-        });
-        setMessages((prevMessages) => {
-            return [...prevMessages, {
-                id: 0,
-                senderId: userId,
-                receiverId,
-                message,
-                createdAt: new Date().toISOString()
-            }];
-        });
-        setMessage("");
-    }
-
-
     // get messages
     useEffect(() => {
         (async () => {
@@ -68,12 +67,14 @@ const Message = () => {
                     withCredentials: true
                 });
                 setMessages(response.data.data);
+                console.log(response.data.data);
+                console.log(user);
             }
             catch (err) {
                 console.log(err);
             }
         })();
-    });
+    }, [receiverId]);
 
 
     return (
