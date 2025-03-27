@@ -13,11 +13,11 @@ import reviewsRoutes from "./src/routes/reviews.route.js"
 import { Server } from "socket.io";
 import { createServer } from "http";
 import handleSocketConnection from "./src/webSocket/handleSocket.js";
-import messageRoute from "./src/routes/message.route.js";
 import socketVerifyToken from "./src/middlewares/socketVerifyToken.js";
 import createReservationTable from "./src/models/reservations.model.js";
 import reservationRoutes from "./src/routes/reservation.route.js"
 import userRoute from "./src/routes/user.route.js";
+import messageRoute from "./src/routes/message.route.js";
 
 
 
