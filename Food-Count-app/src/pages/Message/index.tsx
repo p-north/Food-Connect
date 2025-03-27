@@ -1,6 +1,6 @@
 import {RefObject, useEffect, useRef, useState} from "react";
 import {io, Socket} from "socket.io-client";
-import {API_URL, BASE_URL} from "../../config/api.ts";
+import {BASE_URL} from "../../config/api.ts";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 
@@ -61,10 +61,10 @@ const Message = () => {
     useEffect(() => {
         (async () => {
             try {
-                const response = await axios.get(`${API_URL}/messages/${receiverId}`, {
+                const response = await axios.get(`${BASE_URL}/messages/${receiverId}`, {
                     withCredentials: true
                 });
-                const receiverName = await axios.get(`${API_URL}/users/${receiverId}`, {
+                const receiverName = await axios.get(`${BASE_URL}/users/${receiverId}`, {
                     withCredentials: true
                 });
                 setReceiverName(receiverName.data.data.name);

@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import { API_URL } from '../config/api';
+import { BASE_URL } from '../config/api';
+
+// with every request, also place cookies in header
+axios.defaults.withCredentials = true;
 
 // Define the interface for our store state
 interface User {
@@ -14,6 +17,7 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isCheckingAuth: boolean;
   error: string | null;
   verificationPending: boolean;
   emailToVerify: string | null;
@@ -33,6 +37,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
   isLoading: false,
   error: null,
+  isCheckingAuth: true,
   verificationPending: false,
   emailToVerify: null,
   
@@ -72,7 +77,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   signup: async (userData) => {
     try {
       set({ isLoading: true, error: null });
-      const response = await axios.post(`${API_URL}/auth/signup`, {
+      const response = await axios.post(`${BASE_URL}/auth/signup`, {
         email: userData.email,
         password: userData.password,
         name: userData.firstName,
@@ -100,7 +105,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   verifyEmail: async (code) => {
     try {
       set({ isLoading: true, error: null });
-      await axios.post('http://localhost:5000/api/auth/verify-email', {
+      await axios.post(`${BASE_URL}/auth/verify-email`, {
         code
       }, { withCredentials: true });
       
@@ -122,7 +127,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   logout: async () => {
     try {
       set({ isLoading: true });
-      await axios.post('http://localhost:5001/api/auth/logout', {}, { withCredentials: true });
+      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
       set({ 
         user: null,
         isAuthenticated: false,
@@ -138,27 +143,31 @@ const useAuthStore = create<AuthState>((set, get) => ({
   // Check authentication status
   checkAuth: async () => {
     try {
-      set({ isLoading: true });
-      const response = await axios.get('http://localhost:5001/api/auth/check-auth', { 
+      set({ isLoading: true, isCheckingAuth: true });
+      const response = await axios.get(`${BASE_URL}/auth/check-auth`, { 
         withCredentials: true 
       });
+
+      cons
       
       set({ 
         user: response.data.user,
         isAuthenticated: true,
-        isLoading: false
+        isLoading: false,
+        isCheckingAuth: false,
       });
     } catch (err) {
       set({ 
         user: null,
         isAuthenticated: false,
-        isLoading: false
+        isLoading: false,
+        isCheckingAuth: false,
       });
     }
   },
   
   // Clear error
-  clearError: () => set({ error: null })
+  clearError: () => set({ error: null, isCheckingAuth: false })
 }));
 
 export default useAuthStore;

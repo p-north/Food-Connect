@@ -11,8 +11,11 @@ export const generateTokenAndSetCookie = (res, userId) => {
         // cannot be accesed by javascript
         httpOnly: true,
         // make it secure once in production
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict", //prevents CSRF attack
+        secure: true,
+        // secure: process.env.NODE_ENV === "production",           ---CHANGE THIS IN PRODUCTION
+        // secure: process.env.NODE_ENV === "production",
+
+        sameSite: "None", //prevents CSRF attack
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
