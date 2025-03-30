@@ -11,8 +11,6 @@ import RecipientDashboard from './pages/Recipient/RecipientDashboard';
 import RecipientProfile from './pages/Recipient/RecipientProfile';
 import RecipientReservations from './pages/Recipient/RecipientReservations';
 
-// import RecipientProfile from './pages/Recipient/RecipientProfile'; for prianish when hes done his page
-
 
 const App = () => {
   return (
