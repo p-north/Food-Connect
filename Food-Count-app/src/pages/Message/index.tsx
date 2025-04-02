@@ -27,13 +27,13 @@ const Message = () => {
             message
         });
         setMessages((prevMessages ): MessageType[] => {
-            return [...prevMessages, {
+            return [ {
                 id: 0,
                 senderId: null,
                 receiverId,
                 message,
                 createdAt: new Date().toISOString()
-            }];
+            },...prevMessages,];
         });
         setMessage("");
     }
@@ -46,7 +46,7 @@ const Message = () => {
 
         socketRef.current?.on("private-message", (message: MessageType) => {
             setMessages((prevMessages) => {
-                return [...prevMessages, message];
+                return [message,...prevMessages];
             });
         })
 
@@ -68,7 +68,7 @@ const Message = () => {
                     withCredentials: true
                 });
                 setReceiverName(receiverName.data.data.name);
-                setMessages(response.data.data);
+                setMessages(response.data.data.reverse());
                 console.log(response.data.data);
             }
             catch (err) {
@@ -79,7 +79,7 @@ const Message = () => {
 
 
     return (
-        <div className="bg-gray-50 min-h-96 flex flex-col">
+        <div className="bg-gray-50 flex-col">
             {/* Header */}
             <div className="bg-white shadow-sm p-4">
                 <h1 className="text-2xl font-bold text-gray-800 text-center">
@@ -88,9 +88,10 @@ const Message = () => {
             </div>
 
             {/* Messages Container */}
-            <div className={`flex-1 overflow-y-auto p-4 space-y-4`}
-            >
-                {messages?.map((msg: MessageType) => (
+            <div className={`flex flex-col-reverse max-h-96 overflow-y-auto p-4 gap-5`}>
+                {
+                    // reverse the messages array to display the latest message at the bottom
+                    messages?.map((msg: MessageType) => (
                     <div className={`flex ${msg.senderId !== receiverId ? "justify-end" : "justify-start"}`} >
                         <div className={`max-w-md p-4 rounded-lg ${
                             msg.senderId !== receiverId
@@ -103,7 +104,7 @@ const Message = () => {
                                 {msg.senderId !== receiverId ? "You" : msg.senderName || "Unknown User"}
                             </div>
                             <p className="text-sm text-black">{msg.message}</p>
-                            <div className={`mt-2 text-xs ${
+                            <div className={`m-1 text-xs ${
                                 msg.senderId !== receiverId
                                     ? 'text-green-100'
                                     : 'text-gray-500'
