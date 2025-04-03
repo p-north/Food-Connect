@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg-pattern {
+  background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.15) 2px, transparent 0);
+  background-size: 24px 24px;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
