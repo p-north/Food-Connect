@@ -40,7 +40,10 @@ const Message = () => {
 
     // connect to socket
     useEffect(() => {
-        socketRef.current = io(BASE_URL, {
+        // remove api from BASE_URL
+        const URL = BASE_URL.split("/api")[0];
+
+        socketRef.current = io(URL, {
             withCredentials: true,
         });
 
@@ -79,43 +82,44 @@ const Message = () => {
 
 
     return (
-        <div className="bg-gray-50 flex-col">
+        <div className="bg-gray-50 flex flex-col h-screen">
             {/* Header */}
-            <div className="bg-white shadow-sm p-4">
-                <h1 className="text-2xl font-bold text-gray-800 text-center">
-                    {receiverName}
-                </h1>
+            <div className="bg-white shadow-sm p-4 shrink-0">
+                <h1 className="text-2xl font-bold text-gray-800 text-center">{receiverName}</h1>
             </div>
 
             {/* Messages Container */}
-            <div className={`flex flex-col-reverse max-h-96 overflow-y-auto p-4 gap-5`}>
-                {
-                    // reverse the messages array to display the latest message at the bottom
-                    messages?.map((msg: MessageType) => (
-                    <div className={`flex ${msg.senderId !== receiverId ? "justify-end" : "justify-start"}`} >
-                        <div className={`max-w-md p-4 rounded-lg ${
-                            msg.senderId !== receiverId
-                                ? 'bg-green-500 text-black'
-                                : 'bg-white shadow-sm'
-                        }`}
-                        >
-                            {/* Add sender name display */}
-                            <div className="mb-1 text-xs font-semibold text-gray-800">
-                                {msg.senderId !== receiverId ? "You" : msg.senderName || "Unknown User"}
+            <div className="grow overflow-y-auto p-4">
+                <div className={`flex flex-col-reverse gap-5 h-full overflow-y-auto`}>
+                    {
+                        // reverse the messages array to display the latest message at the bottom
+                        messages?.map((msg: MessageType) => (
+                            <div className={`flex ${msg.senderId !== receiverId ? "justify-end" : "justify-start"}`} >
+                                <div className={`max-w-md p-4 rounded-lg ${
+                                    msg.senderId !== receiverId
+                                        ? 'bg-green-500 text-black'
+                                        : 'bg-white shadow-sm'
+                                }`}
+                                >
+                                    {/* Add sender name display */}
+                                    <div className="mb-1 text-xs font-semibold text-gray-800">
+                                        {msg.senderId !== receiverId ? "You" : msg.senderName || "Unknown User"}
+                                    </div>
+                                    <p className="text-sm text-black">{msg.message}</p>
+                                    <div className={`m-1 text-xs ${
+                                        msg.senderId !== receiverId
+                                            ? 'text-green-100'
+                                            : 'text-gray-500'
+                                    }`}>
+                                        {new Date(msg.createdAt).toLocaleString([], {month: 'long',day: 'numeric', hour: '2-digit', minute: '2-digit'})}
+                                    </div>
+                                </div>
                             </div>
-                            <p className="text-sm text-black">{msg.message}</p>
-                            <div className={`m-1 text-xs ${
-                                msg.senderId !== receiverId
-                                    ? 'text-green-100'
-                                    : 'text-gray-500'
-                            }`}>
-                                {new Date(msg.createdAt).toLocaleString()}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                        ))}
+                </div>
 
+
+            </div>
             {/* Input Area */}
             <div className="border-t bg-white p-4">
                 <div className="flex gap-2">
