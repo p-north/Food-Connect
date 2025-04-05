@@ -16,6 +16,19 @@ const EditProfile = () => {
     website: ''
   });
 
+  const [previewImage, setPreviewImage] = useState(() => {
+    return localStorage.getItem('profileImage') || '';
+  });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setPreviewImage(imageUrl);
+      localStorage.setItem('profileImage', imageUrl);
+    }
+  };
+
   // Load profile from localStorage on component mount
   useEffect(() => {
     const savedProfile = localStorage.getItem('foodConnectProfile');
@@ -38,6 +51,8 @@ const EditProfile = () => {
     localStorage.setItem('foodConnectProfile', JSON.stringify(profile));
     navigate('/donor/dashboard');
   };
+
+  const [profileImage, setProfileImage] = useState<File | null>(null);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -70,6 +85,70 @@ const EditProfile = () => {
           </div>
           
           <form onSubmit={handleSubmit} className="p-6">
+
+          <h2 className="text-sm font-medium text-gray-900 mb-2">Profile Image</h2>
+            <div className="mt-2 flex items-center">
+              {profileImage ? (
+                <img
+                  src={URL.createObjectURL(profileImage)}
+                  alt="Profile"
+                  className="h-20 w-20 rounded-full object-cover"
+                />
+              ) : (
+                <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center text-xl text-gray-600">
+                  {profile.name.charAt(0)}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Upload Image
+              </label>
+              <div
+                className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-md"
+              >
+                <div className="space-y-1 text-center">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M14 22l10 10 10-10M24 32V12"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="flex text-sm text-gray-600 justify-center">
+                    <label
+                      htmlFor="file-upload"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none"
+                    >
+                      <span>Upload a file</span>
+                      <input
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        className="sr-only"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setProfileImage(e.target.files[0]);
+                          }
+                        }}
+                      />
+                    </label>
+                    <p className="pl-1">or drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </div>
+              </div>
+            </div>
+
+
             <div className="mb-8">
               <h2 className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200 text-green-700">
                 Business Information
