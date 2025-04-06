@@ -277,33 +277,48 @@ const MapView: React.FC = () => {
               closeOnClick={false}
               anchor="bottom"
               offset={25}
+              maxWidth="300px"
             >
-              <div className="p-4 max-w-xs bg-white rounded-lg shadow-lg">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{selectedListing.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{selectedListing.description}</p>
-                <p className="text-sm text-gray-500 mb-3 flex items-center">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  {selectedListing.location}
-                </p>
+              <div className="bg-white rounded-lg shadow-lg">
+                {/* Image Section */}
                 {selectedListing.imageUrl && (
-                  <img 
-                    src={selectedListing.imageUrl} 
-                    alt={selectedListing.title}
-                    className="w-full h-32 object-cover rounded-lg mb-2"
-                  />
+                  <div className="w-full h-40 overflow-hidden rounded-t-lg">
+                    <img 
+                      src={selectedListing.imageUrl} 
+                      alt={selectedListing.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
-                <button 
-                  className="w-full mt-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200"
-                  onClick={() => {
-                    // Add your action here
-                    console.log('Reserve clicked for:', selectedListing.title);
-                  }}
-                >
-                  Reserve Now
-                </button>
+                
+                {/* Content Section */}
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{selectedListing.title}</h3>
+                  
+                  {/* Location with Icon */}
+                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="truncate">{selectedListing.location}</span>
+                  </div>
+
+                  {/* Scrollable Description */}
+                  <div className="max-h-32 overflow-y-auto mb-4 pr-2">
+                    <p className="text-sm text-gray-600">{selectedListing.description}</p>
+                  </div>
+
+                  {/* Action Button */}
+                  <button 
+                    className="w-full px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    onClick={() => {
+                      console.log('Reserve clicked for:', selectedListing.title);
+                    }}
+                  >
+                    Reserve Now
+                  </button>
+                </div>
               </div>
             </Popup>
           )}
