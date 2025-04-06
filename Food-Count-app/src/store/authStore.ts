@@ -148,7 +148,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
         withCredentials: true 
       });
 
-      cons
+      console.log(response.data);
       
       set({ 
         user: response.data.user,
