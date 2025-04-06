@@ -9,8 +9,8 @@ import pg from 'pg'
     // \dt 
     // \x auto
 const client = new pg.Client({
-    user: 'admin',
-    password: 'fd123',
+    user: 'postgres',
+    password: '123',
     host: 'localhost',
     database: 'foodconnect',
     port: 5432,
