@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 // import useAuthStore from '../../store/authStore';
-// import MapView from '../../components/Map/MapView';
+import MapView from '../../components/Map/MapView';
 
 interface FoodListing {
   id: string;
@@ -181,11 +181,8 @@ const RecipientDashboard = () => {
             </svg>
           </div>
         ) : viewMode === 'map' ? (
-          <div className="rounded-lg overflow-hidden shadow-md mb-6">
-            {/* <MapView 
-              listings={foodListings} 
-              onSelectListing={handleListingSelect} 
-            /> */}
+          <div className="rounded-lg overflow-hidden shadow-md mb-6 h-[600px]">
+            <MapView />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
