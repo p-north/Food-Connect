@@ -210,4 +210,23 @@ async function checkAuth(req, res) {
 // }
 // async function resetPassword() {}
 
-export { handleLogout, verifyEmail, handleLogin, handleSignUp, checkAuth };
+async function refreshToken(req, res) {
+  try {
+    // The token is automatically sent in the cookie
+    // The verifyToken middleware will handle the validation
+    const uID = req.userID;
+    
+    // Generate a new token
+    const token = generateTokenAndSetCookie(res, uID);
+    
+    res.status(200).json({
+      success: true,
+      message: "Token refreshed successfully"
+    });
+  } catch (error) {
+    console.log("Error in refresh token:", error);
+    res.status(401).json({ success: false, message: "Token refresh failed" });
+  }
+}
+
+export { handleLogout, verifyEmail, handleLogin, handleSignUp, checkAuth, refreshToken };
