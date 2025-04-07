@@ -7,17 +7,29 @@ import { useEffect, useState } from 'react';
 import LoadingSpinner from '../shared/LoadingSpinner';
 
 const Layout = () => {
-  const { isAuthenticated, isCheckingAuth } = useAuthStore();
+  const { isAuthenticated, isCheckingAuth, checkAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Only set loading to false after initial auth check is complete
-    if (!isCheckingAuth) {
+    const initializeAuth = async () => {
+      try {
+        await checkAuth();
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Only run the auth check if we're still checking auth
+    if (isCheckingAuth) {
+      initializeAuth();
+    } else {
       setIsLoading(false);
     }
-  }, [isCheckingAuth]);
+  }, [checkAuth, isCheckingAuth]);
 
-  // Show loading spinner while checking auth state
+  // Show loading spinner only during the initial auth check
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -25,7 +37,6 @@ const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {isAuthenticated ? <Navigation /> : <SimpleNav />}
-      
       <main className="flex-grow">
         <Outlet />
       </main>

@@ -183,21 +183,37 @@ const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ isCheckingAuth: true });
       
-      const response = await axios.get(`${BASE_URL}/auth/check-auth`, { withCredentials: true });
-
-      console.log('Auth check response:', response.data);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      set({ 
-        user: response.data.user,
-        isAuthenticated: true,
-        isCheckingAuth: false,
+      const response = await axios.get<{ user: User | null }>(`${BASE_URL}/auth/check`, {
+        signal: controller.signal
       });
-    } catch (err) {
-      console.error('Auth check failed:', err);
-      set({ 
+      
+      clearTimeout(timeoutId);
+      
+      if (response.data.user) {
+        set({
+          user: response.data.user,
+          isAuthenticated: true,
+          isCheckingAuth: false,
+          error: null
+        });
+      } else {
+        set({
+          user: null,
+          isAuthenticated: false,
+          isCheckingAuth: false,
+          error: null
+        });
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      set({
         user: null,
         isAuthenticated: false,
         isCheckingAuth: false,
+        error: 'Unable to verify authentication status'
       });
     }
   }
