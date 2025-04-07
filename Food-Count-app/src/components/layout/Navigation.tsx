@@ -43,12 +43,12 @@ const Navigation = () => {
           
           <div className="flex items-center gap-2">
             <img 
-              src={user?.avatarUrl || "https://via.placeholder.com/150?text=User"} 
+              src={user?.avatarUrl || "https://ui-avatars.com/api/?name=User&background=random"} 
               alt={user?.name || "User"} 
               className="w-8 h-8 rounded-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "https://via.placeholder.com/150?text=User";
+                target.src = "https://ui-avatars.com/api/?name=User&background=random";
               }}
             />
             <span className="text-sm font-medium hidden md:block">{user?.name || "User"}</span>

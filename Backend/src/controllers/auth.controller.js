@@ -176,7 +176,7 @@ async function checkAuth(req, res) {
 
     res.status(200).json({
       success: true,
-
+      user: user.rows[0],
     });
 
 
