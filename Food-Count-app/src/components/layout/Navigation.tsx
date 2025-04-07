@@ -5,11 +5,14 @@ import useAuthStore from '../../store/authStore';
 const Navigation = () => {
   const { logout, user } = useAuthStore();
   
+  // Determine dashboard path based on account type
+  const dashboardPath = user?.accountType === 'donor' ? '/donor/dashboard' : '/recipient/dashboard';
+  
   return (
     <header className="bg-white shadow-sm py-3 px-4 fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity duration-150">
+          <Link to={dashboardPath} className="flex items-center hover:opacity-80 transition-opacity duration-150">
             <img className="w-6 h-6 text-green-500" src='/foodconnect_logo.png'/>
             <span className="ml-2 text-xl font-semibold text-black ">FoodConnect</span>
           </Link>

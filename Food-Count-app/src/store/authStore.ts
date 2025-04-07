@@ -54,6 +54,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
   
   // Clear token
   clearToken: () => {
+    console.log('Clearing token from localStorage');
     localStorage.removeItem('token');
     set({ token: null });
   },
@@ -153,8 +154,10 @@ const useAuthStore = create<AuthState>((set, get) => ({
   // Logout action
   logout: async () => {
     try {
+      console.log('Starting logout process');
       set({ isLoading: true, isCheckingAuth: true });
       await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
+      console.log('Server logout successful');
       get().clearToken();
       set({ 
         user: null,
@@ -162,7 +165,9 @@ const useAuthStore = create<AuthState>((set, get) => ({
         isLoading: false,
         isCheckingAuth: false
       });
+      console.log('Local state cleared');
     } catch (err) {
+      console.error('Error during logout:', err);
       set({ 
         isLoading: false,
         isCheckingAuth: false
@@ -173,6 +178,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
         user: null, 
         isAuthenticated: false 
       });
+      console.log('Local state cleared after error');
     }
   },
   
@@ -182,15 +188,25 @@ const useAuthStore = create<AuthState>((set, get) => ({
       set({ isCheckingAuth: true });
       const token = get().token;
       
+      // If no token, clear state and return
+      if (!token) {
+        set({ 
+          user: null,
+          isAuthenticated: false,
+          isCheckingAuth: false,
+        });
+        return;
+      }
+
       // If we have a token, add it to the request
-      const config = token ? {
+      const config = {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true
-      } : { withCredentials: true };
+      };
 
       const response = await axios.get(`${BASE_URL}/auth/check-auth`, config);
 
-      console.log(response.data);
+      console.log('Auth check response:', response.data);
       
       // If we get a new token, store it
       if (response.data.token) {
@@ -203,7 +219,8 @@ const useAuthStore = create<AuthState>((set, get) => ({
         isCheckingAuth: false,
       });
     } catch (err) {
-      // If the token is invalid or expired, clear it
+      console.error('Auth check failed:', err);
+      // If the token is invalid or expired, clear everything
       get().clearToken();
       set({ 
         user: null,
