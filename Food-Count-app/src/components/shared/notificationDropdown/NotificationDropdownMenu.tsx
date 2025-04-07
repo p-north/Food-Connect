@@ -10,12 +10,24 @@ type Notification = {
     text: string;
     link: string;
 }
+type UnreadMessages = {
+    count: number;
+    senderName: string;
+    type: string;
+    date: Date;
+}
 
 export default function NotificationDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const [newMessages, setNewMessages] = useState<Notification[]>([]);
     const dropdownRef = useRef(null);
 
+    // handle removing the notification from the list
+    const handleRemoveNotification = (id: number) => {
+        setNewMessages((prev) => prev.filter((item) => item.id !== id));
+    };
+
+    // Close the dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (
@@ -29,18 +41,42 @@ export default function NotificationDropdown() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    // Fetch new messages
     useEffect(() => {
         // Simulate fetching new messages
-        const fetchMessages = async () => {
-            const unreadMessages = await axios.get(`${BASE_URL}/messages/unread-messages`, {
+        (async () => {
+            const { data: {data} } = await axios.get(`${BASE_URL}/messages/unread-messages`, {
                 withCredentials: true
             });
 
-            console.log(unreadMessages);
-        }
-        fetchMessages();
-    }, []);
+            const unreadMessagesData: { [key: number] : UnreadMessages; } = {};
 
+            data.forEach((message: MessageType) => {
+                const senderId = message.senderId;
+                if (!unreadMessagesData[senderId]) {
+                    unreadMessagesData[senderId] = {
+                        count: 0,
+                        type: "message",
+                        date: new Date(message.createdAt),
+                        senderName: message.senderName || "Unknown",
+                    }
+                }
+                // check if the message is the latest
+                if (unreadMessagesData[senderId].date < new Date(message.createdAt))
+                    unreadMessagesData[senderId].date = new Date(message.createdAt);
+
+                unreadMessagesData[senderId].count++;
+            });
+
+            // Convert the unreadMessagesData object to an array of notifications and insert into newMessages
+            const notifications: Notification[] = Object.entries(unreadMessagesData).map(([key, value]) => ({
+                id: Number(key),
+                text: `${value.senderName} sent you ${value.count} new messages`,
+                link: `/message/${key}`,
+            }));
+            setNewMessages([...notifications, ...newMessages]);
+        })();
+    }, []);
 
     return (
         <div className="relative" ref={dropdownRef}>
@@ -59,9 +95,14 @@ export default function NotificationDropdown() {
                             <li className="p-4 text-sm text-gray-500">No new notifications</li>
                         ) : (
                             newMessages.map((notify) => (
-                                <li key={notify.id} className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
-                                    {notify.text}
-                                </li>
+                                <a href={notify.link} key={notify.id}>
+                                    <li className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer" onClick={() => {
+                                        handleRemoveNotification(notify.id);
+                                        setIsOpen(false);
+                                    }} >
+                                        {notify.text}
+                                    </li>
+                                </a>
                             ))
                         )}
                     </ul>

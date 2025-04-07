@@ -6,7 +6,7 @@ import axios from "axios";
 
 export type MessageType = {
     id: number;
-    senderId: number | null;
+    senderId: number;
     receiverId: number;
     message: string;
     createdAt: string;
