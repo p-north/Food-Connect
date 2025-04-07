@@ -82,7 +82,7 @@ const Message = () => {
 
 
     return (
-        <div className="bg-gray-50 flex flex-col h-screen">
+        <div className="bg-gray-50 flex flex-col h-screen pt-20">
             {/* Header */}
             <div className="bg-white shadow-sm p-4 shrink-0">
                 <h1 className="text-2xl font-bold text-gray-800 text-center">{receiverName}</h1>
