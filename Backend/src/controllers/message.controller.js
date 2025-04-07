@@ -59,8 +59,26 @@ const getMessagesSinceLogin = async (req, res) => {
     }
 }
 
+const getUnreadMessages = async (req, res) => {
+    try {
+        const receiverId = req.userID;
+        const messages = await Message.findUnreadMessages(receiverId);
+        res.status(200).json({
+            success: true,
+            message: "Messages retrieved successfully",
+            data: messages
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+}
+
 export {
     createMessage,
     getMessagesByUserId,
-    getMessagesSinceLogin
+    getMessagesSinceLogin,
+    getUnreadMessages
 }
