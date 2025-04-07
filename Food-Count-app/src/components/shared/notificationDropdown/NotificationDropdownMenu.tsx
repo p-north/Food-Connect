@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 
-
-
-// a message notification dropdown component
+// a message notification notificationDropdown component
 
 const mockNotifications = [
     { id: 1, text: "You have a new message" },
@@ -38,15 +36,15 @@ export default function NotificationDropdown() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                <div className="absolute right-0 mt-2 w-64 text-black bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-3">
                     <div className="p-2 font-semibold border-b">Notifications</div>
                     <ul className="max-h-60 overflow-y-auto">
                         {mockNotifications.length === 0 ? (
                             <li className="p-4 text-sm text-gray-500">No new notifications</li>
                         ) : (
-                            mockNotifications.map((notif) => (
-                                <li key={notif.id} className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
-                                    {notif.text}
+                            mockNotifications.map((notify) => (
+                                <li key={notify.id} className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer">
+                                    {notify.text}
                                 </li>
                             ))
                         )}

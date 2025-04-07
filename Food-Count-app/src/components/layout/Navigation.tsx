@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Bell, LogOut, Heart, Search } from 'lucide-react';
+import { LogOut, Search } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
+import NotificationDropdown from "../shared/notificationDropdown/NotificationDropdownMenu.tsx";
 
 const Navigation = () => {
   const { logout, user } = useAuthStore();
@@ -9,7 +10,7 @@ const Navigation = () => {
   const dashboardPath = user?.accountType === 'donor' ? '/donor/dashboard' : '/recipient/dashboard';
   
   return (
-    <header className="bg-white shadow-sm py-3 px-4 fixed top-0 left-0 right-0 z-50 border-b border-gray-200">
+    <header className="bg-white shadow-sm fixed py-3 px-4 top-0 left-0 right-0 z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <Link to={dashboardPath} className="flex items-center hover:opacity-80 transition-opacity duration-150">
@@ -33,12 +34,7 @@ const Navigation = () => {
         
         <div className="flex items-center gap-4">
           <div className="relative">
-            <Link to="/notifications" className="p-1 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100">
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                1
-              </span>
-              <Bell className="w-6 h-6" />
-            </Link>
+            <NotificationDropdown/>
           </div>
           
           <div className="flex items-center gap-2">

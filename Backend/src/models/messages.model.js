@@ -29,20 +29,6 @@ const Message = {
             throw err;
         }
     },
-
-    // async findMessagesByUserId(senderId, receiverId) {
-    //     try {
-    //         const {rows} = await client.query(`
-    //             SELECT * FROM messages
-    //             WHERE (sender_id = $1 AND receiver_id = $2)
-    //             OR (sender_id = $2 AND receiver_id = $1)
-    //             ORDER BY created_at;
-    //         `, [senderId, receiverId]);
-    //         return rows.map(toCamelCase);
-    //     } catch (err) {
-    //         throw err;
-    //     }
-    // }
     async findMessagesByUserId(senderId, receiverId) {
         try {
             const { rows } = await client.query(`
@@ -65,13 +51,14 @@ const Message = {
     },
     async findMessagesSinceLogin(senderId) {
         try {
-            // get last login time from users table
-            const {userRows} = await client.query(`
-                SELECT last_login FROM users
-                WHERE id = $1;
-            `, [senderId]);
+            // // get last login time from users table
+            // const { rows: userRows } = await client.query(`
+            //     SELECT last_login, id AS userId FROM users WHERE id = $1;
+            // `, [senderId]);
 
-            const lastLogin = userRows[0].last_login;
+            // const lastLogin = userRows[0].userId;
+            const SEVEN_DAYS = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
             const { rows } = await client.query(`
                 SELECT 
                     messages.*,
@@ -82,7 +69,7 @@ const Message = {
                 JOIN users AS receiver ON messages.receiver_id = receiver.id
                 WHERE messages.created_at >= $1
                 ORDER BY messages.created_at;
-            `, [lastLogin]);
+            `, [SEVEN_DAYS]);
             return rows.map(toCamelCase);
         } catch (err) {
             throw err;

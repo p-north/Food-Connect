@@ -43,14 +43,15 @@ const getMessagesByUserId = async (req, res) => {
 const getMessagesSinceLogin = async (req, res) => {
     try {
         const senderId = req.userID;
+
         const messages = await Message.findMessagesSinceLogin(senderId);
+
         res.status(200).json({
             success: true,
             message: "Messages retrieved successfully",
             data: messages
         });
     } catch (err) {
-        console.error(err.message);
         res.status(500).json({
             success: false,
             message: "Server Error"
@@ -60,5 +61,6 @@ const getMessagesSinceLogin = async (req, res) => {
 
 export {
     createMessage,
-    getMessagesByUserId
+    getMessagesByUserId,
+    getMessagesSinceLogin
 }

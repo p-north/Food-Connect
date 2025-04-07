@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import DropdownMenu from "../../components/shared/dropdown/dropdownMenu.tsx";
+import DropdownMenu from "../../components/shared/notificationDropdown/NotificationDropdownMenu.tsx";
 
 const DonorDashboard = () => {
   const [listings, setListings] = useState([]);
