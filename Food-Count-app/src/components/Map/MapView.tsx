@@ -3,6 +3,7 @@ import Map from 'react-map-gl';
 import { Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { BASE_URL } from '../../config/api';
 
 // Define the FoodListing interface
 interface FoodListing {
@@ -168,8 +169,68 @@ const MapView: React.FC = () => {
 
   // Set mock data when component mounts
   useEffect(() => {
-    setListings(mockListings);
-    setIsLoading(false);
+    const fetchFoodPosts = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/food-posts`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          credentials: 'include' // Important for cookies
+        });
+        if (!response.ok) throw new Error('Failed to fetch food posts');
+        const responseData = await response.json();
+        console.log("Raw API Response:", responseData);
+        
+        // Transform API data to match FoodListing interface
+        const transformedListings = responseData.data.map((post: any) => {
+          console.log("Processing post:", post);
+          const transformed = {
+            id: post.id,
+            title: post.title,
+            location: post.location,
+            description: post.description,
+            imageUrl: post.imageUrl?.[0] || '', // Use first image if available
+            coordinates: {
+              lat: parseFloat(post.latitude),
+              lng: parseFloat(post.longitude)
+            }
+          };
+          console.log("Transformed post:", transformed);
+          return transformed;
+        });
+        
+        console.log("All transformed listings:", transformedListings);
+        setListings(transformedListings);
+
+        // Update viewport to show all markers
+        if (transformedListings.length > 0) {
+          const bounds = transformedListings.reduce((bounds: mapboxgl.LngLatBounds, listing: FoodListing) => {
+            bounds.extend([listing.coordinates.lng, listing.coordinates.lat]);
+            return bounds;
+          }, new mapboxgl.LngLatBounds());
+          
+          setViewport({
+            ...viewport,
+            ...bounds.toArray().flat(),
+            zoom: 11
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching food posts:', error);
+        // Fallback to mock data if API call fails
+        setListings(mockListings);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFoodPosts();
+   
+    // Current mock data implementation
+    // setListings(mockListings);
+    // setIsLoading(false);
     
     // Fit bounds to show all markers
     const bounds = mockListings.reduce((bounds: mapboxgl.LngLatBounds, listing: FoodListing) => {
