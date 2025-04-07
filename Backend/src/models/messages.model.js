@@ -62,6 +62,31 @@ const Message = {
         } catch (err) {
             throw err;
         }
+    },
+    async findMessagesSinceLogin(senderId) {
+        try {
+            // get last login time from users table
+            const {userRows} = await client.query(`
+                SELECT last_login FROM users
+                WHERE id = $1;
+            `, [senderId]);
+
+            const lastLogin = userRows[0].last_login;
+            const { rows } = await client.query(`
+                SELECT 
+                    messages.*,
+                    sender.name AS sender_name,
+                    receiver.name AS receiver_name
+                FROM messages
+                JOIN users AS sender ON messages.sender_id = sender.id
+                JOIN users AS receiver ON messages.receiver_id = receiver.id
+                WHERE messages.created_at >= $1
+                ORDER BY messages.created_at;
+            `, [lastLogin]);
+            return rows.map(toCamelCase);
+        } catch (err) {
+            throw err;
+        }
     }
 }
 
