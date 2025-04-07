@@ -22,7 +22,6 @@ interface AuthState {
   error: string | null;
   verificationPending: boolean;
   emailToVerify: string | null;
-  token: string | null;
   
   // Actions
   login: (email: string, password: string) => Promise<void>;
@@ -31,8 +30,6 @@ interface AuthState {
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   clearError: () => void;
-  setToken: (token: string) => void;
-  clearToken: () => void;
 }
 
 // Create the store
@@ -44,20 +41,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
   error: null,
   verificationPending: false,
   emailToVerify: null,
-  token: localStorage.getItem('token') || null,
-  
-  // Set token
-  setToken: (token: string) => {
-    localStorage.setItem('token', token);
-    set({ token });
-  },
-  
-  // Clear token
-  clearToken: () => {
-    console.log('Clearing token from localStorage');
-    localStorage.removeItem('token');
-    set({ token: null });
-  },
   
   // Clear error
   clearError: () => set({ error: null, isCheckingAuth: false }),
@@ -72,11 +55,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
       }, { withCredentials: true });
       
       console.log(response.data);
-      
-      // Store the token if it's in the response
-      if (response.data.token) {
-        get().setToken(response.data.token);
-      }
       
       set({ 
         user: {
@@ -156,15 +134,31 @@ const useAuthStore = create<AuthState>((set, get) => ({
     try {
       console.log('Starting logout process');
       set({ isLoading: true, isCheckingAuth: true });
-      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
+      
+      // Clear any local storage items
+      localStorage.clear();
+      
+      // Make the logout request
+      await axios.post(`${BASE_URL}/auth/logout`, {}, { 
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       console.log('Server logout successful');
-      get().clearToken();
+      
+      // Clear the auth state
       set({ 
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        isCheckingAuth: false
+        isCheckingAuth: false,
+        error: null,
+        verificationPending: false,
+        emailToVerify: null
       });
+      
       console.log('Local state cleared');
     } catch (err) {
       console.error('Error during logout:', err);
@@ -173,10 +167,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
         isCheckingAuth: false
       });
       // Even if logout fails on server, clear user data from client
-      get().clearToken();
       set({ 
         user: null, 
-        isAuthenticated: false 
+        isAuthenticated: false,
+        error: null,
+        verificationPending: false,
+        emailToVerify: null
       });
       console.log('Local state cleared after error');
     }
@@ -186,32 +182,10 @@ const useAuthStore = create<AuthState>((set, get) => ({
   checkAuth: async () => {
     try {
       set({ isCheckingAuth: true });
-      const token = get().token;
       
-      // If no token, clear state and return
-      if (!token) {
-        set({ 
-          user: null,
-          isAuthenticated: false,
-          isCheckingAuth: false,
-        });
-        return;
-      }
-
-      // If we have a token, add it to the request
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true
-      };
-
-      const response = await axios.get(`${BASE_URL}/auth/check-auth`, config);
+      const response = await axios.get(`${BASE_URL}/auth/check-auth`, { withCredentials: true });
 
       console.log('Auth check response:', response.data);
-      
-      // If we get a new token, store it
-      if (response.data.token) {
-        get().setToken(response.data.token);
-      }
       
       set({ 
         user: response.data.user,
@@ -220,8 +194,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch (err) {
       console.error('Auth check failed:', err);
-      // If the token is invalid or expired, clear everything
-      get().clearToken();
       set({ 
         user: null,
         isAuthenticated: false,
@@ -230,20 +202,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
     }
   }
 }));
-
-// Add axios interceptor to include token in all requests
-axios.interceptors.request.use(
-  (config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 // Add axios interceptor to handle token refresh
 axios.interceptors.response.use(
@@ -257,13 +215,7 @@ axios.interceptors.response.use(
       
       try {
         const response = await axios.post(`${BASE_URL}/auth/refresh-token`, {}, { withCredentials: true });
-        const { token } = response.data;
-        
-        if (token) {
-          useAuthStore.getState().setToken(token);
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return axios(originalRequest);
-        }
+        return axios(originalRequest);
       } catch (refreshError) {
         // If refresh token fails, logout the user
         useAuthStore.getState().logout();

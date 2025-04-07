@@ -17,6 +17,7 @@ export const generateTokenAndSetCookie = (res, userId) => {
 
         sameSite: "None", //prevents CSRF attack
         maxAge: 7 * 24 * 60 * 60 * 1000,
+        partitioned: true // Add Partitioned attribute for third-party cookie support
     });
 
     // return token

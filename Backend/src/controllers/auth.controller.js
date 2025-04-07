@@ -150,8 +150,13 @@ async function handleLogin(req, res) {
   }
 }
 async function handleLogout(req, res) {
-  // clear the cookies
-  res.clearCookie("token");
+  // clear the cookies with the same options used when setting it
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    partitioned: true
+  });
   res.status(200).json({ sucess: true, message: "Logged out successfully" });
 }
 async function checkAuth(req, res) {
