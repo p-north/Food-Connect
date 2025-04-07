@@ -209,11 +209,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      // Don't set an error message, just treat it as not authenticated
       set({
         user: null,
         isAuthenticated: false,
         isCheckingAuth: false,
-        error: 'Unable to verify authentication status'
+        error: null
       });
     }
   }
