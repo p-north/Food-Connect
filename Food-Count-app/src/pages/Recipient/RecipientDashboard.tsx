@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-// import useAuthStore from '../../store/authStore';
 import MapView from '../../components/Map/MapView';
 
 interface FoodListing {
@@ -19,16 +18,17 @@ interface FoodListing {
 }
 
 const RecipientDashboard = () => {
-  // const { user } = useAuthStore();
-  const [foodListings, setFoodListings] = useState<FoodListing[]>([]);
-  // const [distance, setDistance] = useState<string>("5 miles");
+  const [originalListings, setOriginalListings] = useState<FoodListing[]>([]);
+  const [displayedListings, setDisplayedListings] = useState<FoodListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  // const [selectedListing, setSelectedListing] = useState<FoodListing | null>(null);
+  const [filterTags, setFilterTags] = useState<string[]>([]);
+  const [sortOption, setSortOption] = useState<'distance' | 'availability'>('distance');
+  const [maxDistance, setMaxDistance] = useState<number>(5); // Default to 5 miles
+  const [allTags, setAllTags] = useState<string[]>([]);
 
-  // Mock data for demonstration
+  // Fetch data once
   useEffect(() => {
-    // In a real app, this would be an API call
     const mockListings: FoodListing[] = [
       {
         id: '1',
@@ -75,36 +75,85 @@ const RecipientDashboard = () => {
     ];
 
     setTimeout(() => {
-      setFoodListings(mockListings);
+      setOriginalListings(mockListings);
+      setDisplayedListings(mockListings);
+      
+      // Extract all unique tags
+      const tags = new Set<string>();
+      mockListings.forEach(listing => {
+        listing.tags.forEach(tag => tags.add(tag));
+      });
+      setAllTags(Array.from(tags));
+      
       setIsLoading(false);
     }, 1000); // Simulate network delay
   }, []);
 
-  // const handleListingSelect = (listing: FoodListing) => {
-  //   setSelectedListing(listing);
-  //   // On mobile, we might want to scroll to the selection or show a modal
-  // };
+  // Apply filters and sorting whenever filter criteria change
+  useEffect(() => {
+    if (originalListings.length === 0) return;
+    
+    // Start with original data
+    let filteredData = [...originalListings];
+    
+    // Apply distance filter
+    filteredData = filteredData.filter(
+      listing => parseFloat(listing.distance.split(' ')[0]) <= maxDistance
+    );
+    
+    // Apply tag filters if any are selected
+    if (filterTags.length > 0) {
+      filteredData = filteredData.filter(listing => 
+        filterTags.some(tag => listing.tags.includes(tag))
+      );
+    }
+    
+    // Apply sorting
+    filteredData.sort((a, b) => {
+      if (sortOption === 'distance') {
+        const distanceA = parseFloat(a.distance.split(' ')[0]);
+        const distanceB = parseFloat(b.distance.split(' ')[0]);
+        return distanceA - distanceB;
+      } else {
+        const timeA = parseInt(a.availableFor.split(' ')[0]);
+        const timeB = parseInt(b.availableFor.split(' ')[0]);
+        return timeA - timeB;
+      }
+    });
+    
+    setDisplayedListings(filteredData);
+  }, [originalListings, maxDistance, filterTags, sortOption]);
+
+  const handleSort = (option: 'distance' | 'availability') => {
+    setSortOption(option);
+  };
+
+  const handleFilter = (tag: string) => {
+    setFilterTags(prevTags =>
+      prevTags.includes(tag) ? prevTags.filter(t => t !== tag) : [...prevTags, tag]
+    );
+  };
+
+  const handleDistanceChange = (distance: number) => {
+    setMaxDistance(distance);
+  };
+
+  const handleResetFilters = () => {
+    setFilterTags([]);
+    setMaxDistance(5);
+    setSortOption('distance');
+  };
 
   return (
     <div className="min-h-screen bg-green-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <header className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
           <div className="flex items-center">
-            {/* <svg className="h-8 w-8 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V8h2v4z"/>
-            </svg> */}
-            {/* <h1 className="ml-2 text-2xl font-bold text-gray-900">FoodConnect</h1> */}
+            <h1 className="text-2xl font-bold text-gray-900">Find Food</h1>
           </div>
           <div className="flex items-center space-x-4">
-            {/* <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
-              <span className="sr-only">Notifications</span>
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </button> */}
             <Link to="/recipient/profile" className="flex items-center">
-              {/* <img className="h-8 w-8 rounded-full" src="/images/profile.jpg" alt={user?.name || "User"} /> */}
-              {/* <span className="ml-2 text-gray-700">{user?.name || "John Doe"}</span> */}
+              <span className="text-gray-700">My Profile</span>
             </Link>
           </div>
         </header>
@@ -123,22 +172,119 @@ const RecipientDashboard = () => {
         </nav>
 
         <div className="mb-6 flex flex-wrap items-center justify-between">
-          <div className="flex space-x-2 mb-2 sm:mb-0">
-            <button className="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              <svg className="h-4 w-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-              </svg>
-              Filter
-            </button>
-            <button className="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-              <svg className="h-4 w-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex flex-wrap gap-2 mb-2 sm:mb-0">
+            <div className="relative">
+              <button 
+                className="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                onClick={() => document.getElementById('filter-dropdown')?.classList.toggle('hidden')}
+              >
+                <svg className="h-4 w-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                Filter {filterTags.length > 0 && `(${filterTags.length})`}
+              </button>
+              <div 
+                id="filter-dropdown" 
+                className="hidden absolute left-0 mt-2 p-3 bg-white shadow-lg rounded-md border border-gray-200 z-10 w-64"
+              >
+                <div className="mb-2 font-medium text-gray-700">Filter by Tags</div>
+                <div className="max-h-48 overflow-y-auto">
+                  {allTags.map(tag => (
+                    <div key={tag} className="flex items-center mb-2">
+                      <input
+                        type="checkbox"
+                        id={`tag-${tag}`}
+                        checked={filterTags.includes(tag)}
+                        onChange={() => handleFilter(tag)}
+                        className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      />
+                      <label htmlFor={`tag-${tag}`} className="ml-2 text-sm text-gray-700">
+                        {tag}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <button
+                    onClick={() => setFilterTags([])}
+                    className="text-sm text-gray-600 hover:text-gray-900"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => handleSort('distance')}
+              className={`flex items-center px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${
+                sortOption === 'distance' ? 'bg-green-50 text-green-700 border-green-300' : 'bg-white text-gray-700 border-gray-300'
+              }`}
+            >
+              <svg className="h-4 w-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              {/* Within {distance} */}
+              Distance
             </button>
             
-            {/* View mode toggle */}
+            <button
+              onClick={() => handleSort('availability')}
+              className={`flex items-center px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${
+                sortOption === 'availability' ? 'bg-green-50 text-green-700 border-green-300' : 'bg-white text-gray-700 border-gray-300'
+              }`}
+            >
+              <svg className="h-4 w-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Availability
+            </button>
+            
+            <div className="relative">
+              <button 
+                className="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                onClick={() => document.getElementById('distance-dropdown')?.classList.toggle('hidden')}
+              >
+                <svg className="h-4 w-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                </svg>
+                {maxDistance} miles
+              </button>
+              <div 
+                id="distance-dropdown" 
+                className="hidden absolute left-0 mt-2 p-3 bg-white shadow-lg rounded-md border border-gray-200 z-10 w-48"
+              >
+                <div className="mb-2 font-medium text-gray-700">Max Distance</div>
+                <div className="space-y-2">
+                  {[1, 2, 5, 10, 25].map(distance => (
+                    <button
+                      key={distance}
+                      onClick={() => {
+                        handleDistanceChange(distance);
+                        document.getElementById('distance-dropdown')?.classList.add('hidden');
+                      }}
+                      className={`block w-full text-left px-2 py-1 rounded text-sm ${
+                        maxDistance === distance ? 'bg-green-50 text-green-700' : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      {distance} miles
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {(filterTags.length > 0 || maxDistance !== 5 || sortOption !== 'distance') && (
+              <button
+                onClick={handleResetFilters}
+                className="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <svg className="h-4 w-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Reset
+              </button>
+            )}
+            
             <div className="bg-white border border-gray-300 rounded-md shadow-sm">
               <div className="flex divide-x divide-gray-300">
                 <button
@@ -169,7 +315,7 @@ const RecipientDashboard = () => {
             </div>
           </div>
           <div className="text-gray-500 text-sm">
-            Showing {foodListings.length} results
+            Showing {displayedListings.length} results
           </div>
         </div>
 
@@ -180,16 +326,35 @@ const RecipientDashboard = () => {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
           </div>
+        ) : displayedListings.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-md p-6 text-center">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 className="mt-2 text-lg font-medium text-gray-900">No results found</h3>
+            <p className="mt-1 text-gray-500">Try adjusting your filters or increasing the distance.</p>
+            <button
+              onClick={handleResetFilters}
+              className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
+            >
+              Reset Filters
+            </button>
+          </div>
         ) : viewMode === 'map' ? (
-          <div className="rounded-lg overflow-hidden shadow-md mb-6 h-[600px]">
-            <MapView />
+          <div className="rounded-lg overflow-hidden shadow-md mb-6 h-96">
+            <MapView locations={displayedListings.map(listing => ({
+              id: listing.id,
+              title: listing.title,
+              lat: listing.coordinates.lat,
+              lng: listing.coordinates.lng
+            }))} />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {foodListings.map((listing) => (
+            {displayedListings.map((listing) => (
               <div 
                 key={listing.id} 
-                className="bg-white rounded-lg shadow-md overflow-hidden"
+                className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-200 hover:shadow-lg hover:translate-y-1"
               >
                 <div className="h-48 w-full bg-gray-200">
                   <img 
@@ -223,9 +388,17 @@ const RecipientDashboard = () => {
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {listing.tags.map((tag, index) => (
-                      <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      <button 
+                        key={index} 
+                        onClick={() => handleFilter(tag)}
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          filterTags.includes(tag) 
+                            ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                        }`}
+                      >
                         {tag}
-                      </span>
+                      </button>
                     ))}
                   </div>
                   <div className="mt-4 flex space-x-2">
@@ -258,4 +431,4 @@ const RecipientDashboard = () => {
   );
 };
 
-export default RecipientDashboard; 
+export default RecipientDashboard;
