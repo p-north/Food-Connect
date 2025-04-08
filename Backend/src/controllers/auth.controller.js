@@ -140,8 +140,17 @@ async function handleLogin(req, res) {
       userID,
     ]);
 
+    console.log({
+      message: "Logged in successfully",
+      name: user.rows[0].name,
+      email: user.rows[0].email,
+      accType: user.rows[0].type_of_account,
+    })
     res.status(200).json({
       message: "Logged in successfully",
+      name: user.rows[0].name,
+      email: user.rows[0].email,
+      userID: user.rows[0].id,
       accType: user.rows[0].type_of_account,
     });
   } catch (error) {

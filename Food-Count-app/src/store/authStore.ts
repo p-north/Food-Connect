@@ -60,8 +60,9 @@ const useAuthStore = create<AuthState>((set, get) => ({
       );
 
       const userData: User = {
-        ...response.data,
-        accountType: response.data.accType || 'user', // Default fallback
+        email: response.data.email,
+        name: response.data.name,
+        accountType: response.data.accType || 'user',
       };
 
       // Store in secure storage (e.g., avoid localStorage for sensitive data)

@@ -10,12 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-avatar": "^1.1.3",
     "@react-google-maps/api": "^2.20.6",
     "@tailwindcss/vite": "^4.0.4",
     "@types/mapbox-gl": "^2.7.10",
     "@types/react-map-gl": "^6.1.7",
     "axios": "^1.8.4",
-    "framer-motion": "^12.6.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.6.2",
     "lucide-react": "^0.487.0",
     "mapbox-gl": "^2.15.0",
     "react": "^19.0.0",
@@ -24,7 +27,9 @@
     "react-router-dom": "^7.4.0",
     "react-transition-group": "^4.4.5",
     "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^3.2.0",
     "tailwindcss": "^4.0.4",
+    "tw-animate-css": "^1.2.5",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

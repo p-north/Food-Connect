@@ -55,12 +55,12 @@ const Navigation = () => {
             <div className="relative flex items-center gap-2">
               <div onClick={toggleDropdown} className="cursor-pointer flex items-center">
                 <img 
-                  src={user?.avatarUrl || "https://ui-avatars.com/api/?name=User&background=random"} 
+                  src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.name}&background=0D8ABC&color=fff`} 
                   alt={user?.name || "User"} 
                   className="w-8 h-8 rounded-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = "https://ui-avatars.com/api/?name=User&background=random";
+                    target.src =  `https://ui-avatars.com/api/?name=${user?.name}&background=grey`;
                   }}
                 />
                 <ChevronDown className="w-4 h-4 text-gray-500 ml-1" />
