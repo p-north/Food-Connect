@@ -124,13 +124,7 @@ const RecipientReservations = () => {
   return (
     <div className="min-h-screen bg-green-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <header className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
-          <div className="flex items-center">
-            <svg className="h-8 w-8 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V8h2v4z"/>
-            </svg>
-            <h1 className="ml-2 text-2xl font-bold text-gray-900">FoodConnect</h1>
-          </div>
+        <header className="flex justify-between items-center mb-6 border-gray-200 pb-4">
           <div className="flex items-center space-x-4">
             <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
               <span className="sr-only">Notifications</span>
