@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS food_posts (
     longitude DECIMAL(9,6),
     availability_status VARCHAR(50) NOT NULL,
     expiration_date TIMESTAMP NOT NULL,
+    tags TEXT[], -- Added tags field
+    available_for VARCHAR(50), -- Added available_for field
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );`;
 
@@ -32,6 +34,8 @@ const FoodPost = {
      * @param location
      * @param availabilityStatus
      * @param expirationDate
+     * @param tags
+     * @param availableFor
      * @returns {Promise<*>}
      */
     async create({
@@ -44,6 +48,8 @@ const FoodPost = {
         location,
         availabilityStatus,
         expirationDate,
+        tags, // Added tags parameter
+        availableFor, // Added availableFor parameter
                  }) {
         try {
             // geocode api key
@@ -68,9 +74,11 @@ const FoodPost = {
                     longitude,
                     availability_status,
                     expiration_date,
+                    tags, -- Added tags field
+                    available_for, -- Added available_for field
                     created_at
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 RETURNING *;
             `, [
                 userId,
@@ -84,6 +92,8 @@ const FoodPost = {
                 longitude,
                 availabilityStatus,
                 expirationDate,
+                tags, // Added tags value
+                availableFor, // Added availableFor value
                 createdAt
             ]);
             return toCamelCase(rows[0]);
@@ -138,6 +148,8 @@ const FoodPost = {
      * @param location
      * @param availabilityStatus
      * @param expirationDate
+     * @param tags
+     * @param availableFor
      * @returns {Promise<*>}
      */
     async updateById(id, {
@@ -149,6 +161,8 @@ const FoodPost = {
         location,
         availabilityStatus,
         expirationDate,
+        tags, // Added tags parameter
+        availableFor, // Added availableFor parameter
     }) {
         try {
             const GEOCODE_API_KEY = process.env.GEOCODE_API_KEY;
@@ -169,10 +183,12 @@ const FoodPost = {
                     latitude = $7,
                     longitude = $8,
                     availability_status = $9,
-                    expiration_date = $10
-                WHERE id = $11
+                    expiration_date = $10,
+                    tags = $11, -- Added tags field
+                    available_for = $12 -- Added available_for field
+                WHERE id = $13
                 RETURNING *;
-            `, [title, quantity, description, imageUrl, dietaryRestrictions, location, latitude, longitude, availabilityStatus, expirationDate, id]);
+            `, [title, quantity, description, imageUrl, dietaryRestrictions, location, latitude, longitude, availabilityStatus, expirationDate, tags, availableFor, id]);
             return toCamelCase(rows[0]);
         }
         catch (error) {

@@ -229,8 +229,9 @@ foodPost model:
     location: string,
     availabilityStatus: string,
     expirationDate: date,
+    tags: [string], -- Added tags field
+    availableFor: string, -- Added availableFor field
 }
-
 
 /api/food-posts/
 method: GET
@@ -273,6 +274,8 @@ body:
     "location": "1234 Main St",
     "availabilityStatus": "Available",
     "expirationDate": "2021-12-31",
+    "tags": ["tag1", "tag2"], -- Added tags field
+    "availableFor": "3 hours" -- Added availableFor field
 }
 response:
 {
@@ -294,6 +297,8 @@ body:
     "location": "1234 Main St",
     "availabilityStatus": "Available",
     "expirationDate": "2021-12-31",
+    "tags": ["tag1", "tag2"], -- Added tags field
+    "availableFor": "3 hours" -- Added availableFor field
 }
 response:
 {
