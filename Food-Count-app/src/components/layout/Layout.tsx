@@ -37,7 +37,7 @@ const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {isAuthenticated ? <Navigation /> : <SimpleNav />}
-      <main className="flex-grow">
+      <main className="flex-grow pt-18">
         <Outlet />
       </main>
       

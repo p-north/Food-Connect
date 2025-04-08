@@ -149,21 +149,24 @@ const MapView: React.FC = () => {
 
   // Get user's location
   useEffect(() => {
+    console.log("Attempting to get user location...");
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log("Location retrieved:", position.coords);
           setUserLocation({
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
           });
         },
         (error) => {
-          setLocationError("Unable to retrieve your location");
           console.error("Error getting location:", error);
+          setLocationError("Unable to retrieve your location.");
         }
       );
     } else {
-      setLocationError("Geolocation is not supported by your browser");
+      console.warn("Geolocation is not supported by your browser.");
+      setLocationError("Geolocation is not supported by your browser.");
     }
   }, []);
 
@@ -191,7 +194,7 @@ const MapView: React.FC = () => {
             title: post.title,
             location: post.location,
             description: post.description,
-            imageUrl: post.imageUrl?.[0] || '', // Use first image if available
+            imageUrl: post.imageUrl || '', // Use first image if available
             coordinates: {
               lat: parseFloat(post.latitude),
               lng: parseFloat(post.longitude)
