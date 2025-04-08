@@ -25,7 +25,7 @@ const Login = () => {
       if (user.accountType === 'donor') {
         navigate('/donor/profile');
       } else if (user.accountType === 'recipient') {
-        navigate('/recipient/profile'); // make sure you add this route
+        navigate('/recipient/dashboard'); // make sure you add this route
       }
     }
   }, [isAuthenticated, user, navigate]);  
