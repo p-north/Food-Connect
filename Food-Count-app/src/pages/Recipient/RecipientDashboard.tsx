@@ -41,7 +41,7 @@ const RecipientDashboard = () => {
         distance: "0.8 miles",
         availableFor: "2 hours",
         tags: ["Croissants", "Baguettes", "Danish Pastries"],
-        image: "/images/bread.jpg",
+        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKuhbn6kSNFxzMJQ3QG61EG1qVw4tPnJ84Pg&s",
         coordinates: {
           lat: 40.7128,
           lng: -74.006,
@@ -55,7 +55,7 @@ const RecipientDashboard = () => {
         distance: "1.2 miles",
         availableFor: "3 hours",
         tags: ["Tomatoes", "Lettuce", "Carrots", "Apples"],
-        image: "/images/produce.jpg",
+        image: "https://assets.farmjournal.com/dims4/default/c9abbcb/2147483647/strip/true/crop/840x561+0+20/resize/800x534!/quality/90/?url=https%3A%2F%2Ffj-corp-pub.s3.us-east-2.amazonaws.com%2Fs3fs-public%2F2022-12%2FReducing-food-waste2.png",
         coordinates: {
           lat: 40.7312,
           lng: -73.989,
@@ -69,7 +69,7 @@ const RecipientDashboard = () => {
         distance: "2.4 miles",
         availableFor: "4 hours",
         tags: ["Soups", "Sandwiches", "Salads"],
-        image: "/images/meals.jpg",
+        image: "https://thecinnamonmom.com/wp-content/uploads/2018/12/34E4A223-BD11-4879-9B59-4D7CE3801464-600x450.jpeg",
         coordinates: {
           lat: 40.7415,
           lng: -73.9987,
