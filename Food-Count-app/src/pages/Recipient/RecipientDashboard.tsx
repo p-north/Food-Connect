@@ -148,9 +148,6 @@ const RecipientDashboard = () => {
     <div className="min-h-screen bg-green-50 py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <header className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
-          <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-900">Find Food</h1>
-          </div>
           <div className="flex items-center space-x-4">
             <Link to="/recipient/profile" className="flex items-center">
               <span className="text-gray-700">My Profile</span>
@@ -341,7 +338,7 @@ const RecipientDashboard = () => {
             </button>
           </div>
         ) : viewMode === 'map' ? (
-          <div className="rounded-lg overflow-hidden shadow-md mb-6 h-96">
+          <div className="rounded-lg overflow-hidden shadow-md mb-6 h-120">
             <MapView locations={displayedListings.map(listing => ({
               id: listing.id,
               title: listing.title,
