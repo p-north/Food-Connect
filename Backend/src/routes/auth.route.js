@@ -5,6 +5,7 @@ import {
   handleLogin,
   handleSignUp,
   checkAuth,
+  refreshToken,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 
@@ -16,6 +17,7 @@ router.post("/verify-email", verifyEmail);
 router.post("/login", handleLogin);
 router.post("/logout", handleLogout);
 router.get("/check-auth", verifyToken, checkAuth);
+router.post("/refresh-token", verifyToken, refreshToken);
 
 // optional: forgot password, reset password
 // router.post("forgot-password", forgotPassword);

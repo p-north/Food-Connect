@@ -1,16 +1,18 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { BASE_URL } from '../config/api';
 
-// with every request, also place cookies in header
+// Configure axios to include credentials and set base URL
+axios.defaults.baseURL = BASE_URL;
 axios.defaults.withCredentials = true;
 
-// Define the interface for our store state
+// Interfaces for type safety
 interface User {
   id?: string;
   email: string;
   name: string;
   accountType: string;
+  avatarUrl?: string;
 }
 
 interface AuthState {
@@ -21,153 +23,284 @@ interface AuthState {
   error: string | null;
   verificationPending: boolean;
   emailToVerify: string | null;
-  
+
   // Actions
   login: (email: string, password: string) => Promise<void>;
-  signup: (userData: any) => Promise<void>;
+  signup: (userData: { email: string; password: string; firstName: string; accountType: string }) => Promise<void>;
   verifyEmail: (code: string) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   clearError: () => void;
 }
 
-// Create the store
+// Create a signal for request cancellation
+let abortController: AbortController | null = null;
+
 const useAuthStore = create<AuthState>((set, get) => ({
-  user: null,
-  isAuthenticated: false,
+  user: JSON.parse(localStorage.getItem('user') || 'null') as User | null,
+  isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
   isLoading: false,
-  error: null,
   isCheckingAuth: true,
+  error: null,
   verificationPending: false,
   emailToVerify: null,
-  
-  // Login action
+
+  clearError: () => set({ error: null, isCheckingAuth: false }),
+
   login: async (email: string, password: string) => {
     try {
-      set({ isLoading: true, error: null });
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        email,
-        password
-      }, { withCredentials: true });
-      
-      console.log(response.data);
-      set({ 
-        user: {
-          ...response.data,
-          accountType: response.data.accType
-        },
+      abortController?.abort(); // Cancel any previous request
+      abortController = new AbortController();
+      set({ isLoading: true, error: null, isCheckingAuth: true });
+
+      const response = await axios.post(
+        '/auth/login',
+        { email, password },
+        { signal: abortController.signal }
+      );
+
+      const userData: User = {
+        ...response.data,
+        accountType: response.data.accType || 'user', // Default fallback
+      };
+
+      // Store in secure storage (e.g., avoid localStorage for sensitive data)
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('isAuthenticated', 'true');
+
+      set({
+        user: userData,
         isAuthenticated: true,
-        isLoading: false
+        isLoading: false,
+        isCheckingAuth: false,
       });
     } catch (err: any) {
+      const error = err as AxiosError;
       let errorMessage = 'Login failed';
-      if (err.response?.status === 401) {
+      if (error.response?.status === 401) {
         errorMessage = 'Invalid email or password';
-      } else if (err.response?.status === 400) {
+      } else if (error.response?.status === 400) {
         errorMessage = 'Please provide email and password';
-      } else if (!err.response) {
+      } else if (error.code === 'ERR_CANCELED') {
+        errorMessage = 'Request canceled';
+      } else if (!error.response) {
         errorMessage = 'Server not responding';
       }
-      set({ error: errorMessage, isLoading: false });
+      set({ error: errorMessage, isLoading: false, isCheckingAuth: false });
       throw err;
+    } finally {
+      abortController = null;
     }
   },
-  
-  // Signup action
-  signup: async (userData) => {
+
+  signup: async (userData: { email: string; password: string; firstName: string; accountType: string }) => {
     try {
+      abortController?.abort();
+      abortController = new AbortController();
       set({ isLoading: true, error: null });
-      const response = await axios.post(`${BASE_URL}/auth/signup`, {
-        email: userData.email,
-        password: userData.password,
-        name: userData.firstName,
-        accountType: userData.accountType
-      }, { withCredentials: true });
-      
-      set({ 
+
+      const response = await axios.post(
+        '/auth/signup',
+        {
+          email: userData.email,
+          password: userData.password,
+          name: userData.firstName,
+          accountType: userData.accountType,
+        },
+        { signal: abortController.signal }
+      );
+
+      set({
         verificationPending: true,
         emailToVerify: userData.email,
-        isLoading: false
+        isLoading: false,
       });
     } catch (err: any) {
+      const error = err as AxiosError;
       let errorMessage = 'Signup failed';
-      if (err.response?.status === 409) {
+      if (error.response?.status === 409) {
         errorMessage = 'Email already in use';
-      } else if (!err.response) {
+      } else if (error.code === 'ERR_CANCELED') {
+        errorMessage = 'Request canceled';
+      } else if (!error.response) {
         errorMessage = 'Server not responding';
       }
       set({ error: errorMessage, isLoading: false });
       throw err;
+    } finally {
+      abortController = null;
     }
   },
-  
-  // Verify email action
-  verifyEmail: async (code) => {
+
+  verifyEmail: async (code: string) => {
     try {
+      abortController?.abort();
+      abortController = new AbortController();
       set({ isLoading: true, error: null });
-      await axios.post(`${BASE_URL}/auth/verify-email`, {
-        code
-      }, { withCredentials: true });
-      
-      set({ 
+
+      await axios.post(
+        '/auth/verify-email',
+        { code },
+        { signal: abortController.signal }
+      );
+
+      set({
         verificationPending: false,
         emailToVerify: null,
-        isLoading: false
+        isLoading: false,
       });
     } catch (err: any) {
-      set({ 
+      const error = err as AxiosError;
+      set({
         error: 'Verification failed. Please check your code and try again.',
-        isLoading: false
+        isLoading: false,
       });
       throw err;
+    } finally {
+      abortController = null;
     }
   },
-  
-  // Logout action
+
   logout: async () => {
     try {
-      set({ isLoading: true });
-      await axios.post(`${BASE_URL}/auth/logout`, {}, { withCredentials: true });
-      set({ 
+      abortController?.abort();
+      abortController = new AbortController();
+      set({ isLoading: true, isCheckingAuth: true });
+
+      // Clear local storage first (client-side)
+      localStorage.removeItem('user');
+      localStorage.removeItem('isAuthenticated');
+
+      // Make logout request
+      await axios.post(
+        '/auth/logout',
+        {},
+        {
+          signal: abortController.signal,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+
+      // Clear auth state
+      set({
         user: null,
         isAuthenticated: false,
-        isLoading: false
+        isLoading: false,
+        isCheckingAuth: false,
+        error: null,
+        verificationPending: false,
+        emailToVerify: null,
       });
-    } catch (err) {
-      set({ isLoading: false });
-      // Even if logout fails on server, clear user data from client
-      set({ user: null, isAuthenticated: false });
+    } catch (err: any) {
+      const error = err as AxiosError;
+      console.error('Error during logout:', error);
+      // Ensure local state is cleared even if server logout fails
+      localStorage.removeItem('user');
+      localStorage.removeItem('isAuthenticated');
+      set({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        isCheckingAuth: false,
+        error: error.message || 'Logout failed',
+        verificationPending: false,
+        emailToVerify: null,
+      });
+    } finally {
+      abortController = null;
     }
   },
-  
-  // Check authentication status
+
   checkAuth: async () => {
     try {
-      set({ isLoading: true, isCheckingAuth: true });
-      const response = await axios.get(`${BASE_URL}/auth/check-auth`, { 
-        withCredentials: true 
+      abortController?.abort();
+      abortController = new AbortController();
+      set({ isCheckingAuth: true });
+
+      const storedUser = localStorage.getItem('user');
+      const storedAuth = localStorage.getItem('isAuthenticated');
+
+      if (storedUser && storedAuth === 'true') {
+        set({
+          user: JSON.parse(storedUser) as User,
+          isAuthenticated: true,
+          isCheckingAuth: false,
+          error: null,
+        });
+        return;
+      }
+
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout')), 5000);
       });
 
-      console.log(response.data);
-      
-      set({ 
-        user: response.data.user,
-        isAuthenticated: true,
-        isLoading: false,
-        isCheckingAuth: false,
+      const authCheckPromise = axios.get<{ user: User | null }>('/check-auth', {
+        signal: abortController.signal,
       });
-    } catch (err) {
-      set({ 
+
+      const response = (await Promise.race([authCheckPromise, timeoutPromise])) as { data: { user: User | null } };
+
+      if (response.data.user) {
+        const userData = response.data.user;
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('isAuthenticated', 'true');
+
+        set({
+          user: userData,
+          isAuthenticated: true,
+          isCheckingAuth: false,
+          error: null,
+        });
+      } else {
+        localStorage.removeItem('user');
+        localStorage.removeItem('isAuthenticated');
+
+        set({
+          user: null,
+          isAuthenticated: false,
+          isCheckingAuth: false,
+          error: null,
+        });
+      }
+    } catch (error: any) {
+      const err = error as Error | AxiosError;
+      console.error('Auth check failed:', err);
+      localStorage.removeItem('user');
+      localStorage.removeItem('isAuthenticated');
+
+      set({
         user: null,
         isAuthenticated: false,
-        isLoading: false,
         isCheckingAuth: false,
+        error: err.message === 'Request timeout' ? 'Auth check timed out' : null,
       });
+    } finally {
+      abortController = null;
     }
   },
-  
-  // Clear error
-  clearError: () => set({ error: null, isCheckingAuth: false })
 }));
+
+// Axios interceptor for token refresh
+axios.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        await axios.post('/auth/refresh-token', {}, { withCredentials: true });
+        return axios(originalRequest);
+      } catch (refreshError) {
+        // Logout on refresh failure
+        useAuthStore.getState().logout();
+        return Promise.reject(refreshError);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default useAuthStore;

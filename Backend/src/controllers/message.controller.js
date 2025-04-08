@@ -39,7 +39,46 @@ const getMessagesByUserId = async (req, res) => {
     }
 }
 
+// get messages from since login
+const getMessagesSinceLogin = async (req, res) => {
+    try {
+        const senderId = req.userID;
+
+        const messages = await Message.findMessagesSinceLogin(senderId);
+
+        res.status(200).json({
+            success: true,
+            message: "Messages retrieved successfully",
+            data: messages
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+}
+
+const getUnreadMessages = async (req, res) => {
+    try {
+        const receiverId = req.userID;
+        const messages = await Message.findUnreadMessages(receiverId);
+        res.status(200).json({
+            success: true,
+            message: "Messages retrieved successfully",
+            data: messages
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+    }
+}
+
 export {
     createMessage,
-    getMessagesByUserId
+    getMessagesByUserId,
+    getMessagesSinceLogin,
+    getUnreadMessages
 }

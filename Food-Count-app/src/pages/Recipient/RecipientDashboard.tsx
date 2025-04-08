@@ -198,7 +198,7 @@ const RecipientDashboard = () => {
                     className="h-full w-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = 'https://via.placeholder.com/400x200?text=Food+Image';
+                      target.src = 'https://placehold.co/400x200?text=Food+Image';
                     }}
                   />
                 </div>

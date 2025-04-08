@@ -9,17 +9,19 @@ const router = express.Router();
 // get basic user info
 router.get("/:id", verifyToken, async (req, res) => {
     const {id} = req.params;
+    console.log("id", id);
 
     try {
         const userQuery = await client.query(
             'SELECT id, name, type_of_account FROM users WHERE id = $1',
             [id]
         );
-        const data = toCamelCase(userQuery.rows[0]);
-
+        
         if (userQuery.rows.length === 0) {
             return res.status(404).json({success: false, message: "User not found"});
         }
+        const data = toCamelCase(userQuery.rows[0]);
+       
 
         res.status(200).json({success: true, data});
     } catch (err) {
