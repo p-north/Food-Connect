@@ -23,13 +23,11 @@ FoodConnect is a web platform that bridges the gap between food donors and recip
 ### Backend
 - **Express.js**
 - **PostgreSQL**
-- **GraphQL**
 - **Socket.io**
   
 ### Cloud
 - **AWS RDS**
 - **AWS S3**
-- **AWS EC2**
 
 ## 🎯 Features
 
