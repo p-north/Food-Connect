@@ -103,5 +103,6 @@ Ensure you have the following installed on your machine:
    npm run dev
    ```
 
-## 📌 Links
-- 🎨 **Figma Design**: [View on Figma](https://www.figma.com/design/lslDNDAiHzhVulIRzpf3e9/Untitled?node-id=0-1&t=YOmYcakXcrBR3bdA-1)
+##  Links
+- 📌 **Figma Design**: [View on Figma](https://www.figma.com/design/lslDNDAiHzhVulIRzpf3e9/Untitled?node-id=0-1&t=YOmYcakXcrBR3bdA-1)
+- 📌 **Overview**: [View Sketch](https://excalidraw.com/#json=r_GFEVVySkSO_UKvkVFuv,dhcnzzEThm5pd4gVqQXf0w)
