@@ -7,7 +7,7 @@ const createFoodPost = async (req, res) => {
         req.body.userId = req.userID;
         // generate signed image urls from s3 
         const {urls} = await handleImageUpload(req, res);
-        console.log(urls);
+        console.log("AWS Urls", urls);
         
         
         // add the signed urls to body
