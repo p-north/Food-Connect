@@ -166,9 +166,9 @@ const RecipientDashboard = () => {
     );
   };
 
-  const handleDistanceChange = (distance: number) => {
-    setMaxDistance(distance);
-  };
+  // const handleDistanceChange = (distance: number) => {
+  //   setMaxDistance(distance);
+  // };
 
   const handleResetFilters = () => {
     setFilterTags([]);
