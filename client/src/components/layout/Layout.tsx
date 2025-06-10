@@ -57,29 +57,29 @@ const Layout = () => {
             <div>
               <h3 className="font-medium mb-4">Quick Links</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/#how-it-works" className="hover:text-green-500">How It Works</Link></li>
-                <li><Link to="/#partners" className="hover:text-green-500">Partners</Link></li>
-                <li><Link to="/#impact" className="hover:text-green-500">Impact</Link></li>
-                <li><Link to="/#testimonials" className="hover:text-green-500">Testimonials</Link></li>
+                <li className="hover:text-green-500">How It Works</li>
+                <li className="hover:text-green-500">Partners</li>
+                <li className="hover:text-green-500">Impact</li>
+                <li className="hover:text-green-500">Testimonials</li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-medium mb-4">Resources</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/blog" className="hover:text-green-500">Blog</Link></li>
-                <li><Link to="/faq" className="hover:text-green-500">FAQ</Link></li>
-                <li><Link to="/support" className="hover:text-green-500">Support</Link></li>
-                <li><Link to="/contact" className="hover:text-green-500">Contact</Link></li>
+                <li className="hover:text-green-500">Blog</li>
+                <li className="hover:text-green-500">FAQ</li>
+                <li className="hover:text-green-500">Support</li>
+                <li className="hover:text-green-500">Contact</li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-medium mb-4">Legal</h3>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/privacy" className="hover:text-green-500">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="hover:text-green-500">Terms of Service</Link></li>
-                <li><Link to="/cookies" className="hover:text-green-500">Cookie Policy</Link></li>
+                <li className="hover:text-green-500">Privacy Policy</li>
+                <li className="hover:text-green-500">Terms of Service</li>
+                <li className="hover:text-green-500">Cookie Policy</li>
               </ul>
             </div>
           </div>
