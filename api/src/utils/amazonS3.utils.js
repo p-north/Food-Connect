@@ -23,7 +23,7 @@ async function handleImageUpload(req) {
 
   try {
     // array to store all image links
-    const imageUrls = [];
+    const imageKeys = [];
     // loop through each file
     for (const file of files) {
       // add unique name for each
@@ -45,23 +45,15 @@ async function handleImageUpload(req) {
       // save to url array
       console.log("S3 Response:", s3Response.Key);
 
-      // Setup signed url params
-      const signedParams = {
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: s3Response.Key,
-      };
+      // Store the S3 key 
+      imageKeys.push(s3Response.Key);
 
-      // get the signed url
-      const signedURL = await s3.getSignedUrlPromise("getObject", signedParams);
-
-      // push to the urls array
-      imageUrls.push(signedURL);
-
+    
     }
     return {
       success: true,
       message: "Images uploaded sucessfully",
-      urls: imageUrls,
+      keys: imageKeys,
     };
   } catch (error) {
     console.error("Error uploading images:", error);
@@ -69,20 +61,36 @@ async function handleImageUpload(req) {
   }
 }
 
-async function handleImageDeletion(images) {
+// New function to generate signed URLs on-demand
+async function generateSignedUrls(imageKeys, expiresIn = 3600) {
   try {
-    // function to delete all image objects
-    for (const image of images) {
-      // get the key after dotcom
-      const imageURL = image.split(".com/")[1];
-      // get only the path
-      const imageKey = imageURL.split("?")[0];
-
-      console.log("imageKey", imageKey);
-
+    const signedUrls = [];
+    
+    for (const key of imageKeys) {
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: imageKey,
+        Key: key,
+        Expires: expiresIn, // Default 1 hour
+      };
+      
+      const signedURL = await s3.getSignedUrlPromise("getObject", params);
+      signedUrls.push(signedURL);
+    }
+    
+    return { success: true, urls: signedUrls };
+  } catch (error) {
+    console.error("Error generating signed URLs:", error);
+    return { success: false, message: "Error generating signed URLs" };
+  }
+}
+
+async function handleImageDeletion(imageKeys) {
+  try {
+     // function to delete all image objects using keys directly
+    for (const imageKey of imageKeys) {
+      const params = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: imageKey, // Use key directly, no URL parsing needed
       };
 
       // delete the object from s3
@@ -98,4 +106,4 @@ async function handleImageDeletion(images) {
 // optional
 async function handleImageUpdate(req) {}
 
-export { handleImageUpload, handleImageDeletion };
+export { handleImageUpload, generateSignedUrls, handleImageDeletion };
