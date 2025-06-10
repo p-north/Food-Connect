@@ -43,7 +43,7 @@ const RecipientDashboard = () => {
             id: 4,
             title: "Fresh Bread and Pastries",
             provider: "City Bakery",
-            location: "123 Granville St, Vancouver, BC",
+            location: "123 Granville St,Vancouver, BC",
             distance: "0.8 miles",
             availableFor: "2 hours",
             tags: ["Croissants", "Baguettes", "Danish Pastries"],
@@ -478,7 +478,7 @@ const RecipientDashboard = () => {
                         <Navigation className="h-4 w-4 mr-2" />
                         Directions
                       </a>
-                      <button className="flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                      <button className="relative overflow-hidden w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
                         Reserve
                         <ArrowRight className="h-4 w-4 ml-2" />
                       </button>
