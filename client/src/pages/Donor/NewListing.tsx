@@ -1,36 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import DonorLayout from '../../components/layout/DonorLayout';
+import axios from 'axios';
 
 const NewListing = () => {
   const navigate = useNavigate();
   const [listing, setListing] = useState({
     title: '',
     organization: '',
+    quantity:'',
     location: '',
-    duration: 2,
+    available_for: '',
     tags: [],
     status: 'Available',
     description: '',
-    image: '',
+    dietary_restrictions: '',
     reservations: 0
   });
 
   const [tagInput, setTagInput] = useState('');
   const [previewImage, setPreviewImage] = useState(null);
+  const [fileInput, setFileInput] = useState(null);
 
-  // Get organization name from profile if available
-  useEffect(() => {
-    const savedProfile = localStorage.getItem('foodConnectProfile');
-    if (savedProfile) {
-      const profile = JSON.parse(savedProfile);
-      setListing(prev => ({
-        ...prev,
-        organization: profile.name || '',
-        location: profile.address || ''
-      }));
-    }
-  }, []);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,6 +39,7 @@ const NewListing = () => {
         ...prev,
         image: URL.createObjectURL(file)
       }));
+      setFileInput(file);
       setPreviewImage(URL.createObjectURL(file));
     }
   };
@@ -75,23 +68,46 @@ const NewListing = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Generate a unique ID
-    const newId = Date.now();
-    const newListing = {
-      ...listing,
-      id: newId
-    };
-    
-    // Get existing listings from localStorage or initialize empty array
-    const existingListings = JSON.parse(localStorage.getItem('foodConnectListings') || '[]');
-    
-    // Add new listing and save back to localStorage
-    const updatedListings = [...existingListings, newListing];
-    localStorage.setItem('foodConnectListings', JSON.stringify(updatedListings));
-    
+  
+
+    const API_URL = import.meta.env.VITE_API_URL;
+    const now = new Date();
+    // Get the available for date and then create a expiration date out of it
+    const expirationDate = new Date(now.getTime() + (listing.available_for * 60 * 60 * 1000));
+    const formData = new FormData();
+
+    // append text field to data
+    formData.append('title', listing.title);
+    formData.append('quantity', listing.quantity);
+    formData.append("description", listing.description);
+    formData.append('dietaryRestrictions', listing.dietary_restrictions);
+    formData.append('location', listing.location);
+    formData.append('availabilityStatus', listing.status);
+    formData.append('expirationDate', expirationDate.toISOString());
+    formData.append('available_for', listing.available_for);
+
+    formData.append('tags', JSON.stringify(listing.tags));
+
+    // append the file
+    if (fileInput){
+      formData.append('images', fileInput);
+    }
+
+    // Send the request to api from here
+    try {
+      const response = await axios.post(`${API_URL}/food-posts`, formData, {
+        headers:{
+          'Content-Type': 'multipart/form-data',
+
+        },
+      });
+      console.log('Upload success:', response.data);
+    } catch (error) {
+      console.error('Upload error:', error)
+    }
+
     // Navigate back to dashboard
     navigate('/donor/dashboard');
   };
@@ -163,19 +179,37 @@ const NewListing = () => {
                 </div>
 
                 <div className="transform transition-all duration-300 hover:scale-105 focus-within:scale-105">
-                  <label htmlFor="duration" className="block text-sm font-semibold text-gray-700 mb-3">
+                  <label htmlFor="available_for" className="block text-sm font-semibold text-gray-700 mb-3">
                     Available For (hours)
                   </label>
                   <input
                     type="number"
-                    id="duration"
-                    name="duration"
-                    value={listing.duration}
+                    id="available_for"
+                    name="available_for"
+                    value={listing.available_for}
                     onChange={handleChange}
                     min="1"
-                    max="24"
+                    max="72"
                     required
                     placeholder="Example: 36"
+                    className="text-black block w-full rounded-2xl border-2 border-gray-200 shadow-sm py-4 px-5 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:bg-white"
+                  />
+                </div>
+
+                <div className="transform transition-all duration-300 hover:scale-105 focus-within:scale-105">
+                  <label htmlFor="quantity" className="block text-sm font-semibold text-gray-700 mb-3">
+                    Quantity (number)
+                  </label>
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    value={listing.quantity}
+                    onChange={handleChange}
+                    min="1"
+                    max="100"
+                    required
+                    placeholder="Example: 2"
                     className="text-black block w-full rounded-2xl border-2 border-gray-200 shadow-sm py-4 px-5 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:bg-white"
                   />
                 </div>
@@ -222,23 +256,16 @@ const NewListing = () => {
                       {listing.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200 shadow-sm"
+                          className="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200 shadow-sm hover:scale-110 transition-all duration-300 transform "
                         >
                           {tag}
-                          <button
-                            type="button"
-                            onClick={() => removeTag(tag)}
-                            className="ml-2 h-5 w-5 rounded-full inline-flex items-center justify-center text-green-600 hover:text-green-900 focus:outline-none focus:text-green-900 transition-colors duration-300"
-                          >
-                            <span className="sr-only">Remove {tag}</span>
-                            <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                            <svg type='button' onClick={()=>removeTag(tag)} className="cursor-pointer scale-105 transition-all duration-300 transform ml-2 h-3 w-3" fill='currentColor' viewBox="0 0 20 20">
                               <path
                                 fillRule="evenodd"
                                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                 clipRule="evenodd"
                               />
                             </svg>
-                          </button>
                         </span>
                       ))}
                     </div>

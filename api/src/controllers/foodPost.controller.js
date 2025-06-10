@@ -11,6 +11,14 @@ const createFoodPost = async (req, res) => {
         
         // add the keys to body
         req.body.imageUrl = keys;
+
+        // parse tags
+        let tags = req.body.tags;
+        if(typeof tags === 'string'){
+            tags = JSON.parse(tags);
+            req.body.tags = tags;
+        }
+        // create foodpost
         const data = await FoodPost.create(req.body);
 
       
