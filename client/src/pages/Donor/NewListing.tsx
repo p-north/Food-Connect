@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import DonorLayout from '../../components/layout/DonorLayout';
 
 const NewListing = () => {
   const navigate = useNavigate();
@@ -96,27 +97,11 @@ const NewListing = () => {
   };
 
   return (
+    <DonorLayout>
+
+   
     <div className="bg-gray-50 min-h-screen">
-      {/* Header - matching dashboard */}
-      <header className="bg-white border-b border-gray-200 py-3">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center">
-                <svg className="h-7 w-7 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-9h2a1 1 0 0 1 0 2h-2v2a1 1 0 0 1-2 0v-2H9a1 1 0 0 1 0-2h2V9a1 1 0 0 1 2 0v2z" />
-                </svg>
-                <span className="ml-2 text-lg font-semibold text-gray-900">FoodConnect</span>
-              </Link>
-            </div>
-            <div className="flex items-center">
-              <Link to="/donor/dashboard" className="text-sm font-medium text-green-600 hover:text-green-800">
-                Back to Dashboard
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+  
 
       <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -324,6 +309,7 @@ const NewListing = () => {
         </div>
       </div>
     </div>
+    </DonorLayout>
   );
 };
 
