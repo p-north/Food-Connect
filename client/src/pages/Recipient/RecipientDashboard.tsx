@@ -47,7 +47,8 @@ const RecipientDashboard = () => {
             distance: "0.8 miles",
             availableFor: "2 hours",
             tags: ["Croissants", "Baguettes", "Danish Pastries"],
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKuhbn6kSNFxzMJQ3QG61EG1qVw4tPnJ84Pg&s",
+            image:
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKuhbn6kSNFxzMJQ3QG61EG1qVw4tPnJ84Pg&s",
             coordinates: {
               lat: 49.2827,
               lng: -123.1207,
@@ -61,7 +62,8 @@ const RecipientDashboard = () => {
             distance: "1.2 miles",
             availableFor: "3 hours",
             tags: ["Tomatoes", "Lettuce", "Carrots", "Apples"],
-            image: "https://assets.farmjournal.com/dims4/default/c9abbcb/2147483647/strip/true/crop/840x561+0+20/resize/800x534!/quality/90/?url=https%3A%2F%2Ffj-corp-pub.s3.us-east-2.amazonaws.com%2Fs3fs-public%2F2022-12%2FReducing-food-waste2.png",
+            image:
+              "https://assets.farmjournal.com/dims4/default/c9abbcb/2147483647/strip/true/crop/840x561+0+20/resize/800x534!/quality/90/?url=https%3A%2F%2Ffj-corp-pub.s3.us-east-2.amazonaws.com%2Fs3fs-public%2F2022-12%2FReducing-food-waste2.png",
             coordinates: {
               lat: 49.2796,
               lng: -123.1162,
@@ -75,7 +77,8 @@ const RecipientDashboard = () => {
             distance: "2.4 miles",
             availableFor: "4 hours",
             tags: ["Soups", "Sandwiches", "Salads"],
-            image: "https://thecinnamonmom.com/wp-content/uploads/2018/12/34E4A223-BD11-4879-9B59-4D7CE3801464-600x450.jpeg",
+            image:
+              "https://thecinnamonmom.com/wp-content/uploads/2018/12/34E4A223-BD11-4879-9B59-4D7CE3801464-600x450.jpeg",
             coordinates: {
               lat: 49.2734,
               lng: -123.1008,
@@ -84,7 +87,9 @@ const RecipientDashboard = () => {
         ];
 
         // Fetch data from the API
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/food-posts`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/food-posts`
+        );
         // console.log("API Response:", response.data);
         const apiListings = response.data.data.map((post: any) => ({
           id: post.id,
@@ -94,7 +99,8 @@ const RecipientDashboard = () => {
           // distance: post.distance || "N/A", // You may need to calculate this if not provided
           availableFor: post.availableFor || "N/A",
           tags: post.tags || [],
-          image: post.imageUrl || "https://placehold.co/400x200?text=Food+Image", // Map imageUrl to image
+          image:
+            post.imageUrl || "https://placehold.co/400x200?text=Food+Image", // Map imageUrl to image
           coordinates: {
             lat: post.latitude || 0,
             lng: post.longitude || 0,
@@ -123,7 +129,7 @@ const RecipientDashboard = () => {
         setIsLoading(false);
       }
     };
-
+    
     fetchFoodListings();
   }, []);
 
@@ -166,9 +172,38 @@ const RecipientDashboard = () => {
     );
   };
 
-  // const handleDistanceChange = (distance: number) => {
-  //   setMaxDistance(distance);
-  // };
+  const handleReservation = async (listingID: string | number) => {
+    // make the api call here once the button is pressed
+
+    const API_URL = import.meta.env.VITE_API_URL;
+
+    // input: userID for recipients passed as cookies token
+    // body{
+    //     food_post_id: 8,
+    //     donor_id: 9
+    // }
+    // output:
+    // {
+    //     sucess: true,
+    //     message: reservation created sucessfully,
+
+    // }
+
+    const data = {
+      food_post_id: listingID,
+    };
+
+    try {
+      const response = await axios.post(`${API_URL}/reservations`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Reservation response", response)
+    } catch (error) {
+      console.log("Error generating reservation", error);
+    }
+  };
 
   const handleResetFilters = () => {
     setFilterTags([]);
@@ -245,10 +280,11 @@ const RecipientDashboard = () => {
 
               <button
                 onClick={() => handleSort("availability")}
-                className={`flex items-center px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${sortOption === "availability"
-                  ? "bg-green-50 text-green-700 border-green-300"
-                  : "bg-white text-gray-700 border-gray-300"
-                  }`}
+                className={`flex items-center px-3 py-2 border rounded-md shadow-sm text-sm font-medium ${
+                  sortOption === "availability"
+                    ? "bg-green-50 text-green-700 border-green-300"
+                    : "bg-white text-gray-700 border-gray-300"
+                }`}
               >
                 <svg
                   className="h-4 w-4 mr-1 text-gray-500"
@@ -269,35 +305,36 @@ const RecipientDashboard = () => {
               {(filterTags.length > 0 ||
                 maxDistance !== 5 ||
                 sortOption !== "distance") && (
-                  <button
-                    onClick={handleResetFilters}
-                    className="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                <button
+                  onClick={handleResetFilters}
+                  className="flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <svg
+                    className="h-4 w-4 mr-1 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      className="h-4 w-4 mr-1 text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    Reset
-                  </button>
-                )}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Reset
+                </button>
+              )}
 
               <div className="bg-white border border-gray-300 rounded-md shadow-sm">
                 <div className="flex divide-x divide-gray-300">
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`px-3 py-2 text-sm font-medium ${viewMode === "list"
-                      ? "bg-green-50 text-green-700"
-                      : "text-gray-700 hover:bg-gray-50"
-                      }`}
+                    className={`px-3 py-2 text-sm font-medium ${
+                      viewMode === "list"
+                        ? "bg-green-50 text-green-700"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
                   >
                     <svg
                       className="h-4 w-4"
@@ -315,10 +352,11 @@ const RecipientDashboard = () => {
                   </button>
                   <button
                     onClick={() => setViewMode("map")}
-                    className={`px-3 py-2 text-sm font-medium ${viewMode === "map"
-                      ? "bg-green-50 text-green-700"
-                      : "text-gray-700 hover:bg-gray-50"
-                      }`}
+                    className={`px-3 py-2 text-sm font-medium ${
+                      viewMode === "map"
+                        ? "bg-green-50 text-green-700"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
                   >
                     <svg
                       className="h-4 w-4"
@@ -442,9 +480,7 @@ const RecipientDashboard = () => {
                     <div className="mt-4 space-y-3">
                       <div className="flex items-center text-sm text-gray-600">
                         <MapPin className="h-4 w-4 text-gray-400 mr-2" />
-                        <span>
-                          {listing.location}
-                        </span>
+                        <span>{listing.location}</span>
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <Clock className="h-4 w-4 text-gray-400 mr-2" />
@@ -457,10 +493,11 @@ const RecipientDashboard = () => {
                         <button
                           key={index}
                           onClick={() => handleFilter(tag)}
-                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-colors ${filterTags.includes(tag)
-                            ? "bg-green-50 text-green-700 hover:bg-green-100"
-                            : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-                            }`}
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                            filterTags.includes(tag)
+                              ? "bg-green-50 text-green-700 hover:bg-green-100"
+                              : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                          }`}
                         >
                           <Tag className="h-3 w-3" />
                           {tag}
@@ -478,7 +515,12 @@ const RecipientDashboard = () => {
                         <Navigation className="h-4 w-4 mr-2" />
                         Directions
                       </a>
-                      <button className="relative overflow-hidden w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
+                      <button
+                        onClick={() => {
+                          handleReservation(listing.id);
+                        }}
+                        className="relative overflow-hidden w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+                      >
                         Reserve
                         <ArrowRight className="h-4 w-4 ml-2" />
                       </button>

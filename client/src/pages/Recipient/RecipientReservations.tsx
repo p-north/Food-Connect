@@ -1,75 +1,227 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import RecipientLayout from '../../components/layout/RecipientLayout';
+import axios from 'axios';
 // import useAuthStore from '../../store/authStore';
 
 interface Reservation {
-  id: string;
-  title: string;
-  provider: string;
-  location: string;
-  pickupTime: string;
-  status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
-  items: string[];
-  image: string;
+  id: number;
+  recipient_id: number;
+  donor_id: number;
+  food_post_id: number;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  created_at: string;
+  updated_at: string;
+  // Populated data from related tables
+  food_post?: {
+    id: number;
+    user_id: number;
+    title: string;
+    quantity: number;
+    description: string;
+    image_url: string[];
+    dietary_restrictions: string;
+    location: string;
+    latitude: number;
+    longitude: number;
+    availability_status: string;
+    expiration_date: string;
+    tags: string[];
+    available_for: string;
+    created_at: string;
+  };
+  donor?: {
+    id: number;
+    email: string;
+    name: string;
+    type_of_account: string;
+    is_verified: boolean;
+    created_at: string;
+  };
 }
 
 const RecipientReservations = () => {
-  // const { user } = useAuthStore();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
 
-  // Mock data for demonstration
+  // Mock data following the database model
   useEffect(() => {
-    // In a real app, this would be an API call
-    const mockReservations: Reservation[] = [
-      {
-        id: '1',
-        title: 'Fresh Bread and Pastries',
-        provider: 'City Bakery',
-        location: '123 Main St',
-        pickupTime: 'Today, 5:00 PM - 6:00 PM',
-        status: 'confirmed',
-        items: ['2 Croissants', '1 Baguette', '3 Danish Pastries'],
-        image: '/images/bread.jpg'
-      },
-      {
-        id: '2',
-        title: 'Surplus Produce',
-        provider: 'Green Market',
-        location: '456 Oak Ave',
-        pickupTime: 'Tomorrow, 2:00 PM - 3:00 PM',
-        status: 'pending',
-        items: ['Tomatoes (2 lbs)', 'Lettuce (1 head)', 'Carrots (1 bunch)', 'Apples (4)'],
-        image: '/images/produce.jpg'
-      },
-      {
-        id: '3',
-        title: 'Prepared Meals',
-        provider: 'Community Kitchen',
-        location: '789 Pine St',
-        pickupTime: 'Yesterday, 12:00 PM - 1:00 PM',
-        status: 'completed',
-        items: ['Vegetable Soup (1 qt)', 'Sandwich (2)', 'Green Salad (1)'],
-        image: '/images/meals.jpg'
-      },
-      {
-        id: '4',
-        title: 'Bakery Goods',
-        provider: 'Sweet Treats',
-        location: '567 Cherry Lane',
-        pickupTime: 'Last Week, 4:00 PM - 5:00 PM',
-        status: 'cancelled',
-        items: ['Muffins (3)', 'Cookies (6)', 'Brownies (2)'],
-        image: '/images/bakery.jpg'
-      }
-    ];
+    const fetchReservations = async () => {
+      try {
 
-    setTimeout(() => {
-      setReservations(mockReservations);
-      setIsLoading(false);
-    }, 1000); // Simulate network delay
+        setIsLoading(true);
+        
+        const mockReservations: Reservation[] = [
+          {
+            id: 1,
+            recipient_id: 1, // Current user's ID
+            donor_id: 2,
+            food_post_id: 1,
+            status: 'confirmed',
+            created_at: '2025-06-10T14:30:00Z',
+            updated_at: '2025-06-10T15:00:00Z',
+            food_post: {
+              id: 1,
+              user_id: 2,
+              title: 'Fresh Bread and Pastries',
+              quantity: 5,
+              description: 'Surplus baked goods from today including croissants, baguettes, and danish pastries',
+              image_url: ['/images/bread.jpg'],
+              dietary_restrictions: 'Contains gluten, dairy',
+              location: '123 Main St, Downtown',
+              latitude: 40.7128,
+              longitude: -74.0060,
+              availability_status: 'available',
+              expiration_date: '2025-06-11T18:00:00Z',
+              tags: ['baked goods', 'pastries', 'bread'],
+              available_for: 'pickup',
+              created_at: '2025-06-10T08:00:00Z'
+            },
+            donor: {
+              id: 2,
+              email: 'citybakery@example.com',
+              name: 'City Bakery',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-05-01T10:00:00Z'
+            }
+          },
+          {
+            id: 2,
+            recipient_id: 1,
+            donor_id: 3,
+            food_post_id: 2,
+            status: 'pending',
+            created_at: '2025-06-10T16:15:00Z',
+            updated_at: '2025-06-10T16:15:00Z',
+            food_post: {
+              id: 2,
+              user_id: 3,
+              title: 'Surplus Produce',
+              quantity: 10,
+              description: 'Fresh vegetables and fruits that need to be picked up today',
+              image_url: ['/images/produce.jpg'],
+              dietary_restrictions: 'Vegan, gluten-free',
+              location: '456 Oak Ave, Market District',
+              latitude: 40.7589,
+              longitude: -73.9851,
+              availability_status: 'available',
+              expiration_date: '2025-06-11T20:00:00Z',
+              tags: ['vegetables', 'fruits', 'organic'],
+              available_for: 'pickup',
+              created_at: '2025-06-10T12:00:00Z'
+            },
+            donor: {
+              id: 3,
+              email: 'greenmarket@example.com',
+              name: 'Green Market',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-04-15T09:00:00Z'
+            }
+          },
+          {
+            id: 3,
+            recipient_id: 1,
+            donor_id: 4,
+            food_post_id: 3,
+            status: 'completed',
+            created_at: '2025-06-09T10:00:00Z',
+            updated_at: '2025-06-09T13:30:00Z',
+            food_post: {
+              id: 3,
+              user_id: 4,
+              title: 'Prepared Meals',
+              quantity: 3,
+              description: 'Hot meals ready for pickup including soup, sandwiches, and salad',
+              image_url: ['/images/meals.jpg'],
+              dietary_restrictions: 'Vegetarian options available',
+              location: '789 Pine St, Community Center',
+              latitude: 40.7505,
+              longitude: -73.9934,
+              availability_status: 'reserved',
+              expiration_date: '2025-06-09T15:00:00Z',
+              tags: ['prepared meals', 'hot food', 'ready to eat'],
+              available_for: 'pickup',
+              created_at: '2025-06-09T09:00:00Z'
+            },
+            donor: {
+              id: 4,
+              email: 'communitykitchen@example.com',
+              name: 'Community Kitchen',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-03-20T11:00:00Z'
+            }
+          },
+          {
+            id: 4,
+            recipient_id: 1,
+            donor_id: 5,
+            food_post_id: 4,
+            status: 'cancelled',
+            created_at: '2025-06-03T11:20:00Z',
+            updated_at: '2025-06-03T14:45:00Z',
+            food_post: {
+              id: 4,
+              user_id: 5,
+              title: 'Bakery Goods',
+              quantity: 11,
+              description: 'End of day bakery items including muffins, cookies, and brownies',
+              image_url: ['/images/bakery.jpg'],
+              dietary_restrictions: 'Contains gluten, eggs, dairy',
+              location: '567 Cherry Lane, Bakery Row',
+              latitude: 40.7282,
+              longitude: -74.0776,
+              availability_status: 'expired',
+              expiration_date: '2025-06-03T18:00:00Z',
+              tags: ['baked goods', 'desserts', 'sweet treats'],
+              available_for: 'pickup',
+              created_at: '2025-06-03T08:30:00Z'
+            },
+            donor: {
+              id: 5,
+              email: 'sweettreats@example.com',
+              name: 'Sweet Treats',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-02-10T14:00:00Z'
+            }
+          }
+        ];
+        const API_URL = import.meta.env.VITE_API_URL;
+        // Fetch data from API
+        const response = await axios.get(`${API_URL}/reservations/recipient`);
+        let apiReservations: Reservation[] = [];
+        
+        if (response.data.success && response.data.reservations) {
+          apiReservations = response.data.reservations;
+        }
+        
+        // Combine API data with mock data
+        // Ensure unique IDs by offsetting mock data IDs
+        const offsetMockReservations = mockReservations.map(reservation => ({
+          ...reservation,
+          id: reservation.id + 1000 // Offset to avoid ID conflicts
+        }));
+        
+        // Combine both arrays
+        const combinedReservations = [...apiReservations, ...offsetMockReservations];
+        
+        setReservations(combinedReservations);
+        
+      } catch (error) {
+        console.log("Error fetching reservations", error);
+        // If API fails, just use mock data
+        setReservations(mockReservations);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+        
+    fetchReservations();
+
   }, []);
 
   const upcomingReservations = reservations.filter(
@@ -109,13 +261,13 @@ const RecipientReservations = () => {
     }
   };
 
-  const handleCancelReservation = (id: string) => {
+  const handleCancelReservation = (id: number) => {
     // In a real app, this would be an API call
     setIsLoading(true);
     setTimeout(() => {
       setReservations(
         reservations.map(res =>
-          res.id === id ? { ...res, status: 'cancelled' } : res
+          res.id === id ? { ...res, status: 'cancelled', updated_at: new Date().toISOString() } : res
         )
       );
       setIsLoading(false);
@@ -184,8 +336,8 @@ const RecipientReservations = () => {
                 <div className="md:flex">
                   <div className="md:flex-shrink-0 w-full md:w-48 bg-gray-200 overflow-hidden">
                     <img
-                      src={reservation.image}
-                      alt={reservation.title}
+                      src={reservation.food_post?.image_url?.[0]}
+                      alt={reservation.food_post?.title}
                       className="h-full w-full object-cover object-center transition-opacity duration-300 hover:scale-105"
                       loading="lazy"
                       onError={(e) => {
@@ -197,8 +349,8 @@ const RecipientReservations = () => {
                   <div className="p-6 flex-1">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">{reservation.title}</h3>
-                        <p className="mt-1 text-gray-600">{reservation.provider}</p>
+                        <h3 className="text-lg font-bold text-gray-900">{reservation.food_post?.title}</h3>
+                        <p className="mt-1 text-gray-600">{reservation.donor?.name}</p>
                       </div>
                       {getStatusBadge(reservation.status)}
                     </div>
@@ -208,29 +360,39 @@ const RecipientReservations = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      <p>{reservation.location}</p>
+                      <p>{reservation.food_post?.location}</p>
                     </div>
 
                     <div className="mt-2 flex items-center text-sm text-gray-500">
                       <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
-                      <p>Pickup: {reservation.pickupTime}</p>
+                      <p>Expires: {new Date(reservation.food_post?.expiration_date || '').toLocaleDateString()}</p>
                     </div>
 
                     <div className="mt-4">
-                      <h4 className="text-sm font-medium text-gray-900">Items:</h4>
-                      <ul className="mt-2 pl-5 list-disc text-sm text-gray-600 space-y-1">
-                        {reservation.items.map((item, idx) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
+                      <h4 className="text-sm font-medium text-gray-900">Quantity: {reservation.food_post?.quantity} items</h4>
+                      <p className="mt-2 text-sm text-gray-600">{reservation.food_post?.description}</p>
+                      {reservation.food_post?.dietary_restrictions && (
+                        <p className="mt-2 text-sm text-gray-500">
+                          <span className="font-medium">Dietary info:</span> {reservation.food_post.dietary_restrictions}
+                        </p>
+                      )}
+                      {reservation.food_post?.tags && reservation.food_post.tags.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {reservation.food_post.tags.map((tag, idx) => (
+                            <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {reservation.status === 'confirmed' && (
                       <div className="mt-6 flex space-x-3">
                         <a
-                          href={`https://maps.google.com/?q=${encodeURIComponent(reservation.location)}`}
+                          href={`https://maps.google.com/?q=${encodeURIComponent(reservation.food_post?.location || '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -288,4 +450,4 @@ const RecipientReservations = () => {
   );
 };
 
-export default RecipientReservations; 
+export default RecipientReservations;

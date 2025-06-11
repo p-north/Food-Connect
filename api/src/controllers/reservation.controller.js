@@ -1,5 +1,5 @@
 import client from "../database/connectDB.js";
-
+import { generateSignedUrls } from "../utils/amazonS3.utils.js";
 async function handleDonorReservations(req, res) {
   try {
     // view the reservations for a donor
@@ -68,16 +68,100 @@ async function handleRecipientReservations(req, res) {
         .json({ sucess: false, message: "User is not type *recipient!" });
     }
 
-    // get all the reservations for the recipient
+
+    // get the donor id
+    const query = await client.query(`SELECT donor_id FROM reservations WHERE recipient_id = $1`, [recipient_id]);
+    const donor_id = query.rows[0].donor_id;
+
+    // get all the reservations for the donor with related data
     const result = await client.query(
-      `SELECT r.id, r.donor_id, r.food_post_id, r.status, r.created_at FROM reservations r WHERE r.recipient_id = $1;`,
-      [recipient_id]
+      `SELECT 
+        r.id, 
+        r.recipient_id, 
+        r.food_post_id, 
+        r.status, 
+        r.created_at,
+        r.updated_at,
+        fp.title as food_post_title,
+        fp.quantity as food_post_quantity,
+        fp.description as food_post_description,
+        fp.image_url as food_post_image_url,
+        fp.dietary_restrictions as food_post_dietary_restrictions,
+        fp.location as food_post_location,
+        fp.latitude as food_post_latitude,
+        fp.longitude as food_post_longitude,
+        fp.availability_status as food_post_availability_status,
+        fp.expiration_date as food_post_expiration_date,
+        fp.tags as food_post_tags,
+        fp.available_for as food_post_available_for,
+        fp.created_at as food_post_created_at,
+        u.id as recipient_id_ref,
+        u.email as recipient_email,
+        u.name as recipient_name,
+        u.type_of_account as recipient_type,
+        u.is_verified as recipient_verified,
+        u.created_at as recipient_created_at
+      FROM reservations r
+      LEFT JOIN food_posts fp ON r.food_post_id = fp.id
+      LEFT JOIN users u ON r.recipient_id = u.id
+      WHERE r.donor_id = $1
+      ORDER BY r.created_at DESC;`,
+      [donor_id]
     );
+    
+    // Transform the flat result into nested objects with signed URLs
+    const reservations = await Promise.all(result.rows.map(async (row) => {
+      let signedImageUrls = [];
+      
+      // Generate signed URLs for food post images if they exist
+      if (row.food_post_image_url && row.food_post_image_url.length > 0) {
+        const signedUrlsResult = await generateSignedUrls(row.food_post_image_url);
+        if (signedUrlsResult.success) {
+          signedImageUrls = signedUrlsResult.urls;
+        }
+      }
+
+      return {
+        id: row.id,
+        recipient_id: row.recipient_id,
+        donor_id: row.donor_id,
+        food_post_id: row.food_post_id,
+        status: row.status,
+        created_at: row.created_at,
+        updated_at: row.updated_at,
+        food_post: {
+          id: row.food_post_id,
+          user_id: row.donor_id,
+          title: row.food_post_title,
+          quantity: row.food_post_quantity,
+          description: row.food_post_description,
+          image_url: signedImageUrls.length > 0 ? signedImageUrls : row.food_post_image_url,
+          dietary_restrictions: row.food_post_dietary_restrictions,
+          location: row.food_post_location,
+          latitude: row.food_post_latitude,
+          longitude: row.food_post_longitude,
+          availability_status: row.food_post_availability_status,
+          expiration_date: row.food_post_expiration_date,
+          tags: row.food_post_tags,
+          available_for: row.food_post_available_for,
+          created_at: row.food_post_created_at
+        },
+        donor: {
+          id: row.donor_id_ref,
+          email: row.donor_email,
+          name: row.donor_name,
+          type_of_account: row.donor_type,
+          is_verified: row.donor_verified,
+          created_at: row.donor_created_at
+        }
+      };
+    }));
+
 
     return res.status(200).json({
       success: true,
       message: "Reservations fetched successfully",
-      reservations: result.rows,
+      reservations: reservations,
     });
   } catch (error) {
     console.log("Error fetching all donor reservations", error);
@@ -90,13 +174,23 @@ async function handleCreateReservation(req, res) {
     const postID = req.body.food_post_id;
 
     // get the donor id
-    const donor_id = req.body.donor_id;
+    const donorQuery = await client.query(`SELECT user_id FROM food_posts WHERE id = $1;`, [postID]);
+    const donor_id = donorQuery.rows[0].user_id;
 
     // Ensure that the donor is a valid user and that they are actually a "donor"
     const donorCheck = await client.query(
       `SELECT type_of_account FROM users WHERE id = $1;`,
       [donor_id]
     );
+
+    // Check if food post exists
+    if (donorQuery.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Food post does not exist."
+      });
+    }
+
 
     // check if donor exists
     if (donorCheck.rows.length == 0) {
