@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import RecipientLayout from '../../components/layout/RecipientLayout';
+import axios from 'axios';
 // import useAuthStore from '../../store/authStore';
 
 interface Reservation {
@@ -40,157 +41,187 @@ interface Reservation {
 }
 
 const RecipientReservations = () => {
-  // const { user } = useAuthStore();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past'>('upcoming');
 
   // Mock data following the database model
   useEffect(() => {
-    // In a real app, this would be an API call that joins reservations with food_posts and users
-    const mockReservations: Reservation[] = [
-      {
-        id: 1,
-        recipient_id: 1, // Current user's ID
-        donor_id: 2,
-        food_post_id: 1,
-        status: 'confirmed',
-        created_at: '2025-06-10T14:30:00Z',
-        updated_at: '2025-06-10T15:00:00Z',
-        food_post: {
-          id: 1,
-          user_id: 2,
-          title: 'Fresh Bread and Pastries',
-          quantity: 5,
-          description: 'Surplus baked goods from today including croissants, baguettes, and danish pastries',
-          image_url: ['/images/bread.jpg'],
-          dietary_restrictions: 'Contains gluten, dairy',
-          location: '123 Main St, Downtown',
-          latitude: 40.7128,
-          longitude: -74.0060,
-          availability_status: 'available',
-          expiration_date: '2025-06-11T18:00:00Z',
-          tags: ['baked goods', 'pastries', 'bread'],
-          available_for: 'pickup',
-          created_at: '2025-06-10T08:00:00Z'
-        },
-        donor: {
-          id: 2,
-          email: 'citybakery@example.com',
-          name: 'City Bakery',
-          type_of_account: 'donor',
-          is_verified: true,
-          created_at: '2025-05-01T10:00:00Z'
-        }
-      },
-      {
-        id: 2,
-        recipient_id: 1,
-        donor_id: 3,
-        food_post_id: 2,
-        status: 'pending',
-        created_at: '2025-06-10T16:15:00Z',
-        updated_at: '2025-06-10T16:15:00Z',
-        food_post: {
-          id: 2,
-          user_id: 3,
-          title: 'Surplus Produce',
-          quantity: 10,
-          description: 'Fresh vegetables and fruits that need to be picked up today',
-          image_url: ['/images/produce.jpg'],
-          dietary_restrictions: 'Vegan, gluten-free',
-          location: '456 Oak Ave, Market District',
-          latitude: 40.7589,
-          longitude: -73.9851,
-          availability_status: 'available',
-          expiration_date: '2025-06-11T20:00:00Z',
-          tags: ['vegetables', 'fruits', 'organic'],
-          available_for: 'pickup',
-          created_at: '2025-06-10T12:00:00Z'
-        },
-        donor: {
-          id: 3,
-          email: 'greenmarket@example.com',
-          name: 'Green Market',
-          type_of_account: 'donor',
-          is_verified: true,
-          created_at: '2025-04-15T09:00:00Z'
-        }
-      },
-      {
-        id: 3,
-        recipient_id: 1,
-        donor_id: 4,
-        food_post_id: 3,
-        status: 'completed',
-        created_at: '2025-06-09T10:00:00Z',
-        updated_at: '2025-06-09T13:30:00Z',
-        food_post: {
-          id: 3,
-          user_id: 4,
-          title: 'Prepared Meals',
-          quantity: 3,
-          description: 'Hot meals ready for pickup including soup, sandwiches, and salad',
-          image_url: ['/images/meals.jpg'],
-          dietary_restrictions: 'Vegetarian options available',
-          location: '789 Pine St, Community Center',
-          latitude: 40.7505,
-          longitude: -73.9934,
-          availability_status: 'reserved',
-          expiration_date: '2025-06-09T15:00:00Z',
-          tags: ['prepared meals', 'hot food', 'ready to eat'],
-          available_for: 'pickup',
-          created_at: '2025-06-09T09:00:00Z'
-        },
-        donor: {
-          id: 4,
-          email: 'communitykitchen@example.com',
-          name: 'Community Kitchen',
-          type_of_account: 'donor',
-          is_verified: true,
-          created_at: '2025-03-20T11:00:00Z'
-        }
-      },
-      {
-        id: 4,
-        recipient_id: 1,
-        donor_id: 5,
-        food_post_id: 4,
-        status: 'cancelled',
-        created_at: '2025-06-03T11:20:00Z',
-        updated_at: '2025-06-03T14:45:00Z',
-        food_post: {
-          id: 4,
-          user_id: 5,
-          title: 'Bakery Goods',
-          quantity: 11,
-          description: 'End of day bakery items including muffins, cookies, and brownies',
-          image_url: ['/images/bakery.jpg'],
-          dietary_restrictions: 'Contains gluten, eggs, dairy',
-          location: '567 Cherry Lane, Bakery Row',
-          latitude: 40.7282,
-          longitude: -74.0776,
-          availability_status: 'expired',
-          expiration_date: '2025-06-03T18:00:00Z',
-          tags: ['baked goods', 'desserts', 'sweet treats'],
-          available_for: 'pickup',
-          created_at: '2025-06-03T08:30:00Z'
-        },
-        donor: {
-          id: 5,
-          email: 'sweettreats@example.com',
-          name: 'Sweet Treats',
-          type_of_account: 'donor',
-          is_verified: true,
-          created_at: '2025-02-10T14:00:00Z'
-        }
-      }
-    ];
+    const fetchReservations = async () => {
+      try {
 
-    setTimeout(() => {
-      setReservations(mockReservations);
-      setIsLoading(false);
-    }, 1000); // Simulate network delay
+        setIsLoading(true);
+        
+        const mockReservations: Reservation[] = [
+          {
+            id: 1,
+            recipient_id: 1, // Current user's ID
+            donor_id: 2,
+            food_post_id: 1,
+            status: 'confirmed',
+            created_at: '2025-06-10T14:30:00Z',
+            updated_at: '2025-06-10T15:00:00Z',
+            food_post: {
+              id: 1,
+              user_id: 2,
+              title: 'Fresh Bread and Pastries',
+              quantity: 5,
+              description: 'Surplus baked goods from today including croissants, baguettes, and danish pastries',
+              image_url: ['/images/bread.jpg'],
+              dietary_restrictions: 'Contains gluten, dairy',
+              location: '123 Main St, Downtown',
+              latitude: 40.7128,
+              longitude: -74.0060,
+              availability_status: 'available',
+              expiration_date: '2025-06-11T18:00:00Z',
+              tags: ['baked goods', 'pastries', 'bread'],
+              available_for: 'pickup',
+              created_at: '2025-06-10T08:00:00Z'
+            },
+            donor: {
+              id: 2,
+              email: 'citybakery@example.com',
+              name: 'City Bakery',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-05-01T10:00:00Z'
+            }
+          },
+          {
+            id: 2,
+            recipient_id: 1,
+            donor_id: 3,
+            food_post_id: 2,
+            status: 'pending',
+            created_at: '2025-06-10T16:15:00Z',
+            updated_at: '2025-06-10T16:15:00Z',
+            food_post: {
+              id: 2,
+              user_id: 3,
+              title: 'Surplus Produce',
+              quantity: 10,
+              description: 'Fresh vegetables and fruits that need to be picked up today',
+              image_url: ['/images/produce.jpg'],
+              dietary_restrictions: 'Vegan, gluten-free',
+              location: '456 Oak Ave, Market District',
+              latitude: 40.7589,
+              longitude: -73.9851,
+              availability_status: 'available',
+              expiration_date: '2025-06-11T20:00:00Z',
+              tags: ['vegetables', 'fruits', 'organic'],
+              available_for: 'pickup',
+              created_at: '2025-06-10T12:00:00Z'
+            },
+            donor: {
+              id: 3,
+              email: 'greenmarket@example.com',
+              name: 'Green Market',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-04-15T09:00:00Z'
+            }
+          },
+          {
+            id: 3,
+            recipient_id: 1,
+            donor_id: 4,
+            food_post_id: 3,
+            status: 'completed',
+            created_at: '2025-06-09T10:00:00Z',
+            updated_at: '2025-06-09T13:30:00Z',
+            food_post: {
+              id: 3,
+              user_id: 4,
+              title: 'Prepared Meals',
+              quantity: 3,
+              description: 'Hot meals ready for pickup including soup, sandwiches, and salad',
+              image_url: ['/images/meals.jpg'],
+              dietary_restrictions: 'Vegetarian options available',
+              location: '789 Pine St, Community Center',
+              latitude: 40.7505,
+              longitude: -73.9934,
+              availability_status: 'reserved',
+              expiration_date: '2025-06-09T15:00:00Z',
+              tags: ['prepared meals', 'hot food', 'ready to eat'],
+              available_for: 'pickup',
+              created_at: '2025-06-09T09:00:00Z'
+            },
+            donor: {
+              id: 4,
+              email: 'communitykitchen@example.com',
+              name: 'Community Kitchen',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-03-20T11:00:00Z'
+            }
+          },
+          {
+            id: 4,
+            recipient_id: 1,
+            donor_id: 5,
+            food_post_id: 4,
+            status: 'cancelled',
+            created_at: '2025-06-03T11:20:00Z',
+            updated_at: '2025-06-03T14:45:00Z',
+            food_post: {
+              id: 4,
+              user_id: 5,
+              title: 'Bakery Goods',
+              quantity: 11,
+              description: 'End of day bakery items including muffins, cookies, and brownies',
+              image_url: ['/images/bakery.jpg'],
+              dietary_restrictions: 'Contains gluten, eggs, dairy',
+              location: '567 Cherry Lane, Bakery Row',
+              latitude: 40.7282,
+              longitude: -74.0776,
+              availability_status: 'expired',
+              expiration_date: '2025-06-03T18:00:00Z',
+              tags: ['baked goods', 'desserts', 'sweet treats'],
+              available_for: 'pickup',
+              created_at: '2025-06-03T08:30:00Z'
+            },
+            donor: {
+              id: 5,
+              email: 'sweettreats@example.com',
+              name: 'Sweet Treats',
+              type_of_account: 'donor',
+              is_verified: true,
+              created_at: '2025-02-10T14:00:00Z'
+            }
+          }
+        ];
+        const API_URL = import.meta.env.VITE_API_URL;
+        // Fetch data from API
+        const response = await axios.get(`${API_URL}/reservations/recipient`);
+        let apiReservations: Reservation[] = [];
+        
+        if (response.data.success && response.data.reservations) {
+          apiReservations = response.data.reservations;
+        }
+        
+        // Combine API data with mock data
+        // Ensure unique IDs by offsetting mock data IDs
+        const offsetMockReservations = mockReservations.map(reservation => ({
+          ...reservation,
+          id: reservation.id + 1000 // Offset to avoid ID conflicts
+        }));
+        
+        // Combine both arrays
+        const combinedReservations = [...apiReservations, ...offsetMockReservations];
+        
+        setReservations(combinedReservations);
+        
+      } catch (error) {
+        console.log("Error fetching reservations", error);
+        // If API fails, just use mock data
+        setReservations(mockReservations);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+        
+    fetchReservations();
+
   }, []);
 
   const upcomingReservations = reservations.filter(

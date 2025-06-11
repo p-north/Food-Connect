@@ -129,7 +129,7 @@ const RecipientDashboard = () => {
         setIsLoading(false);
       }
     };
-
+    
     fetchFoodListings();
   }, []);
 
