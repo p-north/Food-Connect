@@ -90,13 +90,23 @@ async function handleCreateReservation(req, res) {
     const postID = req.body.food_post_id;
 
     // get the donor id
-    const donor_id = req.body.donor_id;
+    const donorQuery = await client.query(`SELECT user_id FROM food_posts WHERE id = $1;`, [postID]);
+    const donor_id = donorQuery.rows[0].user_id;
 
     // Ensure that the donor is a valid user and that they are actually a "donor"
     const donorCheck = await client.query(
       `SELECT type_of_account FROM users WHERE id = $1;`,
       [donor_id]
     );
+
+    // Check if food post exists
+    if (donorQuery.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Food post does not exist."
+      });
+    }
+
 
     // check if donor exists
     if (donorCheck.rows.length == 0) {
