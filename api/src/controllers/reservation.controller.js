@@ -48,7 +48,7 @@ async function handleRecipientReservations(req, res) {
     // get the id passed in through the AUTH middleware
     const recipient_id = req.userID;
 
-    // ensure the reciepient is a valid user and is type  "reciepient"
+    // ensure the reciepient is a valid user and is type  "recipient"
     const reCheck = await client.query(
       `SELECT type_of_account FROM users WHERE id = $1;`,
       [recipient_id]
@@ -68,16 +68,12 @@ async function handleRecipientReservations(req, res) {
         .json({ sucess: false, message: "User is not type *recipient!" });
     }
 
-
-    // get the donor id
-    const query = await client.query(`SELECT donor_id FROM reservations WHERE recipient_id = $1`, [recipient_id]);
-    const donor_id = query.rows[0].donor_id;
-
-    // get all the reservations for the donor with related data
+    // get all the reservations for the recipient with related data
     const result = await client.query(
       `SELECT 
         r.id, 
         r.recipient_id, 
+        r.donor_id,
         r.food_post_id, 
         r.status, 
         r.created_at,
@@ -95,19 +91,28 @@ async function handleRecipientReservations(req, res) {
         fp.tags as food_post_tags,
         fp.available_for as food_post_available_for,
         fp.created_at as food_post_created_at,
-        u.id as recipient_id_ref,
-        u.email as recipient_email,
-        u.name as recipient_name,
-        u.type_of_account as recipient_type,
-        u.is_verified as recipient_verified,
-        u.created_at as recipient_created_at
+        u.id as donor_id_ref,
+        u.email as donor_email,
+        u.name as donor_name,
+        u.type_of_account as donor_type,
+        u.is_verified as donor_verified,
+        u.created_at as donor_created_at
       FROM reservations r
       LEFT JOIN food_posts fp ON r.food_post_id = fp.id
-      LEFT JOIN users u ON r.recipient_id = u.id
-      WHERE r.donor_id = $1
+      LEFT JOIN users u ON r.donor_id = u.id
+      WHERE r.recipient_id = $1
       ORDER BY r.created_at DESC;`,
-      [donor_id]
+      [recipient_id]
     );
+
+    // Check if recipient has any reservations
+    if (result.rows.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No reservations found for this recipient",
+        reservations: [],
+      });
+    }
     
     // Transform the flat result into nested objects with signed URLs
     const reservations = await Promise.all(result.rows.map(async (row) => {
@@ -157,14 +162,13 @@ async function handleRecipientReservations(req, res) {
       };
     }));
 
-
     return res.status(200).json({
       success: true,
       message: "Reservations fetched successfully",
       reservations: reservations,
     });
   } catch (error) {
-    console.log("Error fetching all donor reservations", error);
+    console.log("Error fetching recipient reservations", error);
     res.status(400).json({ success: false, message: error.message });
   }
 }
