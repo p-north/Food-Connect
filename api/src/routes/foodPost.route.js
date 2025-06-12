@@ -4,7 +4,7 @@ import {
     deleteFoodPost,
     getFoodPost,
     getFoodPosts,
-    updateFoodPost
+    updateFoodPost, getFoodPostsByDonor
 } from '../controllers/foodPost.controller.js';
 import {verifyToken} from "../middlewares/verifyToken.js";
 import multer from "multer"
@@ -20,6 +20,8 @@ const upload = multer({storage: storage});
 
 // get all food posts
 router.get('/', verifyToken, getFoodPosts);
+// get all posts by donor
+router.get('/donor', verifyToken, getFoodPostsByDonor);
 // get post by id
 router.get('/:id', verifyToken, getFoodPost);
 // create new post

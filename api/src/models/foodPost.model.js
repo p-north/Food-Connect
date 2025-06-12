@@ -212,6 +212,22 @@ const FoodPost = {
             throw error;
         }
     },
+    /**
+     * Delete food post by id
+    * @param userId
+     * @returns {Promise<*>}
+     */
+    async findAllByDonorId(userId) {
+        try {
+            const { rows } = await client.query('SELECT * FROM food_posts WHERE user_id = $1', [userId]);
+            //camel case the rows
+            return rows.map(toCamelCase);
+        }
+        catch (error) {
+            console.log("Error in delete food post by id", error);
+            throw error;
+        }
+    },
 }
 
 export { createFoodPostTable, FoodPost };
