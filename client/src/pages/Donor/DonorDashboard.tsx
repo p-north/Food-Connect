@@ -1,30 +1,97 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DonorLayout from '../../components/layout/DonorLayout';
+import axios from 'axios';
+
+interface FoodListing {
+  id: string | number;
+  title: string;
+  location: string;
+  availableFor: string;
+  tags: string[];
+  provider: string;
+  image: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  status?: string;
+  reservations?: number;
+}
 
 const DonorDashboard = () => {
-  const [listings, setListings] = useState([]);
+  const [listings, setListings] = useState<FoodListing[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load listings from localStorage on component mount
+  // Load listings from API on component mount
   useEffect(() => {
-    const savedListings = localStorage.getItem('foodConnectListings');
-    if (savedListings) {
-      setListings(JSON.parse(savedListings));
-    }
+    const fetchDonorListings = async () => {
+      try {
+        setIsLoading(true);
+        // API URL
+        const API_URL = import.meta.env.VITE_API_URL;
+
+        // fetch data for donor's own listings
+        const response = await axios.get(`${API_URL}/food-posts/donor`, {
+          headers: {
+            "Content-Type": "application/json",
+            // Add authorization header if needed
+            // "Authorization": `Bearer ${token}`
+          },
+        });
+
+        console.log("API response", response);
+        const apiListings = response.data.data.map((post: any) => ({
+          id: post.id,
+          title: post.title,
+          provider: post.provider || "You",
+          location: post.location || "Unknown Location",
+          availableFor: post.availableFor || "N/A",
+          tags: post.tags || [],
+          image: post.imageUrl || "https://placehold.co/400x200?text=Food+Image",
+          coordinates: {
+            lat: post.latitude || 0,
+            lng: post.longitude || 0,
+          },
+          status: post.status || "active",
+          reservations: post.reservations || 0,
+        }));
+
+        setListings(apiListings);
+        
+      } catch (error) {
+        console.error("Error fetching donor listings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchDonorListings();
   }, []);
 
   // Filter listings based on search query
   const filteredListings = listings.filter(listing => 
     listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    listing.organization.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    listing.provider.toLowerCase().includes(searchQuery.toLowerCase()) ||
     listing.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const handleDelete = (id) => {
-    const updatedListings = listings.filter(listing => listing.id !== id);
-    setListings(updatedListings);
-    localStorage.setItem('foodConnectListings', JSON.stringify(updatedListings));
+  const handleDelete = async (id: string | number) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      await axios.delete(`${API_URL}/food-posts/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      
+      // Remove from state after successful API call
+      const updatedListings = listings.filter(listing => listing.id !== id);
+      setListings(updatedListings);
+      console.log("Listing deleted successfully");
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+    }
   };
 
   return (
@@ -79,107 +146,132 @@ const DonorDashboard = () => {
 
             {/* Enhanced listings grid */}
             <div className="p-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {filteredListings.length > 0 ? (
-                  filteredListings.map((listing) => (
-                    <div key={listing.id} className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/20 transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2">
-                      <div className="h-56 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                        {listing.image ? (
-                          <img
-                            src={listing.image}
-                            alt={listing.title}
-                            className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                          />
-                        ) : (
-                          <div className="text-gray-400 flex flex-col items-center justify-center">
-                            <svg className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <p className="text-sm mt-2 font-medium">No image available</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-6">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h2 className="text-xl font-bold text-gray-900">{listing.title}</h2>
-                            <p className="text-sm text-gray-600 font-medium">{listing.organization}</p>
-                          </div>
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                            {listing.status}
-                          </span>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <svg
+                    className="animate-spin h-10 w-10 text-green-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {filteredListings.length > 0 ? (
+                    filteredListings.map((listing) => (
+                      <div key={listing.id} className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg border border-white/20 transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-2">
+                        <div className="h-56 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                          {listing.image ? (
+                            <img
+                              src={listing.image}
+                              alt={listing.title}
+                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                            />
+                          ) : (
+                            <div className="text-gray-400 flex flex-col items-center justify-center">
+                              <svg className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              <p className="text-sm mt-2 font-medium">No image available</p>
+                            </div>
+                          )}
                         </div>
-                        
-                        <div className="mt-4 space-y-3">
-                          <div className="flex items-center text-sm text-gray-500">
-                            <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            {listing.location}
-                          </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Available for {listing.duration} hours
-                          </div>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                            {listing.reservations || 0} Reservations
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {listing.tags && listing.tags.map((tag) => (
-                            <span key={tag} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200">
-                              {tag}
+                        <div className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h2 className="text-xl font-bold text-gray-900">{listing.title}</h2>
+                              <p className="text-sm text-gray-600 font-medium">{listing.provider}</p>
+                            </div>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
+                              {listing.status}
                             </span>
-                          ))}
-                        </div>
-                        
-                        <div className="mt-6 grid grid-cols-2 gap-4">
-                          <Link
-                            to={`/editlistings/${listing.id}`}
-                            className="text-center py-3 px-4 border-2 border-gray-200 rounded-2xl shadow-lg text-sm font-semibold text-gray-700 bg-white/80 backdrop-blur-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 transform hover:scale-105"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(listing.id)}
-                            className="py-3 px-4 border-2 border-transparent rounded-2xl shadow-lg text-sm font-semibold text-red-700 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 transform hover:scale-105"
-                          >
-                            Delete
-                          </button>
+                          </div>
+                          
+                          <div className="mt-4 space-y-3">
+                            <div className="flex items-center text-sm text-gray-500">
+                              <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              {listing.location}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              Available for {listing.availableFor}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <svg className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                              </svg>
+                              {listing.reservations || 0} Reservations
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {listing.tags && listing.tags.map((tag, index) => (
+                              <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          
+                          <div className="mt-6 grid grid-cols-2 gap-4">
+                            <Link
+                              to={`/donor/edit/${listing.id}`}
+                              className="text-center py-3 px-4 border-2 border-gray-200 rounded-2xl shadow-lg text-sm font-semibold text-gray-700 bg-white/80 backdrop-blur-sm hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 transform hover:scale-105"
+                            >
+                              Edit
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(listing.id)}
+                              className="py-3 px-4 border-2 border-transparent rounded-2xl shadow-lg text-sm font-semibold text-red-700 bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 transform hover:scale-105"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="md:col-span-2 bg-white/80 backdrop-blur-sm rounded-3xl p-12 text-center border border-white/20 shadow-lg">
-                    <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6">
-                      <svg className="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-                      </svg>
-                    </div>
-                    <h3 className="mt-2 text-2xl font-bold text-gray-900">No listings yet</h3>
-                    <p className="mt-2 text-lg text-gray-500">Get started by creating a new listing.</p>
-                    <div className="mt-8">
-                      <Link
-                        to="/donor/newlisting"
-                        className="inline-flex items-center px-8 py-4 border-2 border-transparent text-lg font-semibold rounded-2xl shadow-xl text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 transform hover:scale-105"
-                      >
-                        <svg className="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    ))
+                  ) : (
+                    <div className="md:col-span-2 bg-white/80 backdrop-blur-sm rounded-3xl p-12 text-center border border-white/20 shadow-lg">
+                      <div className="bg-gradient-to-br from-green-100 to-emerald-100 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                        <svg className="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                         </svg>
-                        New Listing
-                      </Link>
+                      </div>
+                      <h3 className="mt-2 text-2xl font-bold text-gray-900">No listings yet</h3>
+                      <p className="mt-2 text-lg text-gray-500">Get started by creating a new listing.</p>
+                      <div className="mt-8">
+                        <Link
+                          to="/donor/newlisting"
+                          className="inline-flex items-center px-8 py-4 border-2 border-transparent text-lg font-semibold rounded-2xl shadow-xl text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 transform hover:scale-105"
+                        >
+                          <svg className="mr-2 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          New Listing
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import client from "../database/connectDB.js";
 import {FoodPost} from "../models/foodPost.model.js";
 import { handleImageUpload, handleImageDeletion, generateSignedUrls } from "../utils/amazonS3.utils.js";
 
@@ -141,4 +142,46 @@ const deleteFoodPost = async (req, res) => {
     }
 }
 
-export { createFoodPost, getFoodPosts, getFoodPost, updateFoodPost, deleteFoodPost };
+const getFoodPostsByDonor = async (req, res) => {
+    try {
+        
+        // get the donor id
+        const donor_id = req.userID;
+    
+        // check user is type 'donor'
+        const donorCheck = await client.query(
+          `SELECT type_of_account FROM users WHERE id = $1`,
+          [donor_id]
+        );
+    
+        // check if donor exists
+        if (donorCheck.rows.length == 0) {
+          return res
+            .status(400)
+            .json({ sucess: false, message: "Donor does not exist." });
+        }
+    
+        // check if correct type
+        if (donorCheck.rows[0].type_of_account !== "donor") {
+          return res
+            .status(400)
+            .json({ sucess: false, message: "Targeted user is not type *donor!" });
+        }
+
+        // get all the food_posts for donor
+        const data = await FoodPost.findAllByDonorId(donor_id);
+        res.status(200).json({
+            data: data,
+            message: 'Food post fetched successfully',
+        });
+
+    } 
+    catch (error) {
+        console.log("Error fetching all donor reservations", error);
+        res.status(400).json({ success: false, message: error.message });
+    }
+
+
+}
+
+export { createFoodPost, getFoodPosts, getFoodPost, updateFoodPost, deleteFoodPost, getFoodPostsByDonor };
