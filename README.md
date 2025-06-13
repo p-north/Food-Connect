@@ -22,6 +22,7 @@ FoodConnect is a web platform that bridges the gap between food donors and recip
 
 ### Backend
 - **Express.js**
+- **JWT(Auth)**
 - **PostgreSQL**
 - **Socket.io**
   
