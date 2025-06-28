@@ -1,5 +1,6 @@
 import pg from 'pg'
 
+
 // create a postgresql client
 
 // acessing client thru terminal:
@@ -9,11 +10,11 @@ import pg from 'pg'
     // \dt 
     // \x auto
 const client = new pg.Client({
-    user: 'admin',
-    password: 'fd123',
-    host: 'localhost',
-    database: 'foodconnect',
-    port: 5432,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
 
 });
 
