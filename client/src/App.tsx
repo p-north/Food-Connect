@@ -16,6 +16,7 @@ import RecipientDashboard from "./pages/Recipient/RecipientDashboard";
 import RecipientProfile from "./pages/Recipient/RecipientProfile";
 import RecipientReservations from "./pages/Recipient/RecipientReservations";
 import Message from "./pages/Message";
+import MessagesList from "./pages/Message/MessagesList";
 import useAuthStore from "./store/authStore";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
 import { Children, useEffect, ReactNode } from "react";
@@ -110,10 +111,18 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <MessagesList />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Protected message route */}
           <Route
-            path="/message/:receiverId"
+            path="/messages/:receiverId"
             element={
               <ProtectedRoute>
                 <Message />
@@ -121,6 +130,7 @@ const App = () => {
             }
           />
         </Route>
+
       </Routes>
     </Router>
   );
