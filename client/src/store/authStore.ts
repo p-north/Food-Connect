@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
-import { BASE_URL } from '../config/api';
+
 
 // Configure axios to include credentials and set base URL
-axios.defaults.baseURL = BASE_URL;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
 
 // Interfaces for type safety

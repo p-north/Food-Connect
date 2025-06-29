@@ -1,6 +1,5 @@
 import { RefObject, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { BASE_URL } from "../../config/api.ts";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import DonorLayout from "../../components/layout/DonorLayout";
@@ -15,6 +14,7 @@ export type MessageType = {
   createdAt: string;
   senderName?: string;
   receiverName?: string;
+  isRead: String;
 };
 
 const Message = () => {
@@ -37,6 +37,7 @@ const Message = () => {
         senderId: 0,
         receiverId,
         message,
+        isRead,
         createdAt: new Date().toISOString(),
       },
       ...prevMessages,
@@ -46,7 +47,7 @@ const Message = () => {
 
   // connect to socket
   useEffect(() => {
-    const URL = BASE_URL.split("/api")[0];
+    const URL = import.meta.env.VITE_API_URL.split("/api")[0];
     socketRef.current = io(URL, { withCredentials: true });
 
     socketRef.current?.on("private-message", (message: MessageType) => {
@@ -62,10 +63,11 @@ const Message = () => {
   useEffect(() => {
     (async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/messages/${receiverId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/messages/${receiverId}`, {
           withCredentials: true,
         });
-        const receiverNameRes = await axios.get(`${BASE_URL}/users/${receiverId}`, {
+        console.log("Response", response)
+        const receiverNameRes = await axios.get(`${import.meta.env.VITE_API_URL}/users/${receiverId}`, {
           withCredentials: true,
         });
         setReceiverName(receiverNameRes.data.data.name);

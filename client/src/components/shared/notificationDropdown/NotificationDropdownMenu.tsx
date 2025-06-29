@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
-import {BASE_URL} from "../../../config/api.ts";
 import axios from "axios";
 import {MessageType} from "../../../pages/Message";
 
@@ -45,7 +44,7 @@ export default function NotificationDropdown() {
     useEffect(() => {
         // Simulate fetching new messages
         (async () => {
-            const { data: {data} } = await axios.get(`${BASE_URL}/messages/unread-messages`, {
+            const { data: {data} } = await axios.get(`${import.meta.env.VITE_API_URL}/messages/unread-messages`, {
                 withCredentials: true
             });
 
