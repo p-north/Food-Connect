@@ -3,7 +3,7 @@ import Map from 'react-map-gl';
 import { Marker, Popup, NavigationControl, FullscreenControl } from 'react-map-gl';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { BASE_URL } from '../../config/api';
+
 
 // Define the FoodListing interface
 interface FoodListing {
@@ -174,7 +174,7 @@ const MapView: React.FC = () => {
   useEffect(() => {
     const fetchFoodPosts = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/food-posts`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/food-posts`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

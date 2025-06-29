@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { BASE_URL } from "../../config/api";
 import DonorLayout from "../../components/layout/DonorLayout";
 import RecipientLayout from "../../components/layout/RecipientLayout";
 import useAuthStore from "../../store/authStore";
@@ -34,7 +33,7 @@ const MessagesList = () => {
     (async () => {
       try {
         // Fetch all conversations for the logged-in user
-        const res = await axios.get(`${BASE_URL}/messages/conversations`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/messages/conversations`, {
           withCredentials: true,
         });
         console.log("Msg List res", res);
