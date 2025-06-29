@@ -21,6 +21,7 @@ import useAuthStore from "./store/authStore";
 import LoadingSpinner from "./components/shared/LoadingSpinner";
 import { Children, useEffect, ReactNode } from "react";
 
+
 // Protected routes - if the user is not authenticated, they will be redirected to the login page
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { isAuthenticated } = useAuthStore();
