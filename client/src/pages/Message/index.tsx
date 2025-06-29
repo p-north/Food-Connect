@@ -34,7 +34,7 @@ const Message = () => {
     setMessages((prevMessages): MessageType[] => [
       {
         id: 0,
-        senderId: null,
+        senderId: 0,
         receiverId,
         message,
         createdAt: new Date().toISOString(),
