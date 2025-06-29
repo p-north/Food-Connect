@@ -4,6 +4,8 @@ import { BASE_URL } from "../../config/api.ts";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import DonorLayout from "../../components/layout/DonorLayout";
+import RecipientLayout from "../../components/layout/RecipientLayout";
+import useAuthStore from "../../store/authStore";
 
 export type MessageType = {
   id: number;
@@ -23,6 +25,8 @@ const Message = () => {
   const param = useParams();
   const receiverId = Number(param.receiverId);
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const Layout = user?.accountType === "recipient" ? RecipientLayout : DonorLayout;
 
   const sendMessage = () => {
     if (!message.trim()) return;
@@ -73,7 +77,7 @@ const Message = () => {
   }, [receiverId]);
 
   return (
-    <DonorLayout>
+    <Layout>
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 flex flex-col">
         {/* Header */}
         <div className="bg-white/90 backdrop-blur-lg border-b border-white/20 shadow-sm flex items-center px-6 py-4">
@@ -162,7 +166,7 @@ const Message = () => {
           </div>
         </div>
       </div>
-    </DonorLayout>
+    </Layout>
   );
 };
 
