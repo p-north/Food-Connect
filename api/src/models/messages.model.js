@@ -138,8 +138,8 @@ const Message = {
             WHEN sender_id = $1 THEN receiver.name
             ELSE sender.name
         END AS user_name,
-        message,
-        created_at
+        sub.message,
+        sub.created_at
         FROM (
         SELECT *,
             ROW_NUMBER() OVER (
@@ -152,8 +152,8 @@ const Message = {
         JOIN users AS sender ON sub.sender_id = sender.id
         JOIN users AS receiver ON sub.receiver_id = receiver.id
         WHERE rn = 1
-        ORDER BY created_at DESC;
-        `);
+        ORDER BY sub.created_at DESC;
+        `,[userID]);
 
         return rows.map(toCamelCase)
     } catch (err) {
