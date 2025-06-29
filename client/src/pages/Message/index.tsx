@@ -15,6 +15,7 @@ export type MessageType = {
   createdAt: string;
   senderName?: string;
   receiverName?: string;
+  isRead: String;
 };
 
 const Message = () => {
@@ -37,6 +38,7 @@ const Message = () => {
         senderId: 0,
         receiverId,
         message,
+        isRead,
         createdAt: new Date().toISOString(),
       },
       ...prevMessages,
@@ -65,6 +67,7 @@ const Message = () => {
         const response = await axios.get(`${BASE_URL}/messages/${receiverId}`, {
           withCredentials: true,
         });
+        console.log("Response", response)
         const receiverNameRes = await axios.get(`${BASE_URL}/users/${receiverId}`, {
           withCredentials: true,
         });
