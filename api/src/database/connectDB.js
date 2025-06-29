@@ -6,7 +6,7 @@ dotenv.config();
 
 // create a postgresql client
 
-// acessing client thru terminal:
+// acessing client thru terminal (local database):
     // sudo -i -u postgres
     // psql
     // \c foodconnect
