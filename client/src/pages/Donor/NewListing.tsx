@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import DonorLayout from '../../components/layout/DonorLayout';
 import axios from 'axios';
+import "react-toastify/dist/ReactToastify.css";
+import {  toast } from "react-toastify";
 
 const NewListing = () => {
   const navigate = useNavigate();
@@ -106,6 +108,17 @@ const NewListing = () => {
       console.log('Upload success:', response.data);
     } catch (error) {
       console.error('Upload error:', error)
+    } finally{
+       toast.success("Listing successfully created!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
 
     // Navigate back to dashboard

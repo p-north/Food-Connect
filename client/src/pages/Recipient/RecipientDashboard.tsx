@@ -4,6 +4,8 @@ import MapView from "../../components/Map/MapView";
 import { MapPin, Clock, Navigation, ArrowRight, Tag } from "lucide-react";
 import axios from "axios";
 import RecipientLayout from "../../components/layout/RecipientLayout";
+import "react-toastify/dist/ReactToastify.css";
+import {  toast } from "react-toastify";
 
 interface FoodListing {
   id: string | number;
@@ -23,6 +25,8 @@ interface FoodListing {
 
 const RecipientDashboard = () => {
   const [originalListings, setOriginalListings] = useState<FoodListing[]>([]);
+  const [selectedListingId, setSelectedListingId] = useState<string | number | null>(null);
+  const [showReserveModal, setshowReserveModal] = useState(false);
   const [displayedListings, setDisplayedListings] = useState<FoodListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
@@ -207,6 +211,17 @@ const RecipientDashboard = () => {
       console.log("Reservation response", response)
     } catch (error) {
       console.log("Error generating reservation", error);
+    } finally{
+        toast.success("Item successfully reserved!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      });
     }
   };
 
@@ -522,7 +537,8 @@ const RecipientDashboard = () => {
                       </a>
                       <button
                         onClick={() => {
-                          handleReservation(listing.id);
+                          setSelectedListingId(listing.id);
+                          setshowReserveModal(true);
                         }}
                         className="relative overflow-hidden w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
                       >
@@ -549,6 +565,30 @@ const RecipientDashboard = () => {
           )}
         </div>
       </div>
+      {showReserveModal && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+            <h2 className="text-lg font-semibold text-gray-800">Are you sure you want to reserve this item?</h2>
+            <div className="mt-4 flex justify-end gap-4">
+              <button
+                onClick={() => setshowReserveModal(false)}
+                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {if (selectedListingId){
+                  handleReservation(selectedListingId);
+                  setshowReserveModal(false);
+                }}}
+                className="px-4 py-2 bg-green-400 text-white rounded-md hover:bg-green-500"
+              >
+                Reserve
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </RecipientLayout>
   );
 };
