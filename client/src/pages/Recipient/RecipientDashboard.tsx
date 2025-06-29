@@ -7,6 +7,7 @@ import RecipientLayout from "../../components/layout/RecipientLayout";
 
 interface FoodListing {
   id: string | number;
+  donorID: number;
   title: string;
   location: string;
   distance: string;
@@ -42,6 +43,7 @@ const RecipientDashboard = () => {
           {
             id: 4,
             title: "Fresh Bread and Pastries",
+            donorID: 26236,
             provider: "City Bakery",
             location: "123 Granville St,Vancouver, BC",
             distance: "0.8 miles",
@@ -57,6 +59,7 @@ const RecipientDashboard = () => {
           {
             id: 5,
             title: "Surplus Produce",
+            donorID: 26237,
             provider: "Green Market",
             location: "456 Robson St, Vancouver, BC",
             distance: "1.2 miles",
@@ -72,6 +75,7 @@ const RecipientDashboard = () => {
           {
             id: 6,
             title: "Prepared Meals",
+            donorID: 26238,
             provider: "Community Kitchen",
             location: "789 Main St, Vancouver, BC",
             distance: "2.4 miles",
@@ -94,6 +98,7 @@ const RecipientDashboard = () => {
         const apiListings = response.data.data.map((post: any) => ({
           id: post.id,
           title: post.title,
+          donorID: post.userId,
           provider: post.provider || "Public",
           location: post.location || "Unknown Location",
           // distance: post.distance || "N/A", // You may need to calculate this if not provided
@@ -524,6 +529,18 @@ const RecipientDashboard = () => {
                         Reserve
                         <ArrowRight className="h-4 w-4 ml-2" />
                       </button>
+                      {/* Message Donor button */}
+                      {listing.donorID && (
+                        <Link
+                          to={`/messages/${listing.donorID}`}
+                          className="col-span-2 mt-2 flex justify-center items-center py-2.5 px-4 border border-green-200 rounded-lg text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                        >
+                          <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 14h.01M16 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Message Donor
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>

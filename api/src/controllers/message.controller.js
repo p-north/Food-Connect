@@ -76,9 +76,29 @@ const getUnreadMessages = async (req, res) => {
     }
 }
 
+const getConversations = async (req, res) =>{
+    try {
+        const userID = req.userID;
+        const conversations = await Message.findConversations(userID);
+        res.status(200).json({
+            success: true,
+            message: "Conversations retrieved successfully",
+            data: conversations
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
+        
+    }
+}
+
 export {
     createMessage,
     getMessagesByUserId,
     getMessagesSinceLogin,
-    getUnreadMessages
+    getUnreadMessages,
+    getConversations
 }

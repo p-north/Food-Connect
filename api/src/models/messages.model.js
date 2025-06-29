@@ -12,10 +12,11 @@ CREATE TABLE IF NOT EXISTS messages (
 );`;
 
 const Message = {
-    async create({senderId, receiverId, message}) {
-        try {
-            const date = new Date();
-            const {rows} = await client.query(`
+  async create({ senderId, receiverId, message }) {
+    try {
+      const date = new Date();
+      const { rows } = await client.query(
+        `
                 INSERT INTO messages (
                     sender_id,
                     receiver_id,
@@ -24,16 +25,19 @@ const Message = {
                 )
                 VALUES ($1, $2, $3, $4)
                 RETURNING *;
-            `, [senderId, receiverId, message, date]);
-            return toCamelCase(rows[0]);
-        } catch (err) {
-            throw err;
-        }
-    },
-    async findMessagesByUserId(senderId, receiverId) {
-        try {
-            // senderId is the user who is logged in
-            const { rows } = await client.query(`
+            `,
+        [senderId, receiverId, message, date]
+      );
+      return toCamelCase(rows[0]);
+    } catch (err) {
+      throw err;
+    }
+  },
+  async findMessagesByUserId(senderId, receiverId) {
+    try {
+      // senderId is the user who is logged in
+      const { rows } = await client.query(
+        `
                 SELECT 
                     messages.*,
                     sender.name AS sender_name,
@@ -44,33 +48,39 @@ const Message = {
                 WHERE (messages.sender_id = $1 AND messages.receiver_id = $2)
                 OR (messages.sender_id = $2 AND messages.receiver_id = $1)
                 ORDER BY messages.created_at;
-            `, [senderId, receiverId]);
+            `,
+        [senderId, receiverId]
+      );
 
-            // make unread messages read where the user is the receiver
-            await client.query(`
+      // make unread messages read where the user is the receiver
+      await client.query(
+        `
                 UPDATE messages
                 SET is_read = true
                 WHERE receiver_id = $1 AND sender_id = $2
                 AND is_read = false;
-            `, [senderId, receiverId]);
+            `,
+        [senderId, receiverId]
+      );
 
-            return rows.map(toCamelCase);
-        } catch (err) {
-            throw err;
-        }
-    },
+      return rows.map(toCamelCase);
+    } catch (err) {
+      throw err;
+    }
+  },
 
-    async findMessagesSinceLogin(senderId) {
-        try {
-            // // get last login time from users table
-            // const { rows: userRows } = await client.query(`
-            //     SELECT last_login, id AS userId FROM users WHERE id = $1;
-            // `, [senderId]);
+  async findMessagesSinceLogin(senderId) {
+    try {
+      // // get last login time from users table
+      // const { rows: userRows } = await client.query(`
+      //     SELECT last_login, id AS userId FROM users WHERE id = $1;
+      // `, [senderId]);
 
-            // const lastLogin = userRows[0].userId;
-            const SEVEN_DAYS = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      // const lastLogin = userRows[0].userId;
+      const SEVEN_DAYS = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-            const { rows } = await client.query(`
+      const { rows } = await client.query(
+        `
                 SELECT
                     messages.*,
                     sender.name AS sender_name,
@@ -81,18 +91,21 @@ const Message = {
                 WHERE messages.created_at >= $1
                   AND messages.receiver_id = $2
                 ORDER BY messages.created_at;
-            `, [SEVEN_DAYS, senderId]);
+            `,
+        [SEVEN_DAYS, senderId]
+      );
 
-            return rows.map(toCamelCase);
-        } catch (err) {
-            throw err;
-        }
-    },
+      return rows.map(toCamelCase);
+    } catch (err) {
+      throw err;
+    }
+  },
 
-    // find unread messages
-    async findUnreadMessages(receiverId) {
-        try {
-            const { rows } = await client.query(`
+  // find unread messages
+  async findUnreadMessages(receiverId) {
+    try {
+      const { rows } = await client.query(
+        `
                 SELECT
                     messages.*,
                     sender.name AS sender_name,
@@ -102,15 +115,52 @@ const Message = {
                          JOIN users AS receiver ON messages.receiver_id = receiver.id
                 WHERE messages.is_read = false
                   AND messages.receiver_id = $1
-                ORDER BY messages.created_at;
-            `, [receiverId]);
+                ORDER BY messages.created_at;w
+            `,
+        [receiverId]
+      );
 
-            return rows.map(toCamelCase);
-        } catch (err) {
-            console.error("Error fetching unread messages:", err);
-            throw err;
-        }
+      return rows.map(toCamelCase);
+    } catch (err) {
+      console.error("Error fetching unread messages:", err);
+      throw err;
     }
-}
+  },
+  async findConversations(userID) {
+    try {
+      const { rows } = await client.query(`
+        SELECT
+        CASE
+            WHEN sender_id = $1 THEN receiver_id
+            ELSE sender_id
+        END AS user_id,
+        CASE
+            WHEN sender_id = $1 THEN receiver.name
+            ELSE sender.name
+        END AS user_name,
+        sub.message,
+        sub.created_at
+        FROM (
+        SELECT *,
+            ROW_NUMBER() OVER (
+            PARTITION BY LEAST(sender_id, receiver_id), GREATEST(sender_id, receiver_id)
+            ORDER BY created_at DESC
+            ) AS rn
+        FROM messages
+        WHERE sender_id = $1 OR receiver_id = $1
+        ) sub
+        JOIN users AS sender ON sub.sender_id = sender.id
+        JOIN users AS receiver ON sub.receiver_id = receiver.id
+        WHERE rn = 1
+        ORDER BY sub.created_at DESC;
+        `,[userID]);
 
-export {createMessageTable, Message};
+        return rows.map(toCamelCase)
+    } catch (err) {
+        console.error("Error fetching conversations:", err);
+        throw err;
+    }
+  },
+};
+
+export { createMessageTable, Message };
