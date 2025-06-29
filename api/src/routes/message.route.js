@@ -4,12 +4,13 @@ import {
     createMessage,
     getMessagesByUserId,
     getMessagesSinceLogin,
-    getUnreadMessages
+    getUnreadMessages, getConversations
 } from "../controllers/message.controller.js";
 const router = express.Router();
 
 
 router.get("/", verifyToken, getMessagesSinceLogin);
+router.get("/conversations", verifyToken, getConversations);
 router.get("/unread-messages", verifyToken, getUnreadMessages);
 router.post("/:receiverId", verifyToken, createMessage);
 router.get("/:receiverId", verifyToken, getMessagesByUserId);
